@@ -72,3 +72,4 @@ D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\refint\ServoTe
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.pdb
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.genruntimeconfig.cache
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ref\ServoTester3.dll
+D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.sourcelink.json

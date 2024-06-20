@@ -1,3 +1,4 @@
+using ScottPlot;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -22,6 +23,24 @@ namespace ServoTester3
         {
             InitializeComponent();
         }
+        List<double> Graph_ch1 = new List<double>();
+        List<double> Graph_ch2 = new List<double>();
+        List<double> Graph_ch3 = new List<double>();
+        List<double> Graph_ch4 = new List<double>();
+        List<double> Graph_ch5 = new List<double>();
+        List<double> Graph_ch6 = new List<double>();
+        List<double> Graph_ch7 = new List<double>();
+        List<double> Graph_ch8 = new List<double>();
+        List<double> Data_ch1 = new List<double>();
+        List<double> Data_ch2 = new List<double>();
+        List<double> Data_ch3 = new List<double>();
+        List<double> Data_ch4 = new List<double>();
+        List<double> Data_ch5 = new List<double>();
+        List<double> Data_ch6 = new List<double>();
+        List<double> Data_ch7 = new List<double>();
+        List<double> Data_ch8 = new List<double>();
+        private bool refresh_graph_flag = false;
+        private bool clear_graph_flag = false;
         private SerialPort Port { get; } = new SerialPort();
         private bool MotorState { get; set; }
         // private int MotorState;
@@ -41,6 +60,10 @@ namespace ServoTester3
             [FieldOffset(0)] public float f;
             [FieldOffset(0)] public int i;
             [FieldOffset(0)] public uint u;
+            [FieldOffset(0)] public ushort us0;
+            [FieldOffset(2)] public ushort us1;
+            [FieldOffset(0)] public short s0;
+            [FieldOffset(2)] public short s1;
             [FieldOffset(0)] public byte b0;
             [FieldOffset(1)] public byte b1;
             [FieldOffset(2)] public byte b2;
@@ -829,7 +852,7 @@ namespace ServoTester3
             // refresh port
             PortRefresh();
             // select baudrate
-            tbBaudrate.SelectedIndex = 0;
+            cbBaudrate.SelectedIndex = 0;
 
             InitAutoSetting();
             InitMcFlag();
@@ -941,7 +964,6 @@ namespace ServoTester3
                         // error
                         MessageBox.Show($@"{port}에 연결 할 수 없습니다.");
                     }
-
                     break;
                 case true when btCommOpen.Text == @"Close":
                     // try catch
@@ -971,13 +993,15 @@ namespace ServoTester3
         {
             // var list = new List<byte>();
             // check sender
-            if (sender == btRun)
+            if (btRunStop.Text == @"Servo On")
             {
                 MakeAndSendData(106, 1, 1);
+                btRunStop.Text = @"Servo Off";
             }
             else
             {
                 MakeAndSendData(106, 1, 0);
+                btRunStop.Text = @"Servo On";
             }
 
             // // check port is open
@@ -998,10 +1022,15 @@ namespace ServoTester3
         }
         private void btFastenLoosen_Click(object sender, EventArgs e)
         {
+            clear_graph_flag = true;
             if (btFastenLoosen.Text == "Fasten")
+            {
                 MakeAndSendData(2, 1, 0);
+            }
             else//Loosen
+            {
                 MakeAndSendData(2, 1, 1);
+            }
         }
         private void btMcInit_Click(object sender, EventArgs e)
         {
@@ -1170,12 +1199,18 @@ namespace ServoTester3
         {
             timer_working = 1;
             time_tick++;
-            tbAckMessage.Text = time_tick.ToString();
+            tbTimeTickMessage.Text = time_tick.ToString();
 
             tbTargetSpeed.Text = AutoSetting.CurrentSpeed.ToString();
             tbSeatingPoint.Text = AutoSetting.CurrentSeatingPoint.ToString();
             tbFreeSpeed.Text = AutoSetting.CurrentFSpeed.ToString();
             tbFreeAngle.Text = AutoSetting.CurrentFAngle.ToString();
+
+            if (refresh_graph_flag == true)
+            {
+                refresh_graph_flag = false;
+                refresh_graph();
+            }
 
             switch (AutoSetting.FlagSetting)
             {
@@ -1204,55 +1239,55 @@ namespace ServoTester3
             {
                 // change off
                 // case false when !tbOff.Checked:
-                case false when !tbOff.Checked:
-                    tbOff.Checked = true;
+                case false when !rbOff.Checked:
+                    rbOff.Checked = true;
                     // tbOn.Checked = false;
                     break;
                 // change on
                 // case true when !tbOn.Checked:
-                case true when !tbOn.Checked:
+                case true when !rbOn.Checked:
                     // tbOff.Checked = false;
-                    tbOn.Checked = true;
+                    rbOn.Checked = true;
                     break;
             }
             // check Calibration Step state
             switch (CalibStepState)
             {
                 // none
-                case 0 when !tbNone.Checked:
-                    tbNone.Checked = true;
+                case 0 when !rbCalibNone.Checked:
+                    rbCalibNone.Checked = true;
                     break;
                 // hold
-                case 1 when !tbHold.Checked:
-                    tbHold.Checked = true;
+                case 1 when !rbCalibHold.Checked:
+                    rbCalibHold.Checked = true;
                     break;
                 // forward
-                case 2 when !tbForward.Checked:
-                    tbForward.Checked = true;
+                case 2 when !rbCalibForward.Checked:
+                    rbCalibForward.Checked = true;
                     break;
                 // backward
-                case 3 when !tbBackward.Checked:
-                    tbBackward.Checked = true;
+                case 3 when !rbCalibBackward.Checked:
+                    rbCalibBackward.Checked = true;
                     break;
                 // finish
-                case 4 when !tbFinish.Checked:
-                    tbFinish.Checked = true;
+                case 4 when !rbCalibFinish.Checked:
+                    rbCalibFinish.Checked = true;
                     break;
             }
             // check Calibration Result state
             switch (CalibResultState)
             {
                 // success
-                case 2 when !tbCalibSuccess.Checked:
-                    tbCalibSuccess.Checked = true;
+                case 2 when !rbCalibSuccess.Checked:
+                    rbCalibSuccess.Checked = true;
                     break;
                 // fail
-                case 1 when !tbCalibFail.Checked:
-                    tbCalibFail.Checked = true;
+                case 1 when !rbCalibFail.Checked:
+                    rbCalibFail.Checked = true;
                     break;
                 // user stop
-                case 0 when !tbCalibUserStop.Checked:
-                    tbCalibUserStop.Checked = true;
+                case 0 when !rbCalibUserStop.Checked:
+                    rbCalibUserStop.Checked = true;
                     break;
             }
             if (McFlag.b1ControlFL != 0)
@@ -1475,6 +1510,15 @@ namespace ServoTester3
                                     {
                                         AckSend(Command, 0, StartAddress, 0);       // return Ack OK
                                     }
+                                    //List<double> xs = new() { 1, 2, 3, 4, 5 };
+                                    //List<double> ys = new() { 1, 4, 9, 16, 25 };
+                                    //formsPlot1.Plot.Add.Scatter(xs, ys);
+                                    // double[] sin = Generate.Sin(51);
+                                    // double[] cos = Generate.Cos(51);
+                                    // formsPlot1.Plot.Add.Signal(sin);
+                                    // formsPlot1.Plot.Add.Signal(cos);
+                                    // formsPlot1.Plot.ShowLegend();
+                                    fresh_graph_data();
                                     break;
                                 case 5:
                                     if (StartAddress == 1)
@@ -2223,5 +2267,141 @@ namespace ServoTester3
             }
         }
         RecvBuf_ RecvBuf = new RecvBuf_(SERIAL_BUF_SIZE);
+        void clear_graph_data()
+        {
+            Graph_ch1.Clear();
+            Graph_ch2.Clear();
+            Graph_ch3.Clear();
+            Graph_ch4.Clear();
+            Graph_ch5.Clear();
+            Graph_ch6.Clear();
+            Graph_ch7.Clear();
+            Graph_ch8.Clear();
+        }
+        void clear_data()
+        {
+            Data_ch1.Clear();
+            Data_ch2.Clear();
+            Data_ch3.Clear();
+            Data_ch4.Clear();
+            Data_ch5.Clear();
+            Data_ch6.Clear();
+            Data_ch7.Clear();
+            Data_ch8.Clear();
+        }
+        void fresh_graph_data()
+        {
+            TestUnion d = new TestUnion();
+            d.b0 = ComReadBuffer[764 + 0];
+            d.b1 = ComReadBuffer[764 + 1];
+            d.b2 = ComReadBuffer[764 + 2];
+            d.b3 = ComReadBuffer[764 + 3];
+            float hss_gain = d.f;
+            d.b0 = ComReadBuffer[768 + 0];
+            d.b1 = ComReadBuffer[768 + 1];
+            d.b2 = ComReadBuffer[768 + 2];
+            d.b3 = ComReadBuffer[768 + 3];
+            float tq_gain = d.f;
+            clear_data();
+            // Graph number
+            d.b0 = ComReadBuffer[10];
+            d.b1 = ComReadBuffer[11];
+            if (d.us0 == 1)
+            {
+                clear_graph_data();
+            }
+            d.b0 = ComReadBuffer[12];
+            d.b1 = ComReadBuffer[13];
+            ushort Graph_Data_Length = d.us0;
+            // Array.Copy(Array srcArray, int srcCopyStartIndex, Array destArray, int destCopyStartIndex, int CopyLength);
+            for (ushort j = 0; j < Graph_Data_Length; j++)
+            {
+                d.b0 = ComReadBuffer[100 * 0 + 64 + j * 2 + 0];
+                d.b1 = ComReadBuffer[100 * 0 + 64 + j * 2 + 1];
+                Data_ch1.Add(d.s0 * tq_gain);
+                d.b0 = ComReadBuffer[100 * 1 + 64 + j * 2 + 0];
+                d.b1 = ComReadBuffer[100 * 1 + 64 + j * 2 + 1];
+                Data_ch2.Add(d.s0 * hss_gain);
+                d.b0 = ComReadBuffer[100 * 2 + 64 + j * 2 + 0];
+                d.b1 = ComReadBuffer[100 * 2 + 64 + j * 2 + 1];
+                Data_ch3.Add(d.s0);
+                // Data_ch4.Add(ComReadBuffer[100*3+64+j*2+1]<<8 + ComReadBuffer[100*3+64+j*2+0]);
+                d.b0 = ComReadBuffer[100 * 3 + 64 + j * 2 + 0];
+                d.b1 = ComReadBuffer[100 * 3 + 64 + j * 2 + 1];
+                Data_ch4.Add(d.s0);
+                // Data_ch5.Add(ComReadBuffer[100*4+64+j*2+1]<<8 + ComReadBuffer[100*4+64+j*2+0]);
+                d.b0 = ComReadBuffer[100 * 4 + 64 + j * 2 + 0];
+                d.b1 = ComReadBuffer[100 * 4 + 64 + j * 2 + 1];
+                Data_ch5.Add(d.s0);
+                // Data_ch6.Add((ComReadBuffer[100*5+64+j*2+1]<<8 + ComReadBuffer[100*5+64+j*2+0])*hss_gain);
+                d.b0 = ComReadBuffer[100 * 5 + 64 + j * 2 + 0];
+                d.b1 = ComReadBuffer[100 * 5 + 64 + j * 2 + 1];
+                Data_ch6.Add(d.s0 * hss_gain);
+                // Data_ch7.Add(ComReadBuffer[100*6+64+j*2+1]<<8 + ComReadBuffer[100*6+64+j*2+0]);
+                d.b0 = ComReadBuffer[100 * 6 + 64 + j * 2 + 0];
+                d.b1 = ComReadBuffer[100 * 6 + 64 + j * 2 + 1];
+                Data_ch7.Add(d.s0);
+            }
+            Graph_ch1.AddRange(Data_ch1);
+            Graph_ch2.AddRange(Data_ch2);
+            Graph_ch3.AddRange(Data_ch3);
+            Graph_ch4.AddRange(Data_ch4);
+            Graph_ch5.AddRange(Data_ch5);
+            Graph_ch6.AddRange(Data_ch6);
+            Graph_ch7.AddRange(Data_ch7);
+
+            refresh_graph_flag = true;
+
+            tbDataCount.Text = Data_ch1.Count.ToString();
+            tbGraphDataCount.Text = Graph_ch1.Count.ToString();
+        }
+        void refresh_graph()
+        {
+            formsPlot1.Plot.Clear();
+            if (cbGraph_ch1.Checked)
+            {
+                var sig1 = formsPlot1.Plot.Add.Signal(Graph_ch1);
+                sig1.LegendText = "Torque";
+            }
+            if (cbGraph_ch2.Checked)
+            {
+                var sig2 = formsPlot1.Plot.Add.Signal(Graph_ch2);
+                sig2.LegendText = "Current";
+            }
+            if (cbGraph_ch3.Checked)
+            {
+                var sig3 = formsPlot1.Plot.Add.Signal(Graph_ch3);
+                sig3.LegendText = "Speed";
+            }
+            if (cbGraph_ch4.Checked)
+            {
+                var sig4 = formsPlot1.Plot.Add.Signal(Graph_ch4);
+                sig4.LegendText = "Angle";
+            }
+            if (cbGraph_ch5.Checked)
+            {
+                var sig5 = formsPlot1.Plot.Add.Signal(Graph_ch5);
+                sig5.LegendText = "Speed Command";
+            }
+            if (cbGraph_ch6.Checked)
+            {
+                var sig6 = formsPlot1.Plot.Add.Signal(Graph_ch6);
+                sig6.LegendText = "Current Command";
+            }
+            if (cbGraph_ch7.Checked)
+            {
+                var sig7 = formsPlot1.Plot.Add.Signal(Graph_ch7);
+                sig7.LegendText = "SnugAngle";
+            }
+            // sig8.LegendText = "Current";
+            formsPlot1.Plot.ShowLegend(Alignment.UpperLeft);
+            formsPlot1.Plot.Axes.AutoScale();
+            formsPlot1.Refresh();
+        }
+
+        private void cbGraph_CheckedChanged(object sender, EventArgs e)
+        {
+          refresh_graph();
+        }
     }
 }
