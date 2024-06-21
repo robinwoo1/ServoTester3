@@ -711,7 +711,7 @@
             // formsPlot1
             // 
             formsPlot1.DisplayScale = 1F;
-            formsPlot1.Location = new Point(93, 3);
+            formsPlot1.Location = new Point(99, 3);
             formsPlot1.Name = "formsPlot1";
             formsPlot1.Size = new Size(748, 338);
             formsPlot1.TabIndex = 0;

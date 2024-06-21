@@ -1,4 +1,5 @@
 using ScottPlot;
+using ScottPlot.Plottables;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
@@ -19,6 +20,7 @@ namespace ServoTester3
         public byte[] SendDataPacket = new byte[SERIAL_BUF_SIZE];
         public byte[] FlagRun = new byte[10];
         public byte[] FlagFL = new byte[10];
+        public bool closing_flag = false;
         public Form1()
         {
             InitializeComponent();
@@ -47,8 +49,8 @@ namespace ServoTester3
         private int CalibStepState;// { CALIB_SUCCESS, CALIB_FAIL, CALIB_USERSTOP }
         private int CalibResultState;// { get; set; }
         private int time_tick;
-        private int timer_working = 0;
-        private int port_working = 0;
+        private bool timer_working = false;
+        private bool port_working = false;
         public byte[] ComReadBuffer = new byte[128 * 16];
         public int ComReadIndex = 0;
         public ushort Command_Index_Pc;
@@ -962,7 +964,7 @@ namespace ServoTester3
                         // debug
                         Debug.WriteLine(ex.Message);
                         // error
-                        MessageBox.Show($@"{port}¿¡ ¿¬°á ÇÒ ¼ö ¾ø½À´Ï´Ù.");
+                        MessageBox.Show($@"{port}ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                     }
                     break;
                 case true when btCommOpen.Text == @"Close":
@@ -970,10 +972,10 @@ namespace ServoTester3
                     try
                     {
                         // close
-                        while (port_working > 0) { }
+                        while (port_working) { }
                         Port.Close();
                         // stop timer
-                        while (timer_working > 0) { }
+                        while (timer_working) { }
                         workTimer.Stop();
                         // change button text
                         btCommOpen.Text = @"Open";
@@ -983,7 +985,7 @@ namespace ServoTester3
                         // debug
                         Debug.WriteLine(ex.Message);
                         // error
-                        MessageBox.Show(@"¿¬°áÀ» ´ÝÀ» ¼ö ¾ø½À´Ï´Ù.");
+                        MessageBox.Show(@"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
                     }
 
                     break;
@@ -1147,15 +1149,18 @@ namespace ServoTester3
         }
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            port_working = 1;
+            port_working = true;
             try
             {
                 if (Port.IsOpen)
-                    this.Invoke(new EventHandler(MySerialReceived));//¸ÞÀÎ ¾²·¹µå¿Í ¼ö½Å ¾²·¹µåÀÇ Ãæµ¹ ¹æÁö¸¦ À§ÇØ Invoke »ç¿ë. MySerialReceived·Î ÀÌµ¿ÇÏ¿© Ãß°¡ ÀÛ¾÷ ½ÇÇà.
+                {
+                    this.Invoke(new EventHandler(MySerialReceived));//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Invoke ï¿½ï¿½ï¿½. MySerialReceivedï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ï¿ï¿½ ï¿½ß°ï¿½ ï¿½Û¾ï¿½ ï¿½ï¿½ï¿½ï¿½.
+                }
+                    
             }
             finally
             {
-
+                //Port.Close();
             }
             // // enter monitor
             // if (!Monitor.TryEnter(Receive, 1000))
@@ -1176,14 +1181,14 @@ namespace ServoTester3
             //   // // exit monitor
             //   // Monitor.Exit(Receive);
             // }
-            port_working = 0;
+            port_working = false;
         }
 
-        private void MySerialReceived(object s, EventArgs e)  //¿©±â¿¡¼­ ¼ö½Å µ¥ÀÌÅ¸¸¦ »ç¿ëÀÚÀÇ ¿ëµµ¿¡ µû¶ó Ã³¸®ÇÑ´Ù.
+        private void MySerialReceived(object s, EventArgs e)  //ï¿½ï¿½ï¿½â¿¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ëµµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½Ñ´ï¿½.
         {
             try
             {
-                // int ReceiveData = Port.ReadByte();  //½Ã¸®¾ó ¹öÅÍ¿¡ ¼ö½ÅµÈ µ¥ÀÌÅ¸¸¦ ReceiveData ÀÐ¾î¿À±â
+                // int ReceiveData = Port.ReadByte();  //ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½Åµï¿½ ï¿½ï¿½ï¿½ï¿½Å¸ï¿½ï¿½ ReceiveData ï¿½Ð¾ï¿½ï¿½ï¿½ï¿½
                 byte[] data = Port.Encoding.GetBytes(Port.ReadExisting());
                 rbuf_put(data, (ushort)(data.Count()));
 
@@ -1193,11 +1198,11 @@ namespace ServoTester3
             {
 
             }
-            // richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int Çü½ÄÀ» stringÇü½ÄÀ¸·Î º¯È¯ÇÏ¿© Ãâ·Â
+            // richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ stringï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½
         }
         private void workTimer_Tick(object sender, EventArgs e)
         {
-            timer_working = 1;
+            timer_working = true;
             time_tick++;
             tbTimeTickMessage.Text = time_tick.ToString();
 
@@ -1354,7 +1359,7 @@ namespace ServoTester3
             // var time = DateTime.Now;
             // ProcessPcMcReceivedCommData();
             // Analyze.Clear();
-            timer_working = 0;
+            timer_working = false;
         }
         public void ProcessPcMcReceivedCommData()
         {
@@ -2355,6 +2360,8 @@ namespace ServoTester3
             tbDataCount.Text = Data_ch1.Count.ToString();
             tbGraphDataCount.Text = Graph_ch1.Count.ToString();
         }
+
+        //[Obsolete]
         void refresh_graph()
         {
             formsPlot1.Plot.Clear();
@@ -2362,46 +2369,125 @@ namespace ServoTester3
             {
                 var sig1 = formsPlot1.Plot.Add.Signal(Graph_ch1);
                 sig1.LegendText = "Torque";
+                sig1.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+                sig1.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+                formsPlot1.Plot.Axes.Left.Label.Text = "Torque";
             }
             if (cbGraph_ch2.Checked)
             {
                 var sig2 = formsPlot1.Plot.Add.Signal(Graph_ch2);
                 sig2.LegendText = "Current";
+                sig2.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
             }
             if (cbGraph_ch3.Checked)
             {
                 var sig3 = formsPlot1.Plot.Add.Signal(Graph_ch3);
                 sig3.LegendText = "Speed";
+                sig3.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
             }
             if (cbGraph_ch4.Checked)
             {
                 var sig4 = formsPlot1.Plot.Add.Signal(Graph_ch4);
                 sig4.LegendText = "Angle";
+                sig4.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
             }
             if (cbGraph_ch5.Checked)
             {
                 var sig5 = formsPlot1.Plot.Add.Signal(Graph_ch5);
                 sig5.LegendText = "Speed Command";
+                sig5.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
             }
             if (cbGraph_ch6.Checked)
             {
                 var sig6 = formsPlot1.Plot.Add.Signal(Graph_ch6);
                 sig6.LegendText = "Current Command";
+                sig6.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
             }
             if (cbGraph_ch7.Checked)
             {
                 var sig7 = formsPlot1.Plot.Add.Signal(Graph_ch7);
                 sig7.LegendText = "SnugAngle";
+                sig7.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
             }
-            // sig8.LegendText = "Current";
-            formsPlot1.Plot.ShowLegend(Alignment.UpperLeft);
+            formsPlot1.Plot.ShowLegend(Alignment.UpperRight);
+            
             formsPlot1.Plot.Axes.AutoScale();
+
+            var vl = formsPlot1.Plot.Add.VerticalLine(23);
+            vl.IsDraggable = true;
+            vl.Text = "VLine";
+
+            var hl = formsPlot1.Plot.Add.HorizontalLine(0.42);
+            hl.IsDraggable = true;
+            hl.Text = "HLine";
+            
+            formsPlot1.Refresh();
+
+            // use events for custom mouse interactivity
+            formsPlot1.MouseDown += FormsPlot1_MouseDown;
+            formsPlot1.MouseUp += FormsPlot1_MouseUp;
+            formsPlot1.MouseMove += FormsPlot1_MouseMove;
+        }
+        AxisLine? PlottableBeingDragged = null;
+        private void FormsPlot1_MouseDown(object? sender, MouseEventArgs e)
+        {
+            var lineUnderMouse = GetLineUnderMouse(e.X, e.Y);
+            if (lineUnderMouse is not null)
+            {
+                PlottableBeingDragged = lineUnderMouse;
+                formsPlot1.Interaction.Disable(); // disable panning while dragging
+            }
+        }
+        private void FormsPlot1_MouseUp(object? sender, MouseEventArgs e)
+        {
+            PlottableBeingDragged = null;
+            formsPlot1.Interaction.Enable(); // enable panning again
             formsPlot1.Refresh();
         }
+        private void FormsPlot1_MouseMove(object? sender, MouseEventArgs e)
+        {
+            // this rectangle is the area around the mouse in coordinate units
+            CoordinateRect rect = formsPlot1.Plot.GetCoordinateRect(e.X, e.Y, radius: 10);
 
+            if (PlottableBeingDragged is null)
+            {
+                // set cursor based on what's beneath the plottable
+                var lineUnderMouse = GetLineUnderMouse(e.X, e.Y);
+                if (lineUnderMouse is null) Cursor = Cursors.Default;
+                else if (lineUnderMouse.IsDraggable && lineUnderMouse is VerticalLine) Cursor = Cursors.SizeWE;
+                else if (lineUnderMouse.IsDraggable && lineUnderMouse is HorizontalLine) Cursor = Cursors.SizeNS;
+            }
+            else
+            {
+                // update the position of the plottable being dragged
+                if (PlottableBeingDragged is HorizontalLine hl)
+                {
+                    hl.Y = rect.VerticalCenter;
+                    hl.Text = $"{hl.Y:0.00}";
+                }
+                else if (PlottableBeingDragged is VerticalLine vl)
+                {
+                    vl.X = rect.HorizontalCenter;
+                    vl.Text = $"{vl.X:0.00}";
+                }
+                formsPlot1.Refresh();
+            }
+        }
+        private AxisLine? GetLineUnderMouse(float x, float y)
+        {
+            CoordinateRect rect = formsPlot1.Plot.GetCoordinateRect(x, y, radius: 10);
+
+            foreach (AxisLine axLine in formsPlot1.Plot.GetPlottables<AxisLine>().Reverse())
+            {
+                if (axLine.IsUnderMouse(rect))
+                    return axLine;
+            }
+
+            return null;
+        }
         private void cbGraph_CheckedChanged(object sender, EventArgs e)
         {
-          refresh_graph();
+            refresh_graph();
         }
     }
 }
