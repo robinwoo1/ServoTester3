@@ -964,7 +964,7 @@ namespace ServoTester3
                         // debug
                         Debug.WriteLine(ex.Message);
                         // error
-                        MessageBox.Show($@"{port}�� ���� �� �� �����ϴ�.");
+                        MessageBox.Show($@"{port} isn't enable to open.");
                     }
                     break;
                 case true when btCommOpen.Text == @"Close":
@@ -985,7 +985,7 @@ namespace ServoTester3
                         // debug
                         Debug.WriteLine(ex.Message);
                         // error
-                        MessageBox.Show(@"������ ���� �� �����ϴ�.");
+                        MessageBox.Show(@"Port closing error.");
                     }
 
                     break;
@@ -1154,7 +1154,7 @@ namespace ServoTester3
             {
                 if (Port.IsOpen)
                 {
-                    this.Invoke(new EventHandler(MySerialReceived));//���� ������� ���� �������� �浹 ������ ���� Invoke ���. MySerialReceived�� �̵��Ͽ� �߰� �۾� ����.
+                    this.Invoke(new EventHandler(MySerialReceived));//
                 }
                     
             }
@@ -1184,11 +1184,10 @@ namespace ServoTester3
             port_working = false;
         }
 
-        private void MySerialReceived(object s, EventArgs e)  //���⿡�� ���� ����Ÿ�� ������� �뵵�� ���� ó���Ѵ�.
+        private void MySerialReceived(object s, EventArgs e)  //
         {
             try
             {
-                // int ReceiveData = Port.ReadByte();  //�ø��� ���Ϳ� ���ŵ� ����Ÿ�� ReceiveData �о����
                 byte[] data = Port.Encoding.GetBytes(Port.ReadExisting());
                 rbuf_put(data, (ushort)(data.Count()));
 
@@ -1198,7 +1197,6 @@ namespace ServoTester3
             {
 
             }
-            // richTextBox_received.Text = richTextBox_received.Text + string.Format("{0:X2}", ReceiveData);  //int ������ string�������� ��ȯ�Ͽ� ���
         }
         private void workTimer_Tick(object sender, EventArgs e)
         {
@@ -1283,7 +1281,7 @@ namespace ServoTester3
             switch (CalibResultState)
             {
                 // success
-                case 2 when !rbCalibSuccess.Checked:
+                case 0 when !rbCalibSuccess.Checked:
                     rbCalibSuccess.Checked = true;
                     break;
                 // fail
@@ -1291,7 +1289,7 @@ namespace ServoTester3
                     rbCalibFail.Checked = true;
                     break;
                 // user stop
-                case 0 when !rbCalibUserStop.Checked:
+                case 2 when !rbCalibUserStop.Checked:
                     rbCalibUserStop.Checked = true;
                     break;
             }

@@ -930,7 +930,7 @@
             // 
             cbBaudrate.DropDownStyle = ComboBoxStyle.DropDownList;
             cbBaudrate.FormattingEnabled = true;
-            cbBaudrate.Items.AddRange(new object[] { "921600", "460800", "230400", "115200", "57600", "38400", "19200", "9600" });
+            cbBaudrate.Items.AddRange(new object[] { "1152000", "921600", "460800", "230400", "115200", "57600", "38400", "19200", "9600" });
             cbBaudrate.Location = new Point(62, 42);
             cbBaudrate.Name = "cbBaudrate";
             cbBaudrate.Size = new Size(73, 23);
