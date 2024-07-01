@@ -512,7 +512,7 @@ namespace ServoTester3
                         SendDataPacket[u16PtrCnt++] = d.b1;
                         SendDataPacket[u16PtrCnt++] = d.b2;
                         SendDataPacket[u16PtrCnt++] = d.b3;
-                        d.f = Mc_Para.val.f32MC_INIT_LOOSENING_TIME_LIMIT;
+                        d.f = Mc_Para.val.f32MC_STALL_LOOSENING_TIME_LIMIT;
                         SendDataPacket[u16PtrCnt++] = d.b0;
                         SendDataPacket[u16PtrCnt++] = d.b1;
                         SendDataPacket[u16PtrCnt++] = d.b2;
@@ -544,10 +544,15 @@ namespace ServoTester3
                         SendDataPacket[u16PtrCnt++] = d.b3;
                         SendDataPacket[u16PtrCnt++] = (byte)(Mc_Para.val.u16MC_CROWFOOT_REVERSE_SPEED >> 0);
                         SendDataPacket[u16PtrCnt++] = (byte)(Mc_Para.val.u16MC_CROWFOOT_REVERSE_SPEED >> 8);
-                        SendDataPacket[u16PtrCnt++] = (byte)(0);
-                        SendDataPacket[u16PtrCnt++] = (byte)(0);
-                        SendDataPacket[u16PtrCnt++] = (byte)(0);
-                        SendDataPacket[u16PtrCnt++] = (byte)(0);
+                        d.f = Mc_Para.val.f32MC_FREE_SPEED_MAX_TORQUE;
+                        SendDataPacket[u16PtrCnt++] = d.b0;
+                        SendDataPacket[u16PtrCnt++] = d.b1;
+                        SendDataPacket[u16PtrCnt++] = d.b2;
+                        SendDataPacket[u16PtrCnt++] = d.b3;
+                        // SendDataPacket[u16PtrCnt++] = (byte)(0);
+                        // SendDataPacket[u16PtrCnt++] = (byte)(0);
+                        // SendDataPacket[u16PtrCnt++] = (byte)(0);
+                        // SendDataPacket[u16PtrCnt++] = (byte)(0);
                         SendDataPacket[u16PtrCnt++] = (byte)(0);
                         SendDataPacket[u16PtrCnt++] = (byte)(0);
                         SendDataPacket[u16PtrCnt++] = (byte)(0);
@@ -1889,7 +1894,7 @@ namespace ServoTester3
             Mc_Para.dft.u16MC_LOOSENING_SPEED = 500; Mc_Para.min.u16MC_LOOSENING_SPEED = 100; Mc_Para.max.u16MC_LOOSENING_SPEED = 1000;           //SET[5] :  
             Mc_Para.dft.f32MC_TOTAL_FASTENING_TIME = 100; Mc_Para.min.f32MC_TOTAL_FASTENING_TIME = 0; Mc_Para.max.f32MC_TOTAL_FASTENING_TIME = 600;       //SET[6] :  
             Mc_Para.dft.f32MC_TOTAL_LOOSENING_TIME = 100; Mc_Para.min.f32MC_TOTAL_LOOSENING_TIME = 0; Mc_Para.max.f32MC_TOTAL_LOOSENING_TIME = 600;       //SET[7] :  
-            Mc_Para.dft.f32MC_INIT_LOOSENING_TIME_LIMIT = 2; Mc_Para.min.f32MC_INIT_LOOSENING_TIME_LIMIT = 1; Mc_Para.max.f32MC_INIT_LOOSENING_TIME_LIMIT = 5;    //SET[8] :  
+            Mc_Para.dft.f32MC_STALL_LOOSENING_TIME_LIMIT = 2; Mc_Para.min.f32MC_STALL_LOOSENING_TIME_LIMIT = 1; Mc_Para.max.f32MC_STALL_LOOSENING_TIME_LIMIT = 5;    //SET[8] :  
             Mc_Para.dft.u16MC_SCREW_TYPE = 0; Mc_Para.min.u16MC_SCREW_TYPE = 0; Mc_Para.max.u16MC_SCREW_TYPE = 0x7fff;              //SET[9] :  
             Mc_Para.dft.f32MC_JUDGE_FASTEN_MIN_TURNS = 0; Mc_Para.min.f32MC_JUDGE_FASTEN_MIN_TURNS = 0; Mc_Para.max.f32MC_JUDGE_FASTEN_MIN_TURNS = 50;      //SET[10] : 
             Mc_Para.dft.u16MC_FASTENING_STOP_ALARM = 0; Mc_Para.min.u16MC_FASTENING_STOP_ALARM = 0; Mc_Para.max.u16MC_FASTENING_STOP_ALARM = 1;         //SET[11] : 
@@ -1953,7 +1958,7 @@ namespace ServoTester3
             Mc_Para.val.u16MC_LOOSENING_SPEED = 100;              //5
             Mc_Para.val.f32MC_TOTAL_FASTENING_TIME = 10;         //6
             Mc_Para.val.f32MC_TOTAL_LOOSENING_TIME = 10;         //7
-            Mc_Para.val.f32MC_INIT_LOOSENING_TIME_LIMIT = 0.2f;    //8
+            Mc_Para.val.f32MC_STALL_LOOSENING_TIME_LIMIT = 0.2f;    //8
             Mc_Para.val.u16MC_SCREW_TYPE = 0;                   //9
             Mc_Para.val.f32MC_JUDGE_FASTEN_MIN_TURNS = 0;       //10
             Mc_Para.val.u16MC_FASTENING_STOP_ALARM = 0;         //11
@@ -2151,7 +2156,7 @@ namespace ServoTester3
             public ushort u16MC_LOOSENING_SPEED;            //5
             public float f32MC_TOTAL_FASTENING_TIME;          //6
             public float f32MC_TOTAL_LOOSENING_TIME;          //7
-            public float f32MC_INIT_LOOSENING_TIME_LIMIT;     //8
+            public float f32MC_STALL_LOOSENING_TIME_LIMIT;     //8
             public ushort u16MC_SCREW_TYPE;                 //9
             public float f32MC_JUDGE_FASTEN_MIN_TURNS;        //10
             public ushort u16MC_FASTENING_STOP_ALARM;       //11
@@ -2161,6 +2166,7 @@ namespace ServoTester3
             public ushort u16MC_CROWFOOT_EFFICIENCY;        //15
             public float f32MC_CROWFOOT_REVERSE_TORQUE;       //16
             public ushort u16MC_CROWFOOT_REVERSE_SPEED;     //17
+            public float f32MC_FREE_SPEED_MAX_TORQUE;       //18
                                                             // } para_Val_etc;
             public ushort u16MC_VERSION;
         }

@@ -477,7 +477,7 @@
             groupBox6.Controls.Add(rbCalibUserStop);
             groupBox6.Controls.Add(rbCalibFail);
             groupBox6.Controls.Add(rbCalibSuccess);
-            groupBox6.Location = new Point(5, 100);
+            groupBox6.Location = new Point(8, 100);
             groupBox6.Name = "groupBox6";
             groupBox6.Size = new Size(335, 41);
             groupBox6.TabIndex = 5;
@@ -1226,7 +1226,7 @@
             button3.Name = "button3";
             button3.Size = new Size(94, 23);
             button3.TabIndex = 5;
-            button3.Text = "Torque Runner";
+            button3.Text = "Nut Runner";
             button3.UseVisualStyleBackColor = true;
             // 
             // tbDataCount
