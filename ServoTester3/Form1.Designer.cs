@@ -129,10 +129,12 @@
             btStartStopFL = new Button();
             btFastenLoosen = new Button();
             groupBox13 = new GroupBox();
+            rbNut = new RadioButton();
+            rbMot = new RadioButton();
             label13 = new Label();
-            button2 = new Button();
+            btMotorTest = new Button();
             tbTimeTickMessage = new TextBox();
-            button3 = new Button();
+            btNutRunner = new Button();
             tbDataCount = new TextBox();
             tbGraphDataCount = new TextBox();
             tabControl1.SuspendLayout();
@@ -172,7 +174,7 @@
             tabControl1.Location = new Point(0, 90);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(855, 372);
+            tabControl1.Size = new Size(876, 372);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -186,7 +188,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(847, 344);
+            tabPage1.Size = new Size(868, 344);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Function";
             tabPage1.UseVisualStyleBackColor = true;
@@ -574,6 +576,7 @@
             // 
             rbCalibNone.AutoSize = true;
             rbCalibNone.Checked = true;
+            rbCalibNone.ForeColor = SystemColors.ControlText;
             rbCalibNone.Location = new Point(3, 18);
             rbCalibNone.Name = "rbCalibNone";
             rbCalibNone.Size = new Size(54, 19);
@@ -626,7 +629,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(847, 344);
+            tabPage2.Size = new Size(868, 344);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Graph";
             tabPage2.UseVisualStyleBackColor = true;
@@ -740,7 +743,7 @@
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(847, 344);
+            tabPage3.Size = new Size(868, 344);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Servo";
             tabPage3.UseVisualStyleBackColor = true;
@@ -986,7 +989,7 @@
             groupBox2.Controls.Add(btAlarmReset);
             groupBox2.Controls.Add(btResetMc);
             groupBox2.Controls.Add(label4);
-            groupBox2.Location = new Point(693, 0);
+            groupBox2.Location = new Point(707, 0);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(162, 89);
             groupBox2.TabIndex = 6;
@@ -1128,7 +1131,7 @@
             groupBox12.Controls.Add(tbMaintCnt);
             groupBox12.Controls.Add(btStartStopFL);
             groupBox12.Controls.Add(btFastenLoosen);
-            groupBox12.Location = new Point(546, 0);
+            groupBox12.Location = new Point(557, 0);
             groupBox12.Name = "groupBox12";
             groupBox12.Size = new Size(141, 96);
             groupBox12.TabIndex = 9;
@@ -1182,16 +1185,41 @@
             // 
             // groupBox13
             // 
+            groupBox13.Controls.Add(rbNut);
+            groupBox13.Controls.Add(rbMot);
             groupBox13.Controls.Add(label13);
-            groupBox13.Controls.Add(button2);
+            groupBox13.Controls.Add(btMotorTest);
             groupBox13.Controls.Add(tbTimeTickMessage);
-            groupBox13.Controls.Add(button3);
+            groupBox13.Controls.Add(btNutRunner);
             groupBox13.Location = new Point(407, 0);
             groupBox13.Name = "groupBox13";
-            groupBox13.Size = new Size(132, 96);
+            groupBox13.Size = new Size(140, 96);
             groupBox13.TabIndex = 10;
             groupBox13.TabStop = false;
             groupBox13.Text = "Mode";
+            // 
+            // rbNut
+            // 
+            rbNut.AutoSize = true;
+            rbNut.Checked = true;
+            rbNut.Location = new Point(87, 44);
+            rbNut.Name = "rbNut";
+            rbNut.Size = new Size(45, 19);
+            rbNut.TabIndex = 16;
+            rbNut.TabStop = true;
+            rbNut.Text = "Nut";
+            rbNut.UseVisualStyleBackColor = true;
+            // 
+            // rbMot
+            // 
+            rbMot.AutoSize = true;
+            rbMot.Location = new Point(87, 18);
+            rbMot.Name = "rbMot";
+            rbMot.Size = new Size(47, 19);
+            rbMot.TabIndex = 15;
+            rbMot.TabStop = true;
+            rbMot.Text = "Mot";
+            rbMot.UseVisualStyleBackColor = true;
             // 
             // label13
             // 
@@ -1202,14 +1230,15 @@
             label13.TabIndex = 14;
             label13.Text = "Time Tick";
             // 
-            // button2
+            // btMotorTest
             // 
-            button2.Location = new Point(13, 16);
-            button2.Name = "button2";
-            button2.Size = new Size(93, 23);
-            button2.TabIndex = 8;
-            button2.Text = "MotorTest";
-            button2.UseVisualStyleBackColor = true;
+            btMotorTest.Location = new Point(5, 16);
+            btMotorTest.Name = "btMotorTest";
+            btMotorTest.Size = new Size(78, 23);
+            btMotorTest.TabIndex = 8;
+            btMotorTest.Text = "MotorTest";
+            btMotorTest.UseVisualStyleBackColor = true;
+            btMotorTest.Click += TestModeSelect_Click;
             // 
             // tbTimeTickMessage
             // 
@@ -1220,14 +1249,15 @@
             tbTimeTickMessage.TabIndex = 13;
             tbTimeTickMessage.Text = "0";
             // 
-            // button3
+            // btNutRunner
             // 
-            button3.Location = new Point(12, 42);
-            button3.Name = "button3";
-            button3.Size = new Size(94, 23);
-            button3.TabIndex = 5;
-            button3.Text = "Nut Runner";
-            button3.UseVisualStyleBackColor = true;
+            btNutRunner.Location = new Point(4, 42);
+            btNutRunner.Name = "btNutRunner";
+            btNutRunner.Size = new Size(79, 23);
+            btNutRunner.TabIndex = 5;
+            btNutRunner.Text = "Nut Runner";
+            btNutRunner.UseVisualStyleBackColor = true;
+            btNutRunner.Click += TestModeSelect_Click;
             // 
             // tbDataCount
             // 
@@ -1251,7 +1281,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(867, 460);
+            ClientSize = new Size(875, 460);
             Controls.Add(tbGraphDataCount);
             Controls.Add(tbDataCount);
             Controls.Add(groupBox13);
@@ -1379,8 +1409,8 @@
         private Button btFastenLoosen;
         private ScottPlot.WinForms.FormsPlot formsPlot1;
         private GroupBox groupBox13;
-        private Button button2;
-        private Button button3;
+        private Button btMotorTest;
+        private Button btNutRunner;
         private Button btRunStop;
         private Label label12;
         private TextBox tbMaintCnt;
@@ -1416,5 +1446,7 @@
         private CheckBox cbGraph_ch3;
         private CheckBox cbGraph_ch2;
         private CheckBox cbGraph_ch1;
+        private RadioButton rbNut;
+        private RadioButton rbMot;
     }
 }

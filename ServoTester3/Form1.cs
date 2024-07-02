@@ -21,6 +21,7 @@ namespace ServoTester3
         public byte[] FlagRun = new byte[10];
         public byte[] FlagFL = new byte[10];
         public bool closing_flag = false;
+        public bool Mot_or_Nut = false;
         public Form1()
         {
             InitializeComponent();
@@ -71,6 +72,7 @@ namespace ServoTester3
             [FieldOffset(2)] public byte b2;
             [FieldOffset(3)] public byte b3;
         }
+        
         public int rbuf_put(byte[] rbuf, ushort rsize)
         {
             ushort nhead;
@@ -274,6 +276,19 @@ namespace ServoTester3
                     SendPacket(SendDataPacket, u16PtrCnt);
                 }
                 // else if (StartAddress == 13)//receive Initial Angle result
+            }
+            else if (Command == 8)
+            {
+              if (StartAddress == 1)
+              {
+                MakePacket(Command, StartAddress, Data);
+                u16PtrCnt = CmdAck.u16PtrCnt;
+                calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+                SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+                SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+                // Port.Write(SendDataPacket, 0, u16PtrCnt);
+                SendPacket(SendDataPacket, u16PtrCnt);
+              }
             }
             else if (Command == 104)
             {
@@ -788,6 +803,14 @@ namespace ServoTester3
                     SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
                 }
             }
+            else if (Command == 8) // MotTest or NutRunner
+            {
+                if (StartAddress == 1)
+                {
+                    SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
+                    SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
+                }
+            }
             else if (Command == 104) // parameter
             {
                 // if (StartAddress == 1)
@@ -871,6 +894,19 @@ namespace ServoTester3
             // set event
             // Port.DataReceived += PortOnDataReceived;
             Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+        }
+        private void TestModeSelect_Click(object sender, EventArgs e)
+        {
+          if (!Port.IsOpen)
+            return;
+          if (sender == btMotorTest)
+          {
+            MakeAndSendData(8, 1, 1);
+          }
+          else// (sender == btNutRunner)
+          {
+            MakeAndSendData(8, 1, 0);
+          }
         }
         private void btSaveOrigin_Click(object sender, EventArgs e)
         {
@@ -1316,6 +1352,16 @@ namespace ServoTester3
             {
                 btStartStopFL.Text = "StartFL";
             }
+            if (Mot_or_Nut)
+            {
+              rbMot.Checked = true;
+              rbNut.Checked = false;
+            }
+            else
+            {
+              rbMot.Checked = false;
+              rbNut.Checked = true;
+            }
             // // check is open
             // if (Port.IsOpen)
             // {
@@ -1512,6 +1558,12 @@ namespace ServoTester3
                                     FlagFL[2] = FlagFL[1];
                                     FlagFL[1] = FlagFL[0];
                                     FlagFL[0] = b1ControlFL;
+
+                                    if (ComReadBuffer[63]!=0)
+                                      Mot_or_Nut = true;
+                                    else
+                                      Mot_or_Nut = false;
+                                    
                                     break;
                                 case 4:
                                     if (StartAddress == 1)
