@@ -48,6 +48,8 @@
             label8 = new Label();
             tbFreeAngle = new TextBox();
             label9 = new Label();
+            tbMaintCnt = new TextBox();
+            label12 = new Label();
             groupBox8 = new GroupBox();
             btStartOrigin = new Button();
             btSaveOrigin = new Button();
@@ -109,7 +111,7 @@
             label1 = new Label();
             workTimer = new System.Windows.Forms.Timer(components);
             groupBox2 = new GroupBox();
-            label14 = new Label();
+            btServoOn = new Button();
             rbOn = new RadioButton();
             rbOff = new RadioButton();
             tbError = new TextBox();
@@ -122,19 +124,22 @@
             tbEnc = new TextBox();
             btMcInit = new Button();
             label3 = new Label();
-            groupBox12 = new GroupBox();
+            gbFastenLoosen = new GroupBox();
             tbLoosenAngle = new NumericUpDown();
-            label12 = new Label();
-            tbMaintCnt = new TextBox();
             btStartStopFL = new Button();
             btFastenLoosen = new Button();
+            gbServo = new GroupBox();
+            nudSpeed = new NumericUpDown();
+            nudTorque = new NumericUpDown();
+            btSpeed = new Button();
+            btTorque = new Button();
             groupBox13 = new GroupBox();
             rbNut = new RadioButton();
             rbMot = new RadioButton();
-            label13 = new Label();
             btMotorTest = new Button();
-            tbTimeTickMessage = new TextBox();
             btNutRunner = new Button();
+            label13 = new Label();
+            tbTimeTickMessage = new TextBox();
             tbDataCount = new TextBox();
             tbGraphDataCount = new TextBox();
             tabControl1.SuspendLayout();
@@ -161,8 +166,11 @@
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)tbDriverType).BeginInit();
-            groupBox12.SuspendLayout();
+            gbFastenLoosen.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)tbLoosenAngle).BeginInit();
+            gbServo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)nudSpeed).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)nudTorque).BeginInit();
             groupBox13.SuspendLayout();
             SuspendLayout();
             // 
@@ -171,15 +179,17 @@
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
             tabControl1.Controls.Add(tabPage3);
-            tabControl1.Location = new Point(0, 90);
+            tabControl1.Location = new Point(0, 127);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(876, 372);
+            tabControl1.Size = new Size(878, 392);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
             tabPage1.Controls.Add(groupBox9);
+            tabPage1.Controls.Add(tbMaintCnt);
+            tabPage1.Controls.Add(label12);
             tabPage1.Controls.Add(groupBox8);
             tabPage1.Controls.Add(groupBox7);
             tabPage1.Controls.Add(groupBox6);
@@ -188,7 +198,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(868, 344);
+            tabPage1.Size = new Size(870, 364);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Function";
             tabPage1.UseVisualStyleBackColor = true;
@@ -371,6 +381,24 @@
             label9.Size = new Size(64, 15);
             label9.TabIndex = 0;
             label9.Text = "Free Angle";
+            // 
+            // tbMaintCnt
+            // 
+            tbMaintCnt.Location = new Point(650, 16);
+            tbMaintCnt.Name = "tbMaintCnt";
+            tbMaintCnt.ReadOnly = true;
+            tbMaintCnt.Size = new Size(67, 23);
+            tbMaintCnt.TabIndex = 9;
+            tbMaintCnt.Text = "0";
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(587, 20);
+            label12.Name = "label12";
+            label12.Size = new Size(57, 15);
+            label12.TabIndex = 12;
+            label12.Text = "Main Cnt";
             // 
             // groupBox8
             // 
@@ -629,7 +657,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(868, 344);
+            tabPage2.Size = new Size(870, 364);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Graph";
             tabPage2.UseVisualStyleBackColor = true;
@@ -743,7 +771,7 @@
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(868, 344);
+            tabPage3.Size = new Size(870, 364);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Servo";
             tabPage3.UseVisualStyleBackColor = true;
@@ -982,7 +1010,7 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(label14);
+            groupBox2.Controls.Add(btServoOn);
             groupBox2.Controls.Add(rbOn);
             groupBox2.Controls.Add(rbOff);
             groupBox2.Controls.Add(tbError);
@@ -996,14 +1024,16 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Board Status";
             // 
-            // label14
+            // btServoOn
             // 
-            label14.AutoSize = true;
-            label14.Location = new Point(6, 40);
-            label14.Name = "label14";
-            label14.Size = new Size(57, 15);
-            label14.TabIndex = 11;
-            label14.Text = "Servo On";
+            btServoOn.Enabled = false;
+            btServoOn.Location = new Point(4, 36);
+            btServoOn.Name = "btServoOn";
+            btServoOn.Size = new Size(65, 23);
+            btServoOn.TabIndex = 12;
+            btServoOn.Text = "Servo On";
+            btServoOn.UseVisualStyleBackColor = true;
+            btServoOn.Click += ServoOn_Click;
             // 
             // rbOn
             // 
@@ -1038,7 +1068,7 @@
             // 
             // btAlarmReset
             // 
-            btAlarmReset.Location = new Point(5, 61);
+            btAlarmReset.Location = new Point(4, 61);
             btAlarmReset.Name = "btAlarmReset";
             btAlarmReset.Size = new Size(79, 23);
             btAlarmReset.TabIndex = 5;
@@ -1124,19 +1154,17 @@
             label3.TabIndex = 0;
             label3.Text = "Encoder";
             // 
-            // groupBox12
+            // gbFastenLoosen
             // 
-            groupBox12.Controls.Add(tbLoosenAngle);
-            groupBox12.Controls.Add(label12);
-            groupBox12.Controls.Add(tbMaintCnt);
-            groupBox12.Controls.Add(btStartStopFL);
-            groupBox12.Controls.Add(btFastenLoosen);
-            groupBox12.Location = new Point(557, 0);
-            groupBox12.Name = "groupBox12";
-            groupBox12.Size = new Size(141, 96);
-            groupBox12.TabIndex = 9;
-            groupBox12.TabStop = false;
-            groupBox12.Text = "Fasten/Loosen";
+            gbFastenLoosen.Controls.Add(tbLoosenAngle);
+            gbFastenLoosen.Controls.Add(btStartStopFL);
+            gbFastenLoosen.Controls.Add(btFastenLoosen);
+            gbFastenLoosen.Location = new Point(557, 0);
+            gbFastenLoosen.Name = "gbFastenLoosen";
+            gbFastenLoosen.Size = new Size(144, 71);
+            gbFastenLoosen.TabIndex = 9;
+            gbFastenLoosen.TabStop = false;
+            gbFastenLoosen.Text = "Fasten/Loosen";
             // 
             // tbLoosenAngle
             // 
@@ -1144,24 +1172,6 @@
             tbLoosenAngle.Name = "tbLoosenAngle";
             tbLoosenAngle.Size = new Size(68, 23);
             tbLoosenAngle.TabIndex = 13;
-            // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.Location = new Point(6, 68);
-            label12.Name = "label12";
-            label12.Size = new Size(57, 15);
-            label12.TabIndex = 12;
-            label12.Text = "Main Cnt";
-            // 
-            // tbMaintCnt
-            // 
-            tbMaintCnt.Location = new Point(66, 65);
-            tbMaintCnt.Name = "tbMaintCnt";
-            tbMaintCnt.ReadOnly = true;
-            tbMaintCnt.Size = new Size(67, 23);
-            tbMaintCnt.TabIndex = 9;
-            tbMaintCnt.Text = "0";
             // 
             // btStartStopFL
             // 
@@ -1183,17 +1193,66 @@
             btFastenLoosen.UseVisualStyleBackColor = true;
             btFastenLoosen.Click += btFastenLoosen_Click;
             // 
+            // gbServo
+            // 
+            gbServo.Controls.Add(nudSpeed);
+            gbServo.Controls.Add(nudTorque);
+            gbServo.Controls.Add(btSpeed);
+            gbServo.Controls.Add(btTorque);
+            gbServo.Location = new Point(557, 1);
+            gbServo.Name = "gbServo";
+            gbServo.Size = new Size(144, 70);
+            gbServo.TabIndex = 14;
+            gbServo.TabStop = false;
+            gbServo.Text = "Servo";
+            // 
+            // nudSpeed
+            // 
+            nudSpeed.Enabled = false;
+            nudSpeed.Location = new Point(67, 19);
+            nudSpeed.Maximum = new decimal(new int[] { 40000, 0, 0, 0 });
+            nudSpeed.Name = "nudSpeed";
+            nudSpeed.Size = new Size(68, 23);
+            nudSpeed.TabIndex = 14;
+            // 
+            // nudTorque
+            // 
+            nudTorque.Enabled = false;
+            nudTorque.Location = new Point(66, 44);
+            nudTorque.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            nudTorque.Name = "nudTorque";
+            nudTorque.Size = new Size(68, 23);
+            nudTorque.TabIndex = 13;
+            // 
+            // btSpeed
+            // 
+            btSpeed.Location = new Point(7, 16);
+            btSpeed.Name = "btSpeed";
+            btSpeed.Size = new Size(52, 22);
+            btSpeed.TabIndex = 8;
+            btSpeed.Text = "Speed";
+            btSpeed.UseVisualStyleBackColor = true;
+            btSpeed.Click += SpeedTorque_Click;
+            // 
+            // btTorque
+            // 
+            btTorque.Location = new Point(6, 41);
+            btTorque.Name = "btTorque";
+            btTorque.Size = new Size(53, 23);
+            btTorque.TabIndex = 5;
+            btTorque.Text = "Torque";
+            btTorque.UseVisualStyleBackColor = true;
+            btTorque.Click += SpeedTorque_Click;
+            // 
             // groupBox13
             // 
             groupBox13.Controls.Add(rbNut);
             groupBox13.Controls.Add(rbMot);
-            groupBox13.Controls.Add(label13);
             groupBox13.Controls.Add(btMotorTest);
-            groupBox13.Controls.Add(tbTimeTickMessage);
             groupBox13.Controls.Add(btNutRunner);
             groupBox13.Location = new Point(407, 0);
             groupBox13.Name = "groupBox13";
-            groupBox13.Size = new Size(140, 96);
+            groupBox13.Size = new Size(140, 69);
             groupBox13.TabIndex = 10;
             groupBox13.TabStop = false;
             groupBox13.Text = "Mode";
@@ -1202,7 +1261,7 @@
             // 
             rbNut.AutoSize = true;
             rbNut.Checked = true;
-            rbNut.Location = new Point(87, 44);
+            rbNut.Location = new Point(87, 42);
             rbNut.Name = "rbNut";
             rbNut.Size = new Size(45, 19);
             rbNut.TabIndex = 16;
@@ -1221,15 +1280,6 @@
             rbMot.Text = "Mot";
             rbMot.UseVisualStyleBackColor = true;
             // 
-            // label13
-            // 
-            label13.AutoSize = true;
-            label13.Location = new Point(1, 68);
-            label13.Name = "label13";
-            label13.Size = new Size(58, 15);
-            label13.TabIndex = 14;
-            label13.Text = "Time Tick";
-            // 
             // btMotorTest
             // 
             btMotorTest.Location = new Point(5, 16);
@@ -1240,18 +1290,9 @@
             btMotorTest.UseVisualStyleBackColor = true;
             btMotorTest.Click += TestModeSelect_Click;
             // 
-            // tbTimeTickMessage
-            // 
-            tbTimeTickMessage.Location = new Point(61, 65);
-            tbTimeTickMessage.Name = "tbTimeTickMessage";
-            tbTimeTickMessage.ReadOnly = true;
-            tbTimeTickMessage.Size = new Size(67, 23);
-            tbTimeTickMessage.TabIndex = 13;
-            tbTimeTickMessage.Text = "0";
-            // 
             // btNutRunner
             // 
-            btNutRunner.Location = new Point(4, 42);
+            btNutRunner.Location = new Point(4, 40);
             btNutRunner.Name = "btNutRunner";
             btNutRunner.Size = new Size(79, 23);
             btNutRunner.TabIndex = 5;
@@ -1259,9 +1300,27 @@
             btNutRunner.UseVisualStyleBackColor = true;
             btNutRunner.Click += TestModeSelect_Click;
             // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(41, 79);
+            label13.Name = "label13";
+            label13.Size = new Size(58, 15);
+            label13.TabIndex = 14;
+            label13.Text = "Time Tick";
+            // 
+            // tbTimeTickMessage
+            // 
+            tbTimeTickMessage.Location = new Point(101, 75);
+            tbTimeTickMessage.Name = "tbTimeTickMessage";
+            tbTimeTickMessage.ReadOnly = true;
+            tbTimeTickMessage.Size = new Size(67, 23);
+            tbTimeTickMessage.TabIndex = 13;
+            tbTimeTickMessage.Text = "0";
+            // 
             // tbDataCount
             // 
-            tbDataCount.Location = new Point(210, 75);
+            tbDataCount.Location = new Point(180, 75);
             tbDataCount.Name = "tbDataCount";
             tbDataCount.ReadOnly = true;
             tbDataCount.Size = new Size(75, 23);
@@ -1270,7 +1329,7 @@
             // 
             // tbGraphDataCount
             // 
-            tbGraphDataCount.Location = new Point(291, 75);
+            tbGraphDataCount.Location = new Point(259, 75);
             tbGraphDataCount.Name = "tbGraphDataCount";
             tbGraphDataCount.ReadOnly = true;
             tbGraphDataCount.Size = new Size(75, 23);
@@ -1281,11 +1340,14 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(875, 460);
+            ClientSize = new Size(877, 516);
+            Controls.Add(gbServo);
             Controls.Add(tbGraphDataCount);
             Controls.Add(tbDataCount);
+            Controls.Add(label13);
+            Controls.Add(tbTimeTickMessage);
             Controls.Add(groupBox13);
-            Controls.Add(groupBox12);
+            Controls.Add(gbFastenLoosen);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
@@ -1296,6 +1358,7 @@
             Click += Form1_Load;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
             groupBox9.ResumeLayout(false);
             groupBox9.PerformLayout();
             groupBox11.ResumeLayout(false);
@@ -1329,9 +1392,11 @@
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)tbDriverType).EndInit();
-            groupBox12.ResumeLayout(false);
-            groupBox12.PerformLayout();
+            gbFastenLoosen.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)tbLoosenAngle).EndInit();
+            gbServo.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)nudSpeed).EndInit();
+            ((System.ComponentModel.ISupportInitialize)nudTorque).EndInit();
             groupBox13.ResumeLayout(false);
             groupBox13.PerformLayout();
             ResumeLayout(false);
@@ -1404,7 +1469,7 @@
         private RadioButton rbOn;
         private RadioButton rbOff;
         private ComboBox cbCommPorts;
-        private GroupBox groupBox12;
+        private GroupBox gbFastenLoosen;
         private Button btStartStopFL;
         private Button btFastenLoosen;
         private ScottPlot.WinForms.FormsPlot formsPlot1;
@@ -1416,7 +1481,6 @@
         private TextBox tbMaintCnt;
         private Label label13;
         private TextBox tbTimeTickMessage;
-        private Label label14;
         private Label label17;
         private Label label16;
         private Label label15;
@@ -1448,5 +1512,11 @@
         private CheckBox cbGraph_ch1;
         private RadioButton rbNut;
         private RadioButton rbMot;
+        private Button btServoOn;
+        private GroupBox gbServo;
+        private NumericUpDown nudTorque;
+        private Button btSpeed;
+        private Button btTorque;
+        private NumericUpDown nudSpeed;
     }
 }
