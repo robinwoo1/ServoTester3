@@ -21,7 +21,7 @@ namespace ServoTester3
     public byte[] FlagRun = new byte[10];
     public byte[] FlagFL = new byte[10];
     public bool closing_flag = false;
-    public bool Mot_or_Nut = false;
+    public bool Mot_or_Nut = false;    
     public Form1()
     {
       InitializeComponent();
@@ -278,7 +278,20 @@ namespace ServoTester3
       }
       else if (Command == 8)
       {
-        if (StartAddress == 1)
+        //if (StartAddress == 1)
+        {
+          MakePacket(Command, StartAddress, Data);
+          u16PtrCnt = CmdAck.u16PtrCnt;
+          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+          // Port.Write(SendDataPacket, 0, u16PtrCnt);
+          SendPacket(SendDataPacket, u16PtrCnt);
+        }
+      }
+      else if (Command == 9)
+      {
+        //if (StartAddress == 1)
         {
           MakePacket(Command, StartAddress, Data);
           u16PtrCnt = CmdAck.u16PtrCnt;
@@ -797,7 +810,15 @@ namespace ServoTester3
       }
       else if (Command == 8) // MotTest or NutRunner
       {
-        if (StartAddress == 1)
+        //if (StartAddress == 1)
+        {
+          SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
+        }
+      }
+      else if (Command == 9) // MotTest or NutRunner
+      {
+        //if (StartAddress == 1)
         {
           SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
@@ -869,16 +890,16 @@ namespace ServoTester3
       // select baudrate
       cbBaudrate.SelectedIndex = 0;
 
-      InitAutoSetting();
-      InitMcFlag();
-      InitMcInfo();
-      InitSyncStruct();
-      InitInfo_DrvModel_para(4);//1);
-      InitDriverInfo(4);
-      InitParameter(4);
+      // InitAutoSetting();
+      // InitMcFlag();
+      // InitMcInfo();
+      // InitSyncStruct();
+      // InitInfo_DrvModel_para(4);//1);
+      // InitDriverInfo(4);
+      // InitParameter(4);
       // set event
       // Port.DataReceived += PortOnDataReceived;
-      Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+      // Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
     }
     private void SpeedTorque_Click(object sender, EventArgs e)
     {
@@ -886,11 +907,13 @@ namespace ServoTester3
       {
         nudSpeed.Enabled = true;
         nudTorque.Enabled = false;
+        MakeAndSendData(8, 2, 0);
       }
       else// btTorque
       {
         nudSpeed.Enabled = false;
         nudTorque.Enabled = true;
+        MakeAndSendData(8, 2, 1);
       }
     }
     private void ServoOn_Click(object sender, EventArgs e)
@@ -899,12 +922,12 @@ namespace ServoTester3
         return;
       if (btServoOn.Text == "Servo On")
       {
-        MakeAndSendData(2, 12, 1);
+        MakeAndSendData(8, 3, 1);
         btServoOn.Text = "Servo Off";
       }
       else
       {
-        MakeAndSendData(2, 12, 0);
+        MakeAndSendData(8, 3, 0);
         btServoOn.Text = "Servo On";
       }
     }
@@ -912,7 +935,7 @@ namespace ServoTester3
     {
       if (!Port.IsOpen)
         return;
-      
+
       if (sender == btMotorTest)
       {
         MakeAndSendData(8, 1, 1);
@@ -995,6 +1018,7 @@ namespace ServoTester3
 
     private void btCommOpen_Click(object sender, EventArgs e)
     {
+      
       // check port
       switch (Port.IsOpen)
       {
@@ -1004,7 +1028,7 @@ namespace ServoTester3
           var baudrate = Convert.ToInt32(cbBaudrate.Text);
           // check port
           if (string.IsNullOrWhiteSpace(port))
-              break;
+            break;
           // try catch
           try
           {
@@ -1017,13 +1041,24 @@ namespace ServoTester3
             Port.Encoding = Encoding.GetEncoding(28591);
             // open
             Port.Open();
+            // InitAutoSetting();
+            // InitMcFlag();
+            // InitMcInfo();
+            // InitSyncStruct();
+            // InitInfo_DrvModel_para(4);//1);
+            // InitDriverInfo(4);
+            // InitParameter(4);
+            // set event
+            // Port.DataReceived += PortOnDataReceived;
+            Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+            
             // start timer
             workTimer.Start();
             // change button text
             btCommOpen.Text = @"Close";
-        }
-        catch (Exception ex)
-        {
+          }
+          catch (Exception ex)
+          {
             // debug
             Debug.WriteLine(ex.Message);
             // error
@@ -1054,26 +1089,26 @@ namespace ServoTester3
           break;
       }
     }
-    private void btMotor_Click(object sender, EventArgs e)
-    {
-      // var list = new List<byte>();
-      // check sender
-      if (btRunStop.Text == @"Servo On")
-      {
-        MakeAndSendData(106, 1, 1);
-        btRunStop.Text = @"Servo Off";
-      }
-      else
-      {
-        MakeAndSendData(106, 1, 0);
-        btRunStop.Text = @"Servo On";
-      }
+    // private void btMotor_Click(object sender, EventArgs e)
+    // {
+    //     // var list = new List<byte>();
+    //     // check sender
+    //     if (btRunStop.Text == @"Servo On")
+    //     {
+    //         MakeAndSendData(106, 1, 1);
+    //         btRunStop.Text = @"Servo Off";
+    //     }
+    //     else
+    //     {
+    //         MakeAndSendData(106, 1, 0);
+    //         btRunStop.Text = @"Servo On";
+    //     }
 
-      // // check port is open
-      // if (Port.IsOpen && list.Count > 0)
-      //   // write packet
-      //   Port.Write(list.ToArray(), 0, list.Count);
-    }
+    //     // // check port is open
+    //     // if (Port.IsOpen && list.Count > 0)
+    //     //   // write packet
+    //     //   Port.Write(list.ToArray(), 0, list.Count);
+    // }
     private void btStartStopFL_Click(object sender, EventArgs e)
     {
       if (btStartStopFL.Text == "StartFL")
@@ -1141,7 +1176,12 @@ namespace ServoTester3
         MakeAndSendData(7, 12, 0);
       }
     }
-    private void tbSet_ValueChanged(object sender, EventArgs e)
+        
+    // private void Set_ValueChanged(object sender, EventArgs e)
+    // {
+
+    // }
+    private void Set_ValueChanged(object sender, EventArgs e)
     {
       Control control = null;
       // check sender
@@ -1153,7 +1193,7 @@ namespace ServoTester3
 
       // check control
       if (control == null)
-        return;
+          return;
       // packet
       var packet = new List<byte>();
       // get addr
@@ -1161,42 +1201,43 @@ namespace ServoTester3
       // check tag
       switch (addr)
       {
+        case 1:
         case 2:
-        case 5:
-          // add range
-          // packet.AddRange(GetPacket(addr, Convert.ToInt32(((ComboBox)control).SelectedIndex)));
-          MakeAndSendData(106, addr, Convert.ToInt16(((ComboBox)control).SelectedIndex));
-          break;
         case 3:
         case 4:
         case 6:
         case 7:
         case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-        case 16:
-        case 17:
           // add range
-          // packet.AddRange(GetPacket(addr, Convert.ToInt32(((NumericUpDown)control).Value)));
-          MakeAndSendData(106, addr, Convert.ToInt16(((NumericUpDown)control).Value));
+          // packet.AddRange(GetPacket(addr, Convert.ToInt32(((ComboBox)control).SelectedIndex)));
+          // MakeAndSendData(9, addr, Convert.ToInt16(((ComboBox)control).SelectedIndex));
+          MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value));
           break;
+        // case 9:
+        // case 10:
+        // case 11:
+        // case 12:
+        // case 13:
+        // case 14:
+        // case 15:
+        // case 16:
+        // case 17:
+        //     // add range
+        //     // packet.AddRange(GetPacket(addr, Convert.ToInt32(((NumericUpDown)control).Value)));
+        //     MakeAndSendData(106, addr, Convert.ToInt16(((NumericUpDown)control).Value));
+        //     break;
       }
-      // check port is open
-      if (Port.IsOpen && packet.Count > 0)
-        // write packet
-        Port.Write(packet.ToArray(), 0, packet.Count);
+      // // check port is open
+      // if (Port.IsOpen && packet.Count > 0)
+      //     // write packet
+      //     Port.Write(packet.ToArray(), 0, packet.Count);
 
-      // debug
-      foreach (var b in packet)
-      {
-        Debug.Write($@"{b:X2} ");
-      }
-      Debug.WriteLine(string.Empty);
+      // // debug
+      // foreach (var b in packet)
+      // {
+      //     Debug.Write($@"{b:X2} ");
+      // }
+      // Debug.WriteLine(string.Empty);
     }
     private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
     {
@@ -1207,7 +1248,7 @@ namespace ServoTester3
         {
           this.Invoke(new EventHandler(MySerialReceived));//
         }
-              
+
       }
       finally
       {
@@ -1493,9 +1534,9 @@ namespace ServoTester3
                   if (FlagFL[0] != b1ControlFL)
                   {
                     if (b1ControlFL != 0)
-                    MakeAndSendData(2, 1, 1);
+                      MakeAndSendData(2, 1, 1);
                     else
-                    MakeAndSendData(2, 1, 0);
+                      MakeAndSendData(2, 1, 0);
                   }
                   // FlagFL[4] = FlagFL[3];
                   // FlagFL[3] = FlagFL[2];
@@ -1503,11 +1544,11 @@ namespace ServoTester3
                   FlagFL[1] = FlagFL[0];
                   FlagFL[0] = b1ControlFL;
 
-                  if (ComReadBuffer[63]!=0)
+                  if (ComReadBuffer[63] != 0)
                     Mot_or_Nut = true;
                   else
                     Mot_or_Nut = false;
-                  
+
                   break;
                 case 4:
                   if (StartAddress == 1)
@@ -1627,7 +1668,7 @@ namespace ServoTester3
       CmdAck.u16StartAddress = 0;
       CmdAck.u16PtrCnt = 0;
     }
-      // send ack code
+    // send ack code
     private void AckSend(byte command, byte Try_num, ushort StartAddress, byte code)
     {
       ushort u16PtrCnt = 0, calc_crc;
@@ -1789,7 +1830,7 @@ namespace ServoTester3
           // Gear
           Info_DrvModel_para.f32Gear_ratio = 103.999994f;//48.8163269f;//48.8163261f;
           Info_DrvModel_para.f32Angle_head_ratio = 1.8f;//1.54545498f;
-          break;
+            break;
         case 7://180
               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 35.0f;         // default Nm
@@ -1811,6 +1852,12 @@ namespace ServoTester3
           // Gear
           Info_DrvModel_para.f32Gear_ratio = 103.999994f;//48.8163261f;
           Info_DrvModel_para.f32Angle_head_ratio = 1.8f;//1.54545498f;
+          break;
+        case 9:
+          Info_DrvModel_para.u16Driver_id = u16Driver_id_;
+          Info_DrvModel_para.u16Driver_vendor_id = 1;//1:hantas, 2:torero
+          Info_DrvModel_para.u16Controller_id = 1;      // controller model no. 1:26, 2:32
+          Info_DrvModel_para.u16Motor_id = 1;          // used motor no.       1:26, 2:32
           break;
         default:
           break;
@@ -2355,7 +2402,7 @@ namespace ServoTester3
       tbGraphDataCount.Text = Graph_ch1.Count.ToString();
     }
 
-      //[Obsolete]
+    //[Obsolete]
     void refresh_graph()
     {
       formsPlot1.Plot.Clear();
@@ -2404,7 +2451,7 @@ namespace ServoTester3
         sig7.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
       }
       formsPlot1.Plot.ShowLegend(Alignment.UpperRight);
-      
+
       formsPlot1.Plot.Axes.AutoScale();
 
       var vl = formsPlot1.Plot.Add.VerticalLine(23);
@@ -2414,7 +2461,7 @@ namespace ServoTester3
       var hl = formsPlot1.Plot.Add.HorizontalLine(0.42);
       hl.IsDraggable = true;
       hl.Text = "HLine";
-      
+
       formsPlot1.Refresh();
 
       // use events for custom mouse interactivity
@@ -2483,5 +2530,6 @@ namespace ServoTester3
     {
       refresh_graph();
     }
+
   }
 }
