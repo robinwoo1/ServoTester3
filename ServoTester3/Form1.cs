@@ -1,10 +1,13 @@
 using ScottPlot;
 using ScottPlot.Plottables;
+using System.CodeDom;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace ServoTester3
 {
@@ -21,7 +24,10 @@ namespace ServoTester3
     public byte[] FlagRun = new byte[10];
     public byte[] FlagFL = new byte[10];
     public bool closing_flag = false;
-    public bool Mot_or_Nut = false;    
+    public bool Mot_or_Nut = false;
+    Thread myThread;// = new Thread(myFunc);
+    public bool  myThread_flag = false;
+    public int graph_count = 0;
     public Form1()
     {
       InitializeComponent();
@@ -52,7 +58,10 @@ namespace ServoTester3
     private int time_tick;
     private bool timer_working = false;
     private bool port_working = false;
-    public byte[] ComReadBuffer = new byte[128 * 16];
+    public ConcurrentQueue<byte> cq = new ConcurrentQueue<byte>();
+    public ConcurrentQueue<byte> graph_cq = new ConcurrentQueue<byte>();
+    public byte[] ComReadBuffer = new byte[128 * 16 * 8];
+    public byte[] graph_ComReadBuffer = new byte[1024];
     public int ComReadIndex = 0;
     public ushort Command_Index_Pc;
     public ushort[,] Command_List_Pc = new ushort[COMMAND_LIST_NUM, 3];
@@ -920,15 +929,15 @@ namespace ServoTester3
     {
       if (!Port.IsOpen)
         return;
-      if (btServoOn.Text == "Servo On")
+      if (btServoOnOff.Text == "Servo On")
       {
         MakeAndSendData(8, 3, 1);
-        btServoOn.Text = "Servo Off";
+        btServoOnOff.Text = "Servo Off";
       }
       else
       {
         MakeAndSendData(8, 3, 0);
-        btServoOn.Text = "Servo On";
+        btServoOnOff.Text = "Servo On";
       }
     }
     private void TestModeSelect_Click(object sender, EventArgs e)
@@ -939,7 +948,7 @@ namespace ServoTester3
       if (sender == btMotorTest)
       {
         MakeAndSendData(8, 1, 1);
-        btServoOn.Enabled = true;
+        btServoOnOff.Enabled = true;
         // gbServo.Visible = true;
         // gbFastenLoosen.Visible = false;
         rbMot.Checked = true;
@@ -947,7 +956,7 @@ namespace ServoTester3
       else// (sender == btNutRunner)
       {
         MakeAndSendData(8, 1, 0);
-        btServoOn.Enabled = false;
+        btServoOnOff.Enabled = false;
         // gbFastenLoosen.Visible = true;
         // gbServo.Visible = false;
         rbNut.Checked = true;
@@ -1032,6 +1041,10 @@ namespace ServoTester3
           // try catch
           try
           {
+            //clear Port
+            //Port.DiscardOutBuffer();
+            //Port.DiscardInBuffer();
+
             ComReadIndex = 0;
             RecvBuf.tail = 0;
             RecvBuf.head = 0;
@@ -1056,6 +1069,10 @@ namespace ServoTester3
             workTimer.Start();
             // change button text
             btCommOpen.Text = @"Close";
+            
+            myThread_flag = true;
+            myThread = new Thread(myFunc);
+            myThread.Start();
           }
           catch (Exception ex)
           {
@@ -1071,12 +1088,17 @@ namespace ServoTester3
           {
             // close
             while (port_working) { }
+            //clear Port
+            Port.DiscardOutBuffer();
+            Port.DiscardInBuffer();
             Port.Close();
             // stop timer
             while (timer_working) { }
             workTimer.Stop();
             // change button text
             btCommOpen.Text = @"Open";
+
+            myThread_flag = false;
           }
           catch (Exception ex)
           {
@@ -1087,6 +1109,24 @@ namespace ServoTester3
           }
 
           break;
+      }
+    }
+    private void myFunc()
+    {
+      byte data;
+      while(myThread_flag)
+      {
+        if (graph_cq.Count>0)
+        {
+          for (int i=0;i<800;i++)
+          {
+            graph_cq.TryDequeue(out data);
+            graph_ComReadBuffer[i]=data;
+          }
+          fresh_graph_data();
+          // graph_count++;
+        }
+        Thread.Sleep(30);
       }
     }
     // private void btMotor_Click(object sender, EventArgs e)
@@ -1205,6 +1245,7 @@ namespace ServoTester3
         case 2:
         case 3:
         case 4:
+        case 5:
         case 6:
         case 7:
         case 8:
@@ -1241,12 +1282,13 @@ namespace ServoTester3
     }
     private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
     {
-      port_working = true;
       try
       {
         if (Port.IsOpen)
         {
+          port_working = true;
           this.Invoke(new EventHandler(MySerialReceived));//
+          port_working = false;
         }
 
       }
@@ -1254,7 +1296,7 @@ namespace ServoTester3
       {
         //Port.Close();
       }
-      port_working = false;
+      
     }
 
     private void MySerialReceived(object s, EventArgs e)  //
@@ -1262,7 +1304,12 @@ namespace ServoTester3
       try
       {
         byte[] data = Port.Encoding.GetBytes(Port.ReadExisting());
-        rbuf_put(data, (ushort)(data.Count()));
+        // rbuf_put(data, (ushort)(data.Count()));
+        // cq.CopyTo(data, data.Count());
+        for (int i=0;i<data.Count();i++)
+        {
+          cq.Enqueue(data[i]);
+        }
 
         ProcessPcMcReceivedCommData();
       }
@@ -1285,8 +1332,13 @@ namespace ServoTester3
       if (refresh_graph_flag == true)
       {
         refresh_graph_flag = false;
-        refresh_graph();
+        // refresh_graph();
+        formsPlot1.Refresh();
       }
+      // tbDataCount.Text = Data_ch1.Count.ToString();
+      tbDataCount.Text = graph_count.ToString();
+      tbGraphDataCount.Text = Graph_ch1.Count.ToString();
+      // tbGraphDataCount.Text = graph_count.ToString();//Graph_ch1.Count.ToString();
 
       switch (AutoSetting.FlagSetting)
       {
@@ -1397,36 +1449,22 @@ namespace ServoTester3
     }
     public void ProcessPcMcReceivedCommData()
     {
-      ushort cnt = 0;
-      if (RecvBuf.head < RecvBuf.tail)
-        cnt = (ushort)(RecvBuf.data.Length - RecvBuf.tail + RecvBuf.head);
-      else
-        cnt = (ushort)(RecvBuf.head - RecvBuf.tail);
-
-      // check analyze buffer
-      // while (Analyze.Count > 0)
-      // for (int i = 0; i < Analyze.Count; i++)
-      for (int i = 0; i < cnt; i++)
+      byte data;
+      while(cq.Count>0)
       {
-        // // get laps
-        // var laps = DateTime.Now - time;
-        // // check timeout
-        // if (laps.TotalMilliseconds > 1000)
-        //   // clear analyze buffer
-        //   Analyze.Clear();
-        byte[] err = new byte[2];
-        byte data = rb_get(err);
-
-        // if (err[0] == 1)
-        //   break;
+        cq.TryDequeue(out data);
 
         ComReadBuffer[ComReadIndex++] = data;
-        // ComReadBuffer[ComReadIndex++] = Analyze[i];
         // check header length
         if ((ComReadBuffer[0] == 0x5A) && (ComReadBuffer[1] == 0xA5) && (ComReadIndex >= 4))
         {
           // get length
           var data_length = (ComReadBuffer[3] << 8) | ComReadBuffer[2];
+          if (data_length > 900 || ComReadIndex > 900)
+          {
+            ComReadIndex = 0;
+            continue;
+          }
           // check analyze count
           if (ComReadIndex == (data_length + 6))
           {
@@ -1563,7 +1601,10 @@ namespace ServoTester3
                   // formsPlot1.Plot.Add.Signal(sin);
                   // formsPlot1.Plot.Add.Signal(cos);
                   // formsPlot1.Plot.ShowLegend();
-                  fresh_graph_data();
+                  for (int i=0;i<(data_length + 6);i++)
+                  graph_cq.Enqueue(ComReadBuffer[i]);
+                  graph_count++;
+                  // fresh_graph_data();
                   break;
                 case 5:
                   if (StartAddress == 1)
@@ -1858,6 +1899,15 @@ namespace ServoTester3
           Info_DrvModel_para.u16Driver_vendor_id = 1;//1:hantas, 2:torero
           Info_DrvModel_para.u16Controller_id = 1;      // controller model no. 1:26, 2:32
           Info_DrvModel_para.u16Motor_id = 1;          // used motor no.       1:26, 2:32
+          // TORQUE
+          Info_DrvModel_para.f32Tq_min_Nm = 0.0f;         // default Nm
+          Info_DrvModel_para.f32Tq_max_Nm = 2.0f;         // default Nm
+          // SPEED
+          Info_DrvModel_para.u32Speed_min = 0;
+          Info_DrvModel_para.u32Speed_max = 40000;
+          // Gear
+          Info_DrvModel_para.f32Gear_ratio = 1.0f;//48.8163261f;
+          Info_DrvModel_para.f32Angle_head_ratio = 1.0f;//1.54545498f;
           break;
         default:
           break;
@@ -2338,54 +2388,54 @@ namespace ServoTester3
     void fresh_graph_data()
     {
       TestUnion d = new TestUnion();
-      d.b0 = ComReadBuffer[764 + 0];
-      d.b1 = ComReadBuffer[764 + 1];
-      d.b2 = ComReadBuffer[764 + 2];
-      d.b3 = ComReadBuffer[764 + 3];
+      d.b0 = graph_ComReadBuffer[764 + 0];
+      d.b1 = graph_ComReadBuffer[764 + 1];
+      d.b2 = graph_ComReadBuffer[764 + 2];
+      d.b3 = graph_ComReadBuffer[764 + 3];
       float hss_gain = d.f;
-      d.b0 = ComReadBuffer[768 + 0];
-      d.b1 = ComReadBuffer[768 + 1];
-      d.b2 = ComReadBuffer[768 + 2];
-      d.b3 = ComReadBuffer[768 + 3];
+      d.b0 = graph_ComReadBuffer[768 + 0];
+      d.b1 = graph_ComReadBuffer[768 + 1];
+      d.b2 = graph_ComReadBuffer[768 + 2];
+      d.b3 = graph_ComReadBuffer[768 + 3];
       float tq_gain = d.f;
       clear_data();
       // Graph number
-      d.b0 = ComReadBuffer[10];
-      d.b1 = ComReadBuffer[11];
+      d.b0 = graph_ComReadBuffer[10];
+      d.b1 = graph_ComReadBuffer[11];
       if (d.us0 == 1)
       {
         clear_graph_data();
       }
-      d.b0 = ComReadBuffer[12];
-      d.b1 = ComReadBuffer[13];
+      d.b0 = graph_ComReadBuffer[12];
+      d.b1 = graph_ComReadBuffer[13];
       ushort Graph_Data_Length = d.us0;
       // Array.Copy(Array srcArray, int srcCopyStartIndex, Array destArray, int destCopyStartIndex, int CopyLength);
       for (ushort j = 0; j < Graph_Data_Length; j++)
       {
-        d.b0 = ComReadBuffer[100 * 0 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 0 + 64 + j * 2 + 1];
-        Data_ch1.Add(d.s0 * tq_gain);
-        d.b0 = ComReadBuffer[100 * 1 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 1 + 64 + j * 2 + 1];
-        Data_ch2.Add(d.s0 * hss_gain);
-        d.b0 = ComReadBuffer[100 * 2 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 2 + 64 + j * 2 + 1];
-        Data_ch3.Add(d.s0);
+        d.b0 = graph_ComReadBuffer[100 * 0 + 64 + j * 2 + 0];
+        d.b1 = graph_ComReadBuffer[100 * 0 + 64 + j * 2 + 1];
+        Data_ch1.Add(d.s0 * tq_gain);//torque
+        d.b0 = graph_ComReadBuffer[100 * 1 + 64 + j * 2 + 0];
+        d.b1 = graph_ComReadBuffer[100 * 1 + 64 + j * 2 + 1];
+        Data_ch2.Add(d.s0 * hss_gain);//current
+        d.b0 = graph_ComReadBuffer[100 * 2 + 64 + j * 2 + 0];
+        d.b1 = graph_ComReadBuffer[100 * 2 + 64 + j * 2 + 1];
+        Data_ch3.Add(d.s0);//speed
         // Data_ch4.Add(ComReadBuffer[100*3+64+j*2+1]<<8 + ComReadBuffer[100*3+64+j*2+0]);
-        d.b0 = ComReadBuffer[100 * 3 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 3 + 64 + j * 2 + 1];
+        d.b0 = graph_ComReadBuffer[100 * 3 + 64 + j * 2 + 0];
+        d.b1 = graph_ComReadBuffer[100 * 3 + 64 + j * 2 + 1];
         Data_ch4.Add(d.s0);
         // Data_ch5.Add(ComReadBuffer[100*4+64+j*2+1]<<8 + ComReadBuffer[100*4+64+j*2+0]);
-        d.b0 = ComReadBuffer[100 * 4 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 4 + 64 + j * 2 + 1];
+        d.b0 = graph_ComReadBuffer[100 * 4 + 64 + j * 2 + 0];
+        d.b1 = graph_ComReadBuffer[100 * 4 + 64 + j * 2 + 1];
         Data_ch5.Add(d.s0);
         // Data_ch6.Add((ComReadBuffer[100*5+64+j*2+1]<<8 + ComReadBuffer[100*5+64+j*2+0])*hss_gain);
-        d.b0 = ComReadBuffer[100 * 5 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 5 + 64 + j * 2 + 1];
+        d.b0 = graph_ComReadBuffer[100 * 5 + 64 + j * 2 + 0];
+        d.b1 = graph_ComReadBuffer[100 * 5 + 64 + j * 2 + 1];
         Data_ch6.Add(d.s0 * hss_gain);
         // Data_ch7.Add(ComReadBuffer[100*6+64+j*2+1]<<8 + ComReadBuffer[100*6+64+j*2+0]);
-        d.b0 = ComReadBuffer[100 * 6 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 6 + 64 + j * 2 + 1];
+        d.b0 = graph_ComReadBuffer[100 * 6 + 64 + j * 2 + 0];
+        d.b1 = graph_ComReadBuffer[100 * 6 + 64 + j * 2 + 1];
         Data_ch7.Add(d.s0);
       }
       Graph_ch1.AddRange(Data_ch1);
@@ -2397,14 +2447,17 @@ namespace ServoTester3
       Graph_ch7.AddRange(Data_ch7);
 
       refresh_graph_flag = true;
-
-      tbDataCount.Text = Data_ch1.Count.ToString();
-      tbGraphDataCount.Text = Graph_ch1.Count.ToString();
+      refresh_graph();
+      // tbDataCount.Text = Data_ch1.Count.ToString();
+      // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
     }
 
     //[Obsolete]
     void refresh_graph()
     {
+      // tbDataCount.Text = Data_ch1.Count.ToString();
+      // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
+
       formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
@@ -2462,12 +2515,13 @@ namespace ServoTester3
       hl.IsDraggable = true;
       hl.Text = "HLine";
 
-      formsPlot1.Refresh();
+      // ScottPlot.WinForms.FormsPlot formsPlot11 = formsPlot1;
+      // formsPlot11.Refresh();
 
       // use events for custom mouse interactivity
-      formsPlot1.MouseDown += FormsPlot1_MouseDown;
-      formsPlot1.MouseUp += FormsPlot1_MouseUp;
-      formsPlot1.MouseMove += FormsPlot1_MouseMove;
+      // formsPlot1.MouseDown += FormsPlot1_MouseDown;
+      // formsPlot1.MouseUp += FormsPlot1_MouseUp;
+      // formsPlot1.MouseMove += FormsPlot1_MouseMove;
     }
     AxisLine? PlottableBeingDragged = null;
     private void FormsPlot1_MouseDown(object? sender, MouseEventArgs e)

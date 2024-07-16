@@ -104,7 +104,7 @@
       label1 = new Label();
       workTimer = new System.Windows.Forms.Timer(components);
       groupBox2 = new GroupBox();
-      btServoOn = new Button();
+      btServoOnOff = new Button();
       rbOn = new RadioButton();
       rbOff = new RadioButton();
       tbError = new TextBox();
@@ -752,6 +752,7 @@
       // tbSpeedFFgain
       // 
       tbSpeedFFgain.Location = new Point(219, 69);
+      tbSpeedFFgain.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
       tbSpeedFFgain.Name = "tbSpeedFFgain";
       tbSpeedFFgain.Size = new Size(69, 23);
       tbSpeedFFgain.TabIndex = 20;
@@ -761,6 +762,7 @@
       // tbSpeedIgain
       // 
       tbSpeedIgain.Location = new Point(219, 43);
+      tbSpeedIgain.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
       tbSpeedIgain.Name = "tbSpeedIgain";
       tbSpeedIgain.Size = new Size(69, 23);
       tbSpeedIgain.TabIndex = 19;
@@ -788,6 +790,7 @@
       // tbSpeedPgain
       // 
       tbSpeedPgain.Location = new Point(219, 17);
+      tbSpeedPgain.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
       tbSpeedPgain.Name = "tbSpeedPgain";
       tbSpeedPgain.Size = new Size(69, 23);
       tbSpeedPgain.TabIndex = 16;
@@ -797,6 +800,7 @@
       // tbTorqueFFgain
       // 
       tbTorqueFFgain.Location = new Point(76, 69);
+      tbTorqueFFgain.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
       tbTorqueFFgain.Name = "tbTorqueFFgain";
       tbTorqueFFgain.Size = new Size(69, 23);
       tbTorqueFFgain.TabIndex = 15;
@@ -824,6 +828,7 @@
       // tbTorqueIgain
       // 
       tbTorqueIgain.Location = new Point(76, 43);
+      tbTorqueIgain.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
       tbTorqueIgain.Name = "tbTorqueIgain";
       tbTorqueIgain.Size = new Size(69, 23);
       tbTorqueIgain.TabIndex = 12;
@@ -833,6 +838,7 @@
       // tbTorquePgain
       // 
       tbTorquePgain.Location = new Point(76, 17);
+      tbTorquePgain.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
       tbTorquePgain.Name = "tbTorquePgain";
       tbTorquePgain.Size = new Size(69, 23);
       tbTorquePgain.TabIndex = 11;
@@ -886,7 +892,7 @@
       // 
       cbBaudrate.DropDownStyle = ComboBoxStyle.DropDownList;
       cbBaudrate.FormattingEnabled = true;
-      cbBaudrate.Items.AddRange(new object[] { "1152000", "921600", "460800", "230400", "115200", "57600", "38400", "19200", "9600" });
+      cbBaudrate.Items.AddRange(new object[] { "1152000", "921600", "576000", "460800", "230400", "115200", "57600", "38400", "19200", "9600" });
       cbBaudrate.Location = new Point(62, 42);
       cbBaudrate.Name = "cbBaudrate";
       cbBaudrate.Size = new Size(73, 23);
@@ -935,7 +941,7 @@
       // 
       // groupBox2
       // 
-      groupBox2.Controls.Add(btServoOn);
+      groupBox2.Controls.Add(btServoOnOff);
       groupBox2.Controls.Add(rbOn);
       groupBox2.Controls.Add(rbOff);
       groupBox2.Controls.Add(tbError);
@@ -949,17 +955,17 @@
       groupBox2.TabStop = false;
       groupBox2.Text = "Board Status";
       // 
-      // btServoOn
+      // btServoOnOff
       // 
-      btServoOn.Enabled = false;
-      btServoOn.Location = new Point(4, 36);
-      btServoOn.Name = "btServoOn";
-      btServoOn.Size = new Size(65, 23);
-      btServoOn.TabIndex = 12;
-      btServoOn.Tag = "1";
-      btServoOn.Text = "Servo On";
-      btServoOn.UseVisualStyleBackColor = true;
-      btServoOn.Click += ServoOn_Click;
+      btServoOnOff.Enabled = false;
+      btServoOnOff.Location = new Point(4, 36);
+      btServoOnOff.Name = "btServoOnOff";
+      btServoOnOff.Size = new Size(65, 23);
+      btServoOnOff.TabIndex = 12;
+      btServoOnOff.Tag = "1";
+      btServoOnOff.Text = "Servo On";
+      btServoOnOff.UseVisualStyleBackColor = true;
+      btServoOnOff.Click += ServoOn_Click;
       // 
       // rbOn
       // 
@@ -1136,7 +1142,8 @@
       // 
       nudSpeed.Enabled = false;
       nudSpeed.Location = new Point(67, 19);
-      nudSpeed.Maximum = new decimal(new int[] { 40000, 0, 0, 0 });
+      nudSpeed.Maximum = new decimal(new int[] { 30000, 0, 0, 0 });
+      nudSpeed.Minimum = new decimal(new int[] { 30000, 0, 0, int.MinValue });
       nudSpeed.Name = "nudSpeed";
       nudSpeed.Size = new Size(68, 23);
       nudSpeed.TabIndex = 14;
@@ -1148,6 +1155,7 @@
       nudTorque.Enabled = false;
       nudTorque.Location = new Point(66, 44);
       nudTorque.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+      nudTorque.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
       nudTorque.Name = "nudTorque";
       nudTorque.Size = new Size(68, 23);
       nudTorque.TabIndex = 13;
@@ -1455,7 +1463,7 @@
         private CheckBox cbGraph_ch1;
         private RadioButton rbNut;
         private RadioButton rbMot;
-        private Button btServoOn;
+        private Button btServoOnOff;
         private GroupBox gbServo;
         private NumericUpDown nudTorque;
         private Button btSpeed;

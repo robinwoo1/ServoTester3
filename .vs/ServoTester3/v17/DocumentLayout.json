@@ -3,16 +3,12 @@
   "WorkspaceRootPath": "D:\\hantas-soft\\ServoTester3\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|D:\\hantas-soft\\ServoTester3\\servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|D:\\hantas-soft\\ServoTester3\\servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|D:\\hantas-soft\\ServoTester3\\servotester3\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|D:\\hantas-soft\\ServoTester3\\servotester3\\servotester3.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
@@ -21,6 +17,10 @@
     {
       "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|D:\\hantas-soft\\ServoTester3\\servotester3\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\form1.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|D:\\hantas-soft\\ServoTester3\\servotester3\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,7 +34,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 3,
               "Title": "Form1.Designer.cs",
               "DocumentMoniker": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Form1.Designer.cs",
               "RelativeDocumentMoniker": "ServoTester3\\Form1.Designer.cs",
@@ -47,7 +47,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Program.cs",
               "RelativeDocumentMoniker": "ServoTester3\\Program.cs",
@@ -60,7 +60,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "ServoTester3",
               "DocumentMoniker": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\ServoTester3.csproj",
               "RelativeDocumentMoniker": "ServoTester3\\ServoTester3.csproj",
@@ -78,7 +78,7 @@
               "RelativeDocumentMoniker": "ServoTester3\\Form1.cs",
               "ToolTip": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Form1.cs",
               "RelativeToolTip": "ServoTester3\\Form1.cs",
-              "ViewState": "AQIAAFAAAAAAAAAAAAAEwF8AAABqAAAA",
+              "ViewState": "AQIAAM0EAAAAAAAAAAAcwNcEAAAvAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-06-19T06:20:57.263Z",
               "EditorCaption": ""
