@@ -1334,6 +1334,11 @@ namespace ServoTester3
         refresh_graph_flag = false;
         // refresh_graph();
         formsPlot1.Refresh();
+        
+        // use events for custom mouse interactivity
+        formsPlot1.MouseDown += FormsPlot1_MouseDown;
+        formsPlot1.MouseUp += FormsPlot1_MouseUp;
+        formsPlot1.MouseMove += FormsPlot1_MouseMove;
       }
       // tbDataCount.Text = Data_ch1.Count.ToString();
       tbDataCount.Text = graph_count.ToString();
@@ -2402,7 +2407,7 @@ namespace ServoTester3
       // Graph number
       d.b0 = graph_ComReadBuffer[10];
       d.b1 = graph_ComReadBuffer[11];
-      if (d.us0 == 1)
+      if (d.us0 == 1)//start run
       {
         clear_graph_data();
       }
@@ -2420,19 +2425,19 @@ namespace ServoTester3
         Data_ch2.Add(d.s0 * hss_gain);//current
         d.b0 = graph_ComReadBuffer[100 * 2 + 64 + j * 2 + 0];
         d.b1 = graph_ComReadBuffer[100 * 2 + 64 + j * 2 + 1];
-        Data_ch3.Add(d.s0);//speed
+        Data_ch3.Add(d.s0*2.0);//speed
         // Data_ch4.Add(ComReadBuffer[100*3+64+j*2+1]<<8 + ComReadBuffer[100*3+64+j*2+0]);
         d.b0 = graph_ComReadBuffer[100 * 3 + 64 + j * 2 + 0];
         d.b1 = graph_ComReadBuffer[100 * 3 + 64 + j * 2 + 1];
-        Data_ch4.Add(d.s0);
+        Data_ch4.Add(d.s0);//angle
         // Data_ch5.Add(ComReadBuffer[100*4+64+j*2+1]<<8 + ComReadBuffer[100*4+64+j*2+0]);
         d.b0 = graph_ComReadBuffer[100 * 4 + 64 + j * 2 + 0];
         d.b1 = graph_ComReadBuffer[100 * 4 + 64 + j * 2 + 1];
-        Data_ch5.Add(d.s0);
+        Data_ch5.Add(d.s0*2.0);//speed command
         // Data_ch6.Add((ComReadBuffer[100*5+64+j*2+1]<<8 + ComReadBuffer[100*5+64+j*2+0])*hss_gain);
         d.b0 = graph_ComReadBuffer[100 * 5 + 64 + j * 2 + 0];
         d.b1 = graph_ComReadBuffer[100 * 5 + 64 + j * 2 + 1];
-        Data_ch6.Add(d.s0 * hss_gain);
+        Data_ch6.Add(d.s0 * hss_gain);//current command
         // Data_ch7.Add(ComReadBuffer[100*6+64+j*2+1]<<8 + ComReadBuffer[100*6+64+j*2+0]);
         d.b0 = graph_ComReadBuffer[100 * 6 + 64 + j * 2 + 0];
         d.b1 = graph_ComReadBuffer[100 * 6 + 64 + j * 2 + 1];
@@ -2517,8 +2522,9 @@ namespace ServoTester3
 
       // ScottPlot.WinForms.FormsPlot formsPlot11 = formsPlot1;
       // formsPlot11.Refresh();
+      // formsPlot1.Refresh();
 
-      // use events for custom mouse interactivity
+      // // use events for custom mouse interactivity
       // formsPlot1.MouseDown += FormsPlot1_MouseDown;
       // formsPlot1.MouseUp += FormsPlot1_MouseUp;
       // formsPlot1.MouseMove += FormsPlot1_MouseMove;
