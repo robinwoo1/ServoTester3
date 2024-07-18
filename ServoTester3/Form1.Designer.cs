@@ -937,6 +937,7 @@
       // 
       // workTimer
       // 
+      workTimer.Interval = 50;
       workTimer.Tick += workTimer_Tick;
       // 
       // groupBox2
@@ -1314,6 +1315,7 @@
       Controls.Add(tabControl1);
       Name = "Form1";
       Text = "ServoTester3";
+      FormClosed += ServoFormClosed;
       Load += Form1_Load;
       Click += Form1_Load;
       tabControl1.ResumeLayout(false);

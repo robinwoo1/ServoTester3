@@ -2,12 +2,14 @@ using ScottPlot;
 using ScottPlot.Plottables;
 using System.CodeDom;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ServoTester3
 {
@@ -26,11 +28,17 @@ namespace ServoTester3
     public bool closing_flag = false;
     public bool Mot_or_Nut = false;
     Thread myThread;// = new Thread(myFunc);
-    public bool  myThread_flag = false;
+    public bool myThread_flag = false;
     public int graph_count = 0;
+    ushort TqSensorValue = 0;
+    ushort TqOffsetValue = 0;
+    ushort Error = 0;
+    uint MaintCnt = 0;
+    ushort Enc = 0;
     public Form1()
     {
       InitializeComponent();
+
     }
     List<double> Graph_ch1 = new List<double>();
     List<double> Graph_ch2 = new List<double>();
@@ -855,8 +863,8 @@ namespace ServoTester3
       SendDataPacket[_LengthHigh] = (byte)(Length >> 8);    // Length high
 
       if (((Command == 2) && (StartAddress == 10)) // Start comm.
-                                                    // ||((Command == 2)&&( StartAddress == 11))
-                                                    // || ((LcdMcCmdAck.u8Command == 3)&&(LcdMcCmdAck.u16StartAddress == 1))) // cyclic no ack processing
+                                                   // ||((Command == 2)&&( StartAddress == 11))
+                                                   // || ((LcdMcCmdAck.u8Command == 3)&&(LcdMcCmdAck.u16StartAddress == 1))) // cyclic no ack processing
         || ((Command == 3) && (StartAddress == 1))) // cyclic no ack processing
       {
         ResetAckState();
@@ -1027,7 +1035,7 @@ namespace ServoTester3
 
     private void btCommOpen_Click(object sender, EventArgs e)
     {
-      
+
       // check port
       switch (Port.IsOpen)
       {
@@ -1064,12 +1072,12 @@ namespace ServoTester3
             // set event
             // Port.DataReceived += PortOnDataReceived;
             Port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
-            
+
             // start timer
             workTimer.Start();
             // change button text
             btCommOpen.Text = @"Close";
-            
+
             myThread_flag = true;
             myThread = new Thread(myFunc);
             myThread.Start();
@@ -1114,19 +1122,27 @@ namespace ServoTester3
     private void myFunc()
     {
       byte data;
-      while(myThread_flag)
+
+      while (myThread_flag)
       {
-        if (graph_cq.Count>0)
-        {
-          for (int i=0;i<800;i++)
-          {
-            graph_cq.TryDequeue(out data);
-            graph_ComReadBuffer[i]=data;
-          }
-          fresh_graph_data();
-          // graph_count++;
-        }
-        Thread.Sleep(30);
+        // if (graph_cq.Count>0)
+        // {
+        //   // for (int i=0;i<800;i++)
+        //   // {
+        //   //   graph_cq.TryDequeue(out data);
+        //   //   graph_ComReadBuffer[i]=data;
+        //   // }
+        //   // this.Invoke(new Action(delegate() // this == Form 이다. Form이 아닌 컨트롤의 Invoke를 직접호출해도 무방하다.
+        //   //           {
+        //   //               //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
+        //   //               // lbl_Result.Text = result.ToString();
+        //   //               fresh_graph_data();
+        //   //           }));
+        //   // fresh_graph_data();
+        //   // graph_count++;
+        // }
+        ProcessPcMcReceivedCommData();
+        Thread.Sleep(100);
       }
     }
     // private void btMotor_Click(object sender, EventArgs e)
@@ -1216,7 +1232,7 @@ namespace ServoTester3
         MakeAndSendData(7, 12, 0);
       }
     }
-        
+
     // private void Set_ValueChanged(object sender, EventArgs e)
     // {
 
@@ -1233,7 +1249,7 @@ namespace ServoTester3
 
       // check control
       if (control == null)
-          return;
+        return;
       // packet
       var packet = new List<byte>();
       // get addr
@@ -1254,19 +1270,19 @@ namespace ServoTester3
           // MakeAndSendData(9, addr, Convert.ToInt16(((ComboBox)control).SelectedIndex));
           MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value));
           break;
-        // case 9:
-        // case 10:
-        // case 11:
-        // case 12:
-        // case 13:
-        // case 14:
-        // case 15:
-        // case 16:
-        // case 17:
-        //     // add range
-        //     // packet.AddRange(GetPacket(addr, Convert.ToInt32(((NumericUpDown)control).Value)));
-        //     MakeAndSendData(106, addr, Convert.ToInt16(((NumericUpDown)control).Value));
-        //     break;
+          // case 9:
+          // case 10:
+          // case 11:
+          // case 12:
+          // case 13:
+          // case 14:
+          // case 15:
+          // case 16:
+          // case 17:
+          //     // add range
+          //     // packet.AddRange(GetPacket(addr, Convert.ToInt32(((NumericUpDown)control).Value)));
+          //     MakeAndSendData(106, addr, Convert.ToInt16(((NumericUpDown)control).Value));
+          //     break;
       }
       // // check port is open
       // if (Port.IsOpen && packet.Count > 0)
@@ -1287,37 +1303,42 @@ namespace ServoTester3
         if (Port.IsOpen)
         {
           port_working = true;
-          this.Invoke(new EventHandler(MySerialReceived));//
+          // this.Invoke(new EventHandler(MySerialReceived));//
+          byte[] data = Port.Encoding.GetBytes(Port.ReadExisting());
+          // rbuf_put(data, (ushort)(data.Count()));
+          // cq.CopyTo(data, data.Count());
+          for (int i = 0; i < data.Count(); i++)
+          {
+            cq.Enqueue(data[i]);
+          }
           port_working = false;
         }
-
       }
       finally
       {
         //Port.Close();
       }
-      
+
     }
 
-    private void MySerialReceived(object s, EventArgs e)  //
-    {
-      try
-      {
-        byte[] data = Port.Encoding.GetBytes(Port.ReadExisting());
-        // rbuf_put(data, (ushort)(data.Count()));
-        // cq.CopyTo(data, data.Count());
-        for (int i=0;i<data.Count();i++)
-        {
-          cq.Enqueue(data[i]);
-        }
+    // private void MySerialReceived(object s, EventArgs e)  //
+    // {
+    //   try
+    //   {
+    //     byte[] data = Port.Encoding.GetBytes(Port.ReadExisting());
+    //     // rbuf_put(data, (ushort)(data.Count()));
+    //     // cq.CopyTo(data, data.Count());
+    //     for (int i=0;i<data.Count();i++)
+    //     {
+    //       cq.Enqueue(data[i]);
+    //     }
+    //     // ProcessPcMcReceivedCommData();
+    //   }
+    //   finally
+    //   {
 
-        ProcessPcMcReceivedCommData();
-      }
-      finally
-      {
-
-      }
-    }
+    //   }
+    // }
     private void workTimer_Tick(object sender, EventArgs e)
     {
       timer_working = true;
@@ -1329,17 +1350,12 @@ namespace ServoTester3
       tbFreeSpeed.Text = AutoSetting.CurrentFSpeed.ToString();
       tbFreeAngle.Text = AutoSetting.CurrentFAngle.ToString();
 
-      if (refresh_graph_flag == true)
-      {
-        refresh_graph_flag = false;
-        // refresh_graph();
-        formsPlot1.Refresh();
-        
-        // use events for custom mouse interactivity
-        formsPlot1.MouseDown += FormsPlot1_MouseDown;
-        formsPlot1.MouseUp += FormsPlot1_MouseUp;
-        formsPlot1.MouseMove += FormsPlot1_MouseMove;
-      }
+      tbTqSensorValue.Text = TqSensorValue.ToString();
+      tbTqOffsetValue.Text = TqOffsetValue.ToString();
+      tbError.Text = Error.ToString();
+      tbMaintCnt.Text = MaintCnt.ToString();
+      tbEnc.Text = Enc.ToString();
+      
       // tbDataCount.Text = Data_ch1.Count.ToString();
       tbDataCount.Text = graph_count.ToString();
       tbGraphDataCount.Text = Graph_ch1.Count.ToString();
@@ -1455,7 +1471,7 @@ namespace ServoTester3
     public void ProcessPcMcReceivedCommData()
     {
       byte data;
-      while(cq.Count>0)
+      while (cq.Count > 0)
       {
         cq.TryDequeue(out data);
 
@@ -1520,34 +1536,43 @@ namespace ServoTester3
                   }
                   else if (StartAddress == 5)
                   {
-                    btMcInit.Text = @"Init MC - No";
+                    this.Invoke(new Action(delegate ()
+                    {
+                      btMcInit.Text = @"Init MC - No";
+                    }));
                   }
                   else if (StartAddress == 11)
                   {
                     AckSend(Command, 0, StartAddress, 0);       // return Ack OK
                     ushort Mcinitialized = ComReadBuffer[11];
-                    if (Mcinitialized != 0)
+                    this.Invoke(new Action(delegate ()
                     {
-                      btMcInit.Text = @"Init MC - Yes";
-                    }
-                    else
-                    {
-                      btMcInit.Text = @"Init MC - Fail";
-                    }
+                      if (Mcinitialized != 0)
+                      {
+                        btMcInit.Text = @"Init MC - Yes";
+                      }
+                      else
+                      {
+                        btMcInit.Text = @"Init MC - Fail";
+                      }
+                    }));
                   }
                   break;
                 case 3:// Pc <- Mc, Cyclic
-                  ushort TqSensorValue = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
-                  tbTqSensorValue.Text = TqSensorValue.ToString();
-                  ushort TqOffsetValue = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
+                  TqSensorValue = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
+                  // tbTqSensorValue.Text = TqSensorValue.ToString();//ui
+                  
+                  TqOffsetValue = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
                   DriverInfo.u16TorqueOffset = TqOffsetValue;
-                  tbTqOffsetValue.Text = TqOffsetValue.ToString();
-                  ushort Error = (ushort)((ComReadBuffer[29] << 8) | ComReadBuffer[28]);
-                  tbError.Text = Error.ToString();
-                  uint MaintCnt = (uint)((ComReadBuffer[51] << 24) | (ComReadBuffer[50] << 16) | (ComReadBuffer[49] << 8) | ComReadBuffer[48]);
-                  tbMaintCnt.Text = MaintCnt.ToString();
-                  ushort Enc = (ushort)((ComReadBuffer[41] << 8) | ComReadBuffer[40]);
-                  tbEnc.Text = Enc.ToString();
+                  // tbTqOffsetValue.Text = TqOffsetValue.ToString();//ui
+
+                  Error = (ushort)((ComReadBuffer[29] << 8) | ComReadBuffer[28]);
+                  // tbError.Text = Error.ToString();//ui
+                  MaintCnt = (uint)((ComReadBuffer[51] << 24) | (ComReadBuffer[50] << 16) | (ComReadBuffer[49] << 8) | ComReadBuffer[48]);
+                  // tbMaintCnt.Text = MaintCnt.ToString();//ui
+                  Enc = (ushort)((ComReadBuffer[41] << 8) | ComReadBuffer[40]);
+                  // tbEnc.Text = Enc.ToString();//ui
+
                   MotorState = ((ComReadBuffer[27] << 8) | ComReadBuffer[26]) != 0;
                   McFlag.b1Run = ComReadBuffer[26];
                   McFlag.b1ControlFL = ComReadBuffer[30];
@@ -1598,18 +1623,8 @@ namespace ServoTester3
                   {
                     AckSend(Command, 0, StartAddress, 0);       // return Ack OK
                   }
-                  //List<double> xs = new() { 1, 2, 3, 4, 5 };
-                  //List<double> ys = new() { 1, 4, 9, 16, 25 };
-                  //formsPlot1.Plot.Add.Scatter(xs, ys);
-                  // double[] sin = Generate.Sin(51);
-                  // double[] cos = Generate.Cos(51);
-                  // formsPlot1.Plot.Add.Signal(sin);
-                  // formsPlot1.Plot.Add.Signal(cos);
-                  // formsPlot1.Plot.ShowLegend();
-                  for (int i=0;i<(data_length + 6);i++)
-                  graph_cq.Enqueue(ComReadBuffer[i]);
                   graph_count++;
-                  // fresh_graph_data();
+                  fresh_graph_data();
                   break;
                 case 5:
                   if (StartAddress == 1)
@@ -1803,19 +1818,19 @@ namespace ServoTester3
       Info_DrvModel_para.u16Driver_vendor_id = 2;//1:hantas, 2:torero
       Info_DrvModel_para.u16Controller_id = 1;      // controller model no. 1:26, 2:32
       Info_DrvModel_para.u16Motor_id = 2;          // used motor no.       1:26, 2:32
-                                                    // // TORQUE / SPEED
-                                                    // Info_DrvModel_para.f32Tq_min_Nm = 15;         // default Nm
-                                                    // Info_DrvModel_para.f32Tq_max_Nm = 80;         // default Nm
-                                                    // Info_DrvModel_para.u32Speed_min = 50;
-                                                    // Info_DrvModel_para.u32Speed_max = 475;
-                                                    // SETING
+                                                   // // TORQUE / SPEED
+                                                   // Info_DrvModel_para.f32Tq_min_Nm = 15;         // default Nm
+                                                   // Info_DrvModel_para.f32Tq_max_Nm = 80;         // default Nm
+                                                   // Info_DrvModel_para.u32Speed_min = 50;
+                                                   // Info_DrvModel_para.u32Speed_max = 475;
+                                                   // SETING
       switch (u16Driver_id_)
       {
         case 1://30
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 7.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 35.0f;         // default Nm
-                                                            // SPEED
+                                                           // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 1090;
           // Gear
@@ -1823,10 +1838,10 @@ namespace ServoTester3
           Info_DrvModel_para.f32Angle_head_ratio = 1.545455f;//1.54545498f;
           break;
         case 2://40
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 8.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 40.0f;         // default Nm
-                                                            // SPEED
+                                                           // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 1090;
           // Gear
@@ -1834,10 +1849,10 @@ namespace ServoTester3
           Info_DrvModel_para.f32Angle_head_ratio = 1.545455f;//1.54545498f;
           break;
         case 3://50
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 10.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 55.0f;         // default Nm
-                                                            // SPEED
+                                                           // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 655;
           // Gear
@@ -1845,10 +1860,10 @@ namespace ServoTester3
           Info_DrvModel_para.f32Angle_head_ratio = 1.545455f;//1.54545498f;
           break;
         case 4://70
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 15.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 80.0f;         // default Nm
-                                                            // SPEED
+                                                           // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 475;
           // Gear
@@ -1856,7 +1871,7 @@ namespace ServoTester3
           Info_DrvModel_para.f32Angle_head_ratio = 1.545455f;//1.54545498f;
           break;
         case 5://100
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 20.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 100.0f;         // default Nm
                                                             // SPEED
@@ -1867,7 +1882,7 @@ namespace ServoTester3
           Info_DrvModel_para.f32Angle_head_ratio = 1.8f;//1.54545498f;
           break;
         case 6://150
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 30.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 160.0f;         // default Nm
                                                             // SPEED
@@ -1876,9 +1891,9 @@ namespace ServoTester3
           // Gear
           Info_DrvModel_para.f32Gear_ratio = 103.999994f;//48.8163269f;//48.8163261f;
           Info_DrvModel_para.f32Angle_head_ratio = 1.8f;//1.54545498f;
-            break;
+          break;
         case 7://180
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 35.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 180.0f;         // default Nm
                                                             // SPEED
@@ -1889,7 +1904,7 @@ namespace ServoTester3
           Info_DrvModel_para.f32Angle_head_ratio = 1.8f;//1.54545498f;
           break;
         case 8://200
-              // TORQUE
+               // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 40.0f;         // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 200.0f;         // default Nm
                                                             // SPEED
@@ -2293,7 +2308,7 @@ namespace ServoTester3
         this.u16Driver_vendor_id = 2;
         this.u16Controller_id = 1;      // controller model no. 1:26, 2:32
         this.u16Motor_id = 2;          // used motor no.       1:26, 2:32
-                                        // TORQUE / SPEED
+                                       // TORQUE / SPEED
         this.f32Tq_min_Nm = 15;         // default Nm
         this.f32Tq_max_Nm = 80;         // default Nm
         this.u32Speed_min = 50;
@@ -2390,75 +2405,9 @@ namespace ServoTester3
       Data_ch7.Clear();
       Data_ch8.Clear();
     }
-    void fresh_graph_data()
-    {
-      TestUnion d = new TestUnion();
-      d.b0 = graph_ComReadBuffer[764 + 0];
-      d.b1 = graph_ComReadBuffer[764 + 1];
-      d.b2 = graph_ComReadBuffer[764 + 2];
-      d.b3 = graph_ComReadBuffer[764 + 3];
-      float hss_gain = d.f;
-      d.b0 = graph_ComReadBuffer[768 + 0];
-      d.b1 = graph_ComReadBuffer[768 + 1];
-      d.b2 = graph_ComReadBuffer[768 + 2];
-      d.b3 = graph_ComReadBuffer[768 + 3];
-      float tq_gain = d.f;
-      clear_data();
-      // Graph number
-      d.b0 = graph_ComReadBuffer[10];
-      d.b1 = graph_ComReadBuffer[11];
-      if (d.us0 == 1)//start run
-      {
-        clear_graph_data();
-      }
-      d.b0 = graph_ComReadBuffer[12];
-      d.b1 = graph_ComReadBuffer[13];
-      ushort Graph_Data_Length = d.us0;
-      // Array.Copy(Array srcArray, int srcCopyStartIndex, Array destArray, int destCopyStartIndex, int CopyLength);
-      for (ushort j = 0; j < Graph_Data_Length; j++)
-      {
-        d.b0 = graph_ComReadBuffer[100 * 0 + 64 + j * 2 + 0];
-        d.b1 = graph_ComReadBuffer[100 * 0 + 64 + j * 2 + 1];
-        Data_ch1.Add(d.s0 * tq_gain);//torque
-        d.b0 = graph_ComReadBuffer[100 * 1 + 64 + j * 2 + 0];
-        d.b1 = graph_ComReadBuffer[100 * 1 + 64 + j * 2 + 1];
-        Data_ch2.Add(d.s0 * hss_gain);//current
-        d.b0 = graph_ComReadBuffer[100 * 2 + 64 + j * 2 + 0];
-        d.b1 = graph_ComReadBuffer[100 * 2 + 64 + j * 2 + 1];
-        Data_ch3.Add(d.s0*2.0);//speed
-        // Data_ch4.Add(ComReadBuffer[100*3+64+j*2+1]<<8 + ComReadBuffer[100*3+64+j*2+0]);
-        d.b0 = graph_ComReadBuffer[100 * 3 + 64 + j * 2 + 0];
-        d.b1 = graph_ComReadBuffer[100 * 3 + 64 + j * 2 + 1];
-        Data_ch4.Add(d.s0);//angle
-        // Data_ch5.Add(ComReadBuffer[100*4+64+j*2+1]<<8 + ComReadBuffer[100*4+64+j*2+0]);
-        d.b0 = graph_ComReadBuffer[100 * 4 + 64 + j * 2 + 0];
-        d.b1 = graph_ComReadBuffer[100 * 4 + 64 + j * 2 + 1];
-        Data_ch5.Add(d.s0*2.0);//speed command
-        // Data_ch6.Add((ComReadBuffer[100*5+64+j*2+1]<<8 + ComReadBuffer[100*5+64+j*2+0])*hss_gain);
-        d.b0 = graph_ComReadBuffer[100 * 5 + 64 + j * 2 + 0];
-        d.b1 = graph_ComReadBuffer[100 * 5 + 64 + j * 2 + 1];
-        Data_ch6.Add(d.s0 * hss_gain);//current command
-        // Data_ch7.Add(ComReadBuffer[100*6+64+j*2+1]<<8 + ComReadBuffer[100*6+64+j*2+0]);
-        d.b0 = graph_ComReadBuffer[100 * 6 + 64 + j * 2 + 0];
-        d.b1 = graph_ComReadBuffer[100 * 6 + 64 + j * 2 + 1];
-        Data_ch7.Add(d.s0);
-      }
-      Graph_ch1.AddRange(Data_ch1);
-      Graph_ch2.AddRange(Data_ch2);
-      Graph_ch3.AddRange(Data_ch3);
-      Graph_ch4.AddRange(Data_ch4);
-      Graph_ch5.AddRange(Data_ch5);
-      Graph_ch6.AddRange(Data_ch6);
-      Graph_ch7.AddRange(Data_ch7);
-
-      refresh_graph_flag = true;
-      refresh_graph();
-      // tbDataCount.Text = Data_ch1.Count.ToString();
-      // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
-    }
 
     //[Obsolete]
-    void refresh_graph()
+    public void Refresh_graph()
     {
       // tbDataCount.Text = Data_ch1.Count.ToString();
       // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
@@ -2520,15 +2469,78 @@ namespace ServoTester3
       hl.IsDraggable = true;
       hl.Text = "HLine";
 
-      // ScottPlot.WinForms.FormsPlot formsPlot11 = formsPlot1;
-      // formsPlot11.Refresh();
-      // formsPlot1.Refresh();
+      formsPlot1.Refresh();
 
-      // // use events for custom mouse interactivity
-      // formsPlot1.MouseDown += FormsPlot1_MouseDown;
-      // formsPlot1.MouseUp += FormsPlot1_MouseUp;
-      // formsPlot1.MouseMove += FormsPlot1_MouseMove;
+      // use events for custom mouse interactivity
+      formsPlot1.MouseDown += FormsPlot1_MouseDown;
+      formsPlot1.MouseUp += FormsPlot1_MouseUp;
+      formsPlot1.MouseMove += FormsPlot1_MouseMove;
     }
+    void fresh_graph_data()
+    {
+
+      TestUnion d = new TestUnion();
+      d.b0 = ComReadBuffer[764 + 0];
+      d.b1 = ComReadBuffer[764 + 1];
+      d.b2 = ComReadBuffer[764 + 2];
+      d.b3 = ComReadBuffer[764 + 3];
+      float hss_gain = d.f;
+      d.b0 = ComReadBuffer[768 + 0];
+      d.b1 = ComReadBuffer[768 + 1];
+      d.b2 = ComReadBuffer[768 + 2];
+      d.b3 = ComReadBuffer[768 + 3];
+      float tq_gain = d.f;
+      clear_data();
+      // Graph number
+      d.b0 = ComReadBuffer[10];
+      d.b1 = ComReadBuffer[11];
+      if (d.us0 == 1)//start run
+      {
+        clear_graph_data();
+      }
+      d.b0 = ComReadBuffer[12];
+      d.b1 = ComReadBuffer[13];
+      ushort Graph_Data_Length = d.us0;
+      for (ushort j = 0; j < Graph_Data_Length; j++)
+      {
+        d.b0 = ComReadBuffer[100 * 0 + 64 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 0 + 64 + j * 2 + 1];
+        Data_ch1.Add(d.s0 * tq_gain);//torque
+        d.b0 = ComReadBuffer[100 * 1 + 64 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 1 + 64 + j * 2 + 1];
+        Data_ch2.Add(d.s0 * hss_gain);//current
+        d.b0 = ComReadBuffer[100 * 2 + 64 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 2 + 64 + j * 2 + 1];
+        Data_ch3.Add(d.s0 * 2.0);//speed
+        d.b0 = ComReadBuffer[100 * 3 + 64 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 3 + 64 + j * 2 + 1];
+        Data_ch4.Add(d.s0);//angle
+        d.b0 = ComReadBuffer[100 * 4 + 64 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 4 + 64 + j * 2 + 1];
+        Data_ch5.Add(d.s0 * 2.0);//speed command
+        d.b0 = ComReadBuffer[100 * 5 + 64 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 5 + 64 + j * 2 + 1];
+        Data_ch6.Add(d.s0 * hss_gain);//current command
+        d.b0 = ComReadBuffer[100 * 6 + 64 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 6 + 64 + j * 2 + 1];
+        Data_ch7.Add(d.s0);
+      }
+      Graph_ch1.AddRange(Data_ch1);
+      Graph_ch2.AddRange(Data_ch2);
+      Graph_ch3.AddRange(Data_ch3);
+      Graph_ch4.AddRange(Data_ch4);
+      Graph_ch5.AddRange(Data_ch5);
+      Graph_ch6.AddRange(Data_ch6);
+      Graph_ch7.AddRange(Data_ch7);
+
+      refresh_graph_flag = true;
+      this.Invoke(new Action(delegate () // this == Form 이다. Form이 아닌 컨트롤의 Invoke를 직접호출해도 무방하다.
+      {
+        //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
+        Refresh_graph();
+      }));
+    }
+
     AxisLine? PlottableBeingDragged = null;
     private void FormsPlot1_MouseDown(object? sender, MouseEventArgs e)
     {
@@ -2588,8 +2600,12 @@ namespace ServoTester3
     }
     private void cbGraph_CheckedChanged(object sender, EventArgs e)
     {
-      refresh_graph();
+      Refresh_graph();
     }
 
+    private void ServoFormClosed(object sender, FormClosedEventArgs e)
+    {
+      myThread_flag = false;
+    }
   }
 }
