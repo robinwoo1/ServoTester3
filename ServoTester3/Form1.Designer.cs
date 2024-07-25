@@ -82,7 +82,6 @@
       cbGraph_ch2 = new CheckBox();
       cbGraph_ch1 = new CheckBox();
       formsPlot1 = new ScottPlot.WinForms.FormsPlot();
-      tabPage3 = new TabPage();
       tbSpeedFFgain = new NumericUpDown();
       tbSpeedIgain = new NumericUpDown();
       label22 = new Label();
@@ -136,6 +135,8 @@
       tbDataCount = new TextBox();
       tbGraphDataCount = new TextBox();
       gbGain = new GroupBox();
+      btnLoad = new Button();
+      btnSave = new Button();
       tabControl1.SuspendLayout();
       tabPage1.SuspendLayout();
       groupBox9.SuspendLayout();
@@ -170,7 +171,6 @@
       // 
       tabControl1.Controls.Add(tabPage1);
       tabControl1.Controls.Add(tabPage2);
-      tabControl1.Controls.Add(tabPage3);
       tabControl1.Location = new Point(0, 150);
       tabControl1.Name = "tabControl1";
       tabControl1.SelectedIndex = 0;
@@ -739,16 +739,6 @@
       formsPlot1.Size = new Size(748, 338);
       formsPlot1.TabIndex = 0;
       // 
-      // tabPage3
-      // 
-      tabPage3.Location = new Point(4, 24);
-      tabPage3.Name = "tabPage3";
-      tabPage3.Padding = new Padding(3);
-      tabPage3.Size = new Size(870, 364);
-      tabPage3.TabIndex = 2;
-      tabPage3.Text = "Servo";
-      tabPage3.UseVisualStyleBackColor = true;
-      // 
       // tbSpeedFFgain
       // 
       tbSpeedFFgain.Location = new Point(219, 69);
@@ -942,7 +932,7 @@
       // 
       // workTimer
       // 
-      workTimer.Interval = 50;
+      workTimer.Interval = 20;
       workTimer.Tick += workTimer_Tick;
       // 
       // groupBox2
@@ -1148,8 +1138,8 @@
       // 
       nudSpeed.Enabled = false;
       nudSpeed.Location = new Point(67, 19);
-      nudSpeed.Maximum = new decimal(new int[] { 30000, 0, 0, 0 });
-      nudSpeed.Minimum = new decimal(new int[] { 30000, 0, 0, int.MinValue });
+      nudSpeed.Maximum = new decimal(new int[] { 45000, 0, 0, 0 });
+      nudSpeed.Minimum = new decimal(new int[] { 45000, 0, 0, int.MinValue });
       nudSpeed.Name = "nudSpeed";
       nudSpeed.Size = new Size(68, 23);
       nudSpeed.TabIndex = 14;
@@ -1301,11 +1291,33 @@
       gbGain.TabStop = false;
       gbGain.Text = "Gain";
       // 
+      // btnLoad
+      // 
+      btnLoad.Location = new Point(739, 128);
+      btnLoad.Name = "btnLoad";
+      btnLoad.Size = new Size(92, 23);
+      btnLoad.TabIndex = 17;
+      btnLoad.Text = "Load Graph";
+      btnLoad.UseVisualStyleBackColor = true;
+      btnLoad.Click += btnLoadGraph_Click;
+      // 
+      // btnSave
+      // 
+      btnSave.Location = new Point(739, 99);
+      btnSave.Name = "btnSave";
+      btnSave.Size = new Size(92, 23);
+      btnSave.TabIndex = 16;
+      btnSave.Text = "Save Graph";
+      btnSave.UseVisualStyleBackColor = true;
+      btnSave.Click += btnSaveGraph_Click;
+      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(877, 544);
+      Controls.Add(btnLoad);
+      Controls.Add(btnSave);
       Controls.Add(gbGain);
       Controls.Add(gbServo);
       Controls.Add(tbGraphDataCount);
@@ -1430,7 +1442,6 @@
         private Label label8;
         private TextBox tbFreeAngle;
         private Label label9;
-        private TabPage tabPage3;
         private RadioButton rbOn;
         private RadioButton rbOff;
         private ComboBox cbCommPorts;
@@ -1477,5 +1488,7 @@
         private Button btTorque;
         private NumericUpDown nudSpeed;
         private GroupBox gbGain;
-    }
+    private Button btnLoad;
+    private Button btnSave;
+  }
 }

@@ -1,15 +1,13 @@
 using ScottPlot;
 using ScottPlot.Plottables;
-using System.CodeDom;
 using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Ports;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+//tex:
+//Formula 1: $$(a+b)^2 = a^2 + 2ab + b^2$$
+//Formula 2: $$a^2-b^2 = (a+b)(a-b)$$
 
 namespace ServoTester3
 {
@@ -1147,7 +1145,7 @@ namespace ServoTester3
         //   // graph_count++;
         // }
         ProcessPcMcReceivedCommData();
-        Thread.Sleep(100);
+        Thread.Sleep(50);
       }
     }
     // private void btMotor_Click(object sender, EventArgs e)
@@ -1263,6 +1261,8 @@ namespace ServoTester3
       switch (addr)
       {
         case 1:
+          MakeAndSendData(9, addr, (short)(Convert.ToInt32(((NumericUpDown)control).Value / 10)));
+          break;
         case 2:
         case 3:
         case 4:
@@ -1360,11 +1360,18 @@ namespace ServoTester3
       tbError.Text = Error.ToString();
       tbMaintCnt.Text = MaintCnt.ToString();
       tbEnc.Text = Enc.ToString();
-      
+
       // tbDataCount.Text = Data_ch1.Count.ToString();
       tbDataCount.Text = graph_count.ToString();
       tbGraphDataCount.Text = Graph_ch1.Count.ToString();
       // tbGraphDataCount.Text = graph_count.ToString();//Graph_ch1.Count.ToString();
+
+      if (refresh_graph_flag)
+      {
+        refresh_graph_flag = false;
+        Refresh_graph();
+      }
+
 
       switch (AutoSetting.FlagSetting)
       {
@@ -1582,7 +1589,7 @@ namespace ServoTester3
                 case 3:// Pc <- Mc, Cyclic
                   TqSensorValue = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
                   // tbTqSensorValue.Text = TqSensorValue.ToString();//ui
-                  
+
                   TqOffsetValue = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
                   DriverInfo.u16TorqueOffset = TqOffsetValue;
                   // tbTqOffsetValue.Text = TqOffsetValue.ToString();//ui
@@ -2555,13 +2562,160 @@ namespace ServoTester3
       Graph_ch7.AddRange(Data_ch7);
 
       refresh_graph_flag = true;
-      this.Invoke(new Action(delegate () // this == Form 이다. Form이 아닌 컨트롤의 Invoke를 직접호출해도 무방하다.
-      {
-        //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
-        Refresh_graph();
-      }));
+      // this.Invoke(new Action(delegate () // this == Form 이다. Form이 아닌 컨트롤의 Invoke를 직접호출해도 무방하다.
+      // {
+      //   //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
+      //   Refresh_graph();
+      // }));
     }
+    private void btnSaveGraph_Click(object sender, EventArgs e)
+    {
+      // string FileName = "";
+      SaveFileDialog saveFile = new SaveFileDialog();
+      saveFile.Title = "Save an Text File";
+      saveFile.DefaultExt = "txt";
+      saveFile.Filter = "txt file(*.txt)|*.txt";
+      if (saveFile.ShowDialog() == DialogResult.OK)
+      {
+        if (saveFile.FileName != "")
+        {
+          StreamWriter sw = new StreamWriter(saveFile.FileName);
+          sw.WriteLine(Graph_ch1.Count());
+          for (int i = 0; i < Graph_ch1.Count; i++)
+          {
+            sw.WriteLine(Graph_ch1[i].ToString());
+            sw.WriteLine(Graph_ch2[i].ToString());
+            sw.WriteLine(Graph_ch3[i].ToString());
+            sw.WriteLine(Graph_ch4[i].ToString());
+            sw.WriteLine(Graph_ch5[i].ToString());
+            sw.WriteLine(Graph_ch6[i].ToString());
+            sw.WriteLine(Graph_ch7[i].ToString());
+          }
+          sw.Close();
+        }
+        else
+        {
+          StreamWriter sw = new StreamWriter("GraphData.txt");
+          sw.WriteLine(Graph_ch1.Count());
+          for (int i = 0; i < Graph_ch1.Count; i++)
+          {
+            sw.WriteLine(Graph_ch1[i].ToString());
+            sw.WriteLine(Graph_ch2[i].ToString());
+            sw.WriteLine(Graph_ch3[i].ToString());
+            sw.WriteLine(Graph_ch4[i].ToString());
+            sw.WriteLine(Graph_ch5[i].ToString());
+            sw.WriteLine(Graph_ch6[i].ToString());
+            sw.WriteLine(Graph_ch7[i].ToString());
+          }
+          sw.Close();
+        }
+      }
+    }
+    private void btnLoadGraph_Click(object sender, EventArgs e)
+    {
+      // string FileName = "";
+      OpenFileDialog loadFile = new OpenFileDialog();
+      loadFile.Title = "Load an Text File";
+      loadFile.DefaultExt = "txt";
+      loadFile.Filter = "txt file(*.txt)|*.txt";
+      if (loadFile.ShowDialog() == DialogResult.OK)
+      {
+        if (loadFile.FileName != "")
+        {
+          StreamReader sr = new StreamReader(loadFile.FileName);
+          int Count = Convert.ToInt32(sr.ReadLine());
+          clear_graph_data();
+          for (int i = 0; i < Count; i++)
+          {
+            Graph_ch1.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch2.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch3.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch4.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch5.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch6.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch7.Add(Convert.ToDouble(sr.ReadLine()));
+          }
+          sr.Close();
+        }
+        else
+        {
+          StreamReader sr = new StreamReader("GraphData.txt");
+          int Count = Convert.ToInt32(sr.ReadLine());
+          clear_graph_data();
+          for (int i = 0; i < Count; i++)
+          {
+            Graph_ch1.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch2.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch3.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch4.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch5.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch6.Add(Convert.ToDouble(sr.ReadLine()));
+            Graph_ch7.Add(Convert.ToDouble(sr.ReadLine()));
+          }
+          sr.Close();
+        }
+      }
 
+
+
+      // StreamReader sr1 = new StreamReader("GraphData1.txt");
+      // Count =  Convert.ToInt32(sr1.ReadLine());
+      // Graph_ch1.Clear();
+      // for (int i=0;i< Count;i++)
+      // {
+      //   Graph_ch1.Add(Convert.ToDouble(sr1.ReadLine()));
+      // }
+      // sr1.Close();
+      // StreamReader sr2 = new StreamReader("GraphData2.txt");
+      // Count =  Convert.ToInt32(sr2.ReadLine());
+      // Graph_ch2.Clear();
+      // for (int i=0;i< Count;i++)
+      // {
+      //   Graph_ch2.Add(Convert.ToDouble(sr2.ReadLine()));
+      // }
+      // sr2.Close();
+      // StreamReader sr3 = new StreamReader("GraphData3.txt");
+      // Count =  Convert.ToInt32(sr3.ReadLine());
+      // Graph_ch3.Clear();
+      // for (int i=0;i< Count;i++)
+      // {
+      //   Graph_ch3.Add(Convert.ToDouble(sr3.ReadLine()));
+      // }
+      // sr3.Close();
+      // StreamReader sr4 = new StreamReader("GraphData4.txt");
+      // Count =  Convert.ToInt32(sr4.ReadLine());
+      // Graph_ch4.Clear();
+      // for (int i=0;i< Count;i++)
+      // {
+      //   Graph_ch4.Add(Convert.ToDouble(sr4.ReadLine()));
+      // }
+      // sr4.Close();
+      // StreamReader sr5 = new StreamReader("GraphData5.txt");
+      // Count =  Convert.ToInt32(sr5.ReadLine());
+      // Graph_ch5.Clear();
+      // for (int i=0;i< Count;i++)
+      // {
+      //   Graph_ch5.Add(Convert.ToDouble(sr5.ReadLine()));
+      // }
+      // sr5.Close();
+      // StreamReader sr6 = new StreamReader("GraphData6.txt");
+      // Count =  Convert.ToInt32(sr6.ReadLine());
+      // Graph_ch6.Clear();
+      // for (int i=0;i< Count;i++)
+      // {
+      //   Graph_ch6.Add(Convert.ToDouble(sr6.ReadLine()));
+      // }
+      // sr6.Close();
+      // StreamReader sr7 = new StreamReader("GraphData7.txt");
+      // Count =  Convert.ToInt32(sr7.ReadLine());
+      // Graph_ch7.Clear();
+      // for (int i=0;i< Count;i++)
+      // {
+      //   Graph_ch7.Add(Convert.ToDouble(sr7.ReadLine()));
+      // }
+      // sr7.Close();
+      refresh_graph_flag = true;
+    }
     AxisLine? PlottableBeingDragged = null;
     private void FormsPlot1_MouseDown(object? sender, MouseEventArgs e)
     {
