@@ -24,7 +24,11 @@ namespace ServoTester3
     private List<byte> _requestPacket;
     public byte[] SendDataPacket = new byte[SERIAL_BUF_SIZE];
     public byte[] FlagRun = new byte[10];
+    public byte DriverRun = 0;
+    public byte CommandRun = 0;
     public byte[] FlagFL = new byte[10];
+    public byte DriverFL = 0;
+    public byte CommandFL = 0;
     public bool closing_flag = false;
     public bool Mot_or_Nut = false;
     Thread myThread;// = new Thread(myFunc);
@@ -35,6 +39,7 @@ namespace ServoTester3
     ushort Error = 0;
     uint MaintCnt = 0;
     ushort Enc = 0;
+    ushort Mcinitialized = 0;
     public Form1()
     {
       InitializeComponent();
@@ -1466,6 +1471,22 @@ namespace ServoTester3
         gbServo.Visible = false;
         gbFastenLoosen.Visible = true;
       }
+      if (Mcinitialized != 0)
+      {
+        btMcInit.Text = @"Init MC - Yes";
+      }
+      else
+      {
+        btMcInit.Text = @"Init MC - No";
+      }
+      if (McFlag.b1Run == 0)
+      {
+        btServoOnOff.Text = "Servo On";
+      }
+      else
+      {
+        btServoOnOff.Text = "Servo Off";
+      }
       timer_working = false;
     }
     public void ProcessPcMcReceivedCommData()
@@ -1536,26 +1557,26 @@ namespace ServoTester3
                   }
                   else if (StartAddress == 5)
                   {
-                    this.Invoke(new Action(delegate ()
-                    {
-                      btMcInit.Text = @"Init MC - No";
-                    }));
+                    // this.Invoke(new Action(delegate ()
+                    // {
+                    //   btMcInit.Text = @"Init MC - No";
+                    // }));
                   }
                   else if (StartAddress == 11)
                   {
                     AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    ushort Mcinitialized = ComReadBuffer[11];
-                    this.Invoke(new Action(delegate ()
-                    {
-                      if (Mcinitialized != 0)
-                      {
-                        btMcInit.Text = @"Init MC - Yes";
-                      }
-                      else
-                      {
-                        btMcInit.Text = @"Init MC - Fail";
-                      }
-                    }));
+                    Mcinitialized = ComReadBuffer[11];
+                    // this.Invoke(new Action(delegate ()
+                    // {
+                    //   if (Mcinitialized != 0)
+                    //   {
+                    //     btMcInit.Text = @"Init MC - Yes";
+                    //   }
+                    //   else
+                    //   {
+                    //     btMcInit.Text = @"Init MC - No";
+                    //   }
+                    // }));
                   }
                   break;
                 case 3:// Pc <- Mc, Cyclic

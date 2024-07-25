@@ -767,6 +767,7 @@
       tbSpeedIgain.Size = new Size(69, 23);
       tbSpeedIgain.TabIndex = 19;
       tbSpeedIgain.Tag = "7";
+      tbSpeedIgain.Value = new decimal(new int[] { 150, 0, 0, 0 });
       tbSpeedIgain.ValueChanged += Set_ValueChanged;
       // 
       // label22
@@ -795,6 +796,7 @@
       tbSpeedPgain.Size = new Size(69, 23);
       tbSpeedPgain.TabIndex = 16;
       tbSpeedPgain.Tag = "6";
+      tbSpeedPgain.Value = new decimal(new int[] { 400, 0, 0, 0 });
       tbSpeedPgain.ValueChanged += Set_ValueChanged;
       // 
       // tbTorqueFFgain
@@ -805,6 +807,7 @@
       tbTorqueFFgain.Size = new Size(69, 23);
       tbTorqueFFgain.TabIndex = 15;
       tbTorqueFFgain.Tag = "5";
+      tbTorqueFFgain.Value = new decimal(new int[] { 165, 0, 0, 0 });
       tbTorqueFFgain.ValueChanged += Set_ValueChanged;
       // 
       // label20
@@ -833,6 +836,7 @@
       tbTorqueIgain.Size = new Size(69, 23);
       tbTorqueIgain.TabIndex = 12;
       tbTorqueIgain.Tag = "4";
+      tbTorqueIgain.Value = new decimal(new int[] { 70, 0, 0, 0 });
       tbTorqueIgain.ValueChanged += Set_ValueChanged;
       // 
       // tbTorquePgain
@@ -843,6 +847,7 @@
       tbTorquePgain.Size = new Size(69, 23);
       tbTorquePgain.TabIndex = 11;
       tbTorquePgain.Tag = "3";
+      tbTorquePgain.Value = new decimal(new int[] { 70, 0, 0, 0 });
       tbTorquePgain.ValueChanged += Set_ValueChanged;
       // 
       // label18
@@ -1048,7 +1053,7 @@
       tbDriverType.Name = "tbDriverType";
       tbDriverType.Size = new Size(35, 23);
       tbDriverType.TabIndex = 9;
-      tbDriverType.Value = new decimal(new int[] { 3, 0, 0, 0 });
+      tbDriverType.Value = new decimal(new int[] { 9, 0, 0, 0 });
       // 
       // label5
       // 
