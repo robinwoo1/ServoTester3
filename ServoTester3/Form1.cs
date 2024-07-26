@@ -43,6 +43,7 @@ namespace ServoTester3
       InitializeComponent();
 
     }
+    List<double> Graph_time = new List<double>();
     List<double> Graph_ch1 = new List<double>();
     List<double> Graph_ch2 = new List<double>();
     List<double> Graph_ch3 = new List<double>();
@@ -2439,61 +2440,82 @@ namespace ServoTester3
     {
       // tbDataCount.Text = Data_ch1.Count.ToString();
       // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
-
+      Graph_time.Clear();
+      for (int i=0;i<Graph_ch1.Count;i++)
+        Graph_time.Add(5e-3*(double)i);
       formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
-        var sig1 = formsPlot1.Plot.Add.Signal(Graph_ch1);
+        // var sig1 = formsPlot1.Plot.Add.Signal(Graph_ch1);
+        var sig1 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch1);
         sig1.LegendText = "Torque";
-        sig1.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        sig1.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        formsPlot1.Plot.Axes.Left.Label.Text = "Torque";
+        // sig1.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig1.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+        // formsPlot1.Plot.Axes.Left.Label.Text = "Torque";
       }
       if (cbGraph_ch2.Checked)
       {
-        var sig2 = formsPlot1.Plot.Add.Signal(Graph_ch2);
+        // var sig2 = formsPlot1.Plot.Add.Signal(Graph_ch2);
+        var sig2 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch2);
         sig2.LegendText = "Current";
-        sig2.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig2.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig2.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+        // formsPlot1.Plot.Axes.Left.Label.Text = "Current";
       }
       if (cbGraph_ch3.Checked)
       {
-        var sig3 = formsPlot1.Plot.Add.Signal(Graph_ch3);
+        // var sig3 = formsPlot1.Plot.Add.Signal(Graph_ch3);
+        var sig3 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch3);
         sig3.LegendText = "Speed";
-        sig3.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig3.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig3.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+        // formsPlot1.Plot.Axes.Left.Label.Text = "Speed";
       }
       if (cbGraph_ch4.Checked)
       {
-        var sig4 = formsPlot1.Plot.Add.Signal(Graph_ch4);
+        // var sig4 = formsPlot1.Plot.Add.Signal(Graph_ch4);
+        var sig4 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch4);
         sig4.LegendText = "Angle";
-        sig4.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig4.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig4.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+        // formsPlot1.Plot.Axes.Left.Label.Text = "Angle";
       }
       if (cbGraph_ch5.Checked)
       {
-        var sig5 = formsPlot1.Plot.Add.Signal(Graph_ch5);
+        // var sig5 = formsPlot1.Plot.Add.Signal(Graph_ch5);
+        var sig5 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch5);
         sig5.LegendText = "Speed Command";
-        sig5.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig5.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig5.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+        // formsPlot1.Plot.Axes.Left.Label.Text = "Speed Command";
       }
       if (cbGraph_ch6.Checked)
       {
-        var sig6 = formsPlot1.Plot.Add.Signal(Graph_ch6);
+        // var sig6 = formsPlot1.Plot.Add.Signal(Graph_ch6);
+        var sig6 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch6);
         sig6.LegendText = "Current Command";
-        sig6.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig6.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig6.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+        // formsPlot1.Plot.Axes.Left.Label.Text = "Current Command";
       }
       if (cbGraph_ch7.Checked)
       {
-        var sig7 = formsPlot1.Plot.Add.Signal(Graph_ch7);
+        // var sig7 = formsPlot1.Plot.Add.Signal(Graph_ch7);
+        var sig7 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch7);
         sig7.LegendText = "SnugAngle";
-        sig7.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig7.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
+        // sig7.Axes.YAxis = formsPlot1.Plot.Axes.Left;
+        // formsPlot1.Plot.Axes.Left.Label.Text = "SnugAngle";
       }
       formsPlot1.Plot.ShowLegend(Alignment.UpperRight);
 
       formsPlot1.Plot.Axes.AutoScale();
 
-      var vl = formsPlot1.Plot.Add.VerticalLine(23);
+      var vl = formsPlot1.Plot.Add.VerticalLine(0);
       vl.IsDraggable = true;
       vl.Text = "VLine";
 
-      var hl = formsPlot1.Plot.Add.HorizontalLine(0.42);
+      var hl = formsPlot1.Plot.Add.HorizontalLine(0);
       hl.IsDraggable = true;
       hl.Text = "HLine";
 
@@ -2654,67 +2676,8 @@ namespace ServoTester3
           }
           sr.Close();
         }
+        refresh_graph_flag = true;
       }
-
-
-
-      // StreamReader sr1 = new StreamReader("GraphData1.txt");
-      // Count =  Convert.ToInt32(sr1.ReadLine());
-      // Graph_ch1.Clear();
-      // for (int i=0;i< Count;i++)
-      // {
-      //   Graph_ch1.Add(Convert.ToDouble(sr1.ReadLine()));
-      // }
-      // sr1.Close();
-      // StreamReader sr2 = new StreamReader("GraphData2.txt");
-      // Count =  Convert.ToInt32(sr2.ReadLine());
-      // Graph_ch2.Clear();
-      // for (int i=0;i< Count;i++)
-      // {
-      //   Graph_ch2.Add(Convert.ToDouble(sr2.ReadLine()));
-      // }
-      // sr2.Close();
-      // StreamReader sr3 = new StreamReader("GraphData3.txt");
-      // Count =  Convert.ToInt32(sr3.ReadLine());
-      // Graph_ch3.Clear();
-      // for (int i=0;i< Count;i++)
-      // {
-      //   Graph_ch3.Add(Convert.ToDouble(sr3.ReadLine()));
-      // }
-      // sr3.Close();
-      // StreamReader sr4 = new StreamReader("GraphData4.txt");
-      // Count =  Convert.ToInt32(sr4.ReadLine());
-      // Graph_ch4.Clear();
-      // for (int i=0;i< Count;i++)
-      // {
-      //   Graph_ch4.Add(Convert.ToDouble(sr4.ReadLine()));
-      // }
-      // sr4.Close();
-      // StreamReader sr5 = new StreamReader("GraphData5.txt");
-      // Count =  Convert.ToInt32(sr5.ReadLine());
-      // Graph_ch5.Clear();
-      // for (int i=0;i< Count;i++)
-      // {
-      //   Graph_ch5.Add(Convert.ToDouble(sr5.ReadLine()));
-      // }
-      // sr5.Close();
-      // StreamReader sr6 = new StreamReader("GraphData6.txt");
-      // Count =  Convert.ToInt32(sr6.ReadLine());
-      // Graph_ch6.Clear();
-      // for (int i=0;i< Count;i++)
-      // {
-      //   Graph_ch6.Add(Convert.ToDouble(sr6.ReadLine()));
-      // }
-      // sr6.Close();
-      // StreamReader sr7 = new StreamReader("GraphData7.txt");
-      // Count =  Convert.ToInt32(sr7.ReadLine());
-      // Graph_ch7.Clear();
-      // for (int i=0;i< Count;i++)
-      // {
-      //   Graph_ch7.Add(Convert.ToDouble(sr7.ReadLine()));
-      // }
-      // sr7.Close();
-      refresh_graph_flag = true;
     }
     AxisLine? PlottableBeingDragged = null;
     private void FormsPlot1_MouseDown(object? sender, MouseEventArgs e)
