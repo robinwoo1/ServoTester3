@@ -356,6 +356,7 @@ namespace ServoTester3
       ushort u16PtrCnt = 0;
       ushort Revision = 0;
       byte TryNum = 0;
+      ushort u16Value;
 
       TestUnion d = new TestUnion();
 
@@ -840,10 +841,47 @@ namespace ServoTester3
       else if (Command == 9) // MotTest or NutRunner
       {
         //if (StartAddress == 1)
+        // {
+        //   SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
+        //   SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
+        // }
+        switch(StartAddress)
         {
-          SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
+          case 1:
+          case 2:
+          case 3:
+          case 4:
+          case 5:
+          case 6:
+          case 7:
+          case 8:
+            SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
+          break;
+          case 9:
+            u16Value = (ushort)UInt16.Parse(tbTorquePgain.Text);
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//10
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
+            u16Value = (ushort)UInt16.Parse(tbTorqueIgain.Text);
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//12
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
+            u16Value = (ushort)UInt16.Parse(tbTorqueFFgain.Text);
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//14
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
+            u16Value = (ushort)UInt16.Parse(tbSpeedPgain.Text);
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//16
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
+            u16Value = (ushort)UInt16.Parse(tbSpeedIgain.Text);
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//18
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
+            u16Value = (ushort)UInt16.Parse(tbSpeedFFgain.Text);
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//20
+            SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
+          break;
+          default:
+          break;
         }
+        // MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value));
       }
       else if (Command == 104) // parameter
       {
@@ -1301,6 +1339,10 @@ namespace ServoTester3
       //     Debug.Write($@"{b:X2} ");
       // }
       // Debug.WriteLine(string.Empty);
+    }
+    private void btnSetAllGain_Click(object sender, EventArgs e)
+    {
+      MakeAndSendData(9, 9, 0);
     }
     private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
     {
@@ -2441,8 +2483,8 @@ namespace ServoTester3
       // tbDataCount.Text = Data_ch1.Count.ToString();
       // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
       Graph_time.Clear();
-      for (int i=0;i<Graph_ch1.Count;i++)
-        Graph_time.Add(5e-3*(double)i);
+      for (int i = 0; i < Graph_ch1.Count; i++)
+        Graph_time.Add(5e-3d * (double)i);
       formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
@@ -2595,6 +2637,7 @@ namespace ServoTester3
       // string FileName = "";
       SaveFileDialog saveFile = new SaveFileDialog();
       saveFile.Title = "Save an Text File";
+      saveFile.FileName = "GraphData";
       saveFile.DefaultExt = "txt";
       saveFile.Filter = "txt file(*.txt)|*.txt";
       if (saveFile.ShowDialog() == DialogResult.OK)
@@ -2638,6 +2681,7 @@ namespace ServoTester3
       // string FileName = "";
       OpenFileDialog loadFile = new OpenFileDialog();
       loadFile.Title = "Load an Text File";
+      loadFile.FileName = "GraphData";
       loadFile.DefaultExt = "txt";
       loadFile.Filter = "txt file(*.txt)|*.txt";
       if (loadFile.ShowDialog() == DialogResult.OK)
@@ -2676,7 +2720,8 @@ namespace ServoTester3
           }
           sr.Close();
         }
-        refresh_graph_flag = true;
+        // refresh_graph_flag = true;
+        Refresh_graph();
       }
     }
     AxisLine? PlottableBeingDragged = null;
@@ -2745,5 +2790,6 @@ namespace ServoTester3
     {
       myThread_flag = false;
     }
+
   }
 }

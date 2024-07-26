@@ -137,6 +137,7 @@
       gbGain = new GroupBox();
       btnLoad = new Button();
       btnSave = new Button();
+      btnSetAllGain = new Button();
       tabControl1.SuspendLayout();
       tabPage1.SuspendLayout();
       groupBox9.SuspendLayout();
@@ -1284,7 +1285,7 @@
       gbGain.Controls.Add(label20);
       gbGain.Controls.Add(label21);
       gbGain.Controls.Add(tbTorqueFFgain);
-      gbGain.Location = new Point(407, 70);
+      gbGain.Location = new Point(406, 70);
       gbGain.Name = "gbGain";
       gbGain.Size = new Size(295, 98);
       gbGain.TabIndex = 15;
@@ -1293,7 +1294,7 @@
       // 
       // btnLoad
       // 
-      btnLoad.Location = new Point(739, 128);
+      btnLoad.Location = new Point(746, 138);
       btnLoad.Name = "btnLoad";
       btnLoad.Size = new Size(92, 23);
       btnLoad.TabIndex = 17;
@@ -1303,7 +1304,7 @@
       // 
       // btnSave
       // 
-      btnSave.Location = new Point(739, 99);
+      btnSave.Location = new Point(747, 113);
       btnSave.Name = "btnSave";
       btnSave.Size = new Size(92, 23);
       btnSave.TabIndex = 16;
@@ -1311,11 +1312,22 @@
       btnSave.UseVisualStyleBackColor = true;
       btnSave.Click += btnSaveGraph_Click;
       // 
+      // btnSetAllGain
+      // 
+      btnSetAllGain.Location = new Point(747, 89);
+      btnSetAllGain.Name = "btnSetAllGain";
+      btnSetAllGain.Size = new Size(92, 23);
+      btnSetAllGain.TabIndex = 18;
+      btnSetAllGain.Text = "Set All Gain";
+      btnSetAllGain.UseVisualStyleBackColor = true;
+      btnSetAllGain.Click += btnSetAllGain_Click;
+      // 
       // Form1
       // 
       AutoScaleDimensions = new SizeF(7F, 15F);
       AutoScaleMode = AutoScaleMode.Font;
       ClientSize = new Size(877, 544);
+      Controls.Add(btnSetAllGain);
       Controls.Add(btnLoad);
       Controls.Add(btnSave);
       Controls.Add(gbGain);
@@ -1490,5 +1502,6 @@
         private GroupBox gbGain;
     private Button btnLoad;
     private Button btnSave;
+    private Button btnSetAllGain;
   }
 }
