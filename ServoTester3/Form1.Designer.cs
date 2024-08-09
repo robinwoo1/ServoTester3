@@ -1151,8 +1151,8 @@
       // 
       nudTorque.Enabled = false;
       nudTorque.Location = new Point(66, 44);
-      nudTorque.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-      nudTorque.Minimum = new decimal(new int[] { 10000, 0, 0, int.MinValue });
+      nudTorque.Maximum = new decimal(new int[] { 20000, 0, 0, 0 });
+      nudTorque.Minimum = new decimal(new int[] { 20000, 0, 0, int.MinValue });
       nudTorque.Name = "nudTorque";
       nudTorque.Size = new Size(68, 23);
       nudTorque.TabIndex = 13;

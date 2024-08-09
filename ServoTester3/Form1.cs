@@ -60,6 +60,9 @@ namespace ServoTester3
     List<double> Data_ch6 = new List<double>();
     List<double> Data_ch7 = new List<double>();
     List<double> Data_ch8 = new List<double>();
+
+    
+    
     private bool refresh_graph_flag = false;
     private bool clear_graph_flag = false;
     private SerialPort Port { get; } = new SerialPort();
@@ -1992,7 +1995,7 @@ namespace ServoTester3
           Info_DrvModel_para.u16Motor_id = 1;          // used motor no.       1:26, 2:32
           // TORQUE
           Info_DrvModel_para.f32Tq_min_Nm = 0.0f;         // default Nm
-          Info_DrvModel_para.f32Tq_max_Nm = 2.0f;         // default Nm
+          Info_DrvModel_para.f32Tq_max_Nm = 1.5f;         // default Nm
           // SPEED
           Info_DrvModel_para.u32Speed_min = 0;
           Info_DrvModel_para.u32Speed_max = 40000;
@@ -2485,6 +2488,7 @@ namespace ServoTester3
       Graph_time.Clear();
       for (int i = 0; i < Graph_ch1.Count; i++)
         Graph_time.Add(5e-3d * (double)i);
+      
       formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
@@ -2549,17 +2553,24 @@ namespace ServoTester3
         // sig7.Axes.YAxis = formsPlot1.Plot.Axes.Left;
         // formsPlot1.Plot.Axes.Left.Label.Text = "SnugAngle";
       }
+
+      // HighlightedPointMarker = formsPlot1.Plot.Add.Marker(0, 0);
+      // HighlightedPointMarker.IsVisible = false;
+      // HighlightedPointMarker.Size = 15;
+      // HighlightedPointMarker.LineWidth = 2;
+      // HighlightedPointMarker.Shape = MarkerShape.OpenCircle;
+
       formsPlot1.Plot.ShowLegend(Alignment.UpperRight);
 
       formsPlot1.Plot.Axes.AutoScale();
 
       var vl = formsPlot1.Plot.Add.VerticalLine(0);
       vl.IsDraggable = true;
-      vl.Text = "VLine";
+      vl.Text = $"{vl.X:0.00}";//"VLine";
 
       var hl = formsPlot1.Plot.Add.HorizontalLine(0);
       hl.IsDraggable = true;
-      hl.Text = "HLine";
+      hl.Text = $"{hl.Y:0.00}";//"HLine";
 
       formsPlot1.Refresh();
 
@@ -2724,19 +2735,36 @@ namespace ServoTester3
         Refresh_graph();
       }
     }
-    AxisLine? PlottableBeingDragged = null;
+    AxisLine? PlottableBeingDragged_Line = null;
+    // SignalXY? PlottableBeingDragged_XY = null;
+    // DataPoint StartingDragPosition = DataPoint.None;
+    // double StartingDragOffset = 0;
+    // Marker HighlightedPointMarker;
     private void FormsPlot1_MouseDown(object? sender, MouseEventArgs e)
     {
+      // (SignalXY? sigXY, DataPoint dataPoint) = GetSignalXYUnderMouse(formsPlot1.Plot, e.X, e.Y);
+      //   // if (sigXY is null)
+      //   //     return;
+      // if (sigXY is not null)
+      // {
+      //   PlottableBeingDragged_XY = sigXY;
+      //   StartingDragPosition = dataPoint;
+      //   StartingDragOffset = sigXY.Data.XOffset;
+      //   formsPlot1.Interaction.Disable(); // disable panning while dragging
+      // }
       var lineUnderMouse = GetLineUnderMouse(e.X, e.Y);
       if (lineUnderMouse is not null)
       {
-        PlottableBeingDragged = lineUnderMouse;
+        PlottableBeingDragged_Line = lineUnderMouse;
         formsPlot1.Interaction.Disable(); // disable panning while dragging
       }
     }
     private void FormsPlot1_MouseUp(object? sender, MouseEventArgs e)
     {
-      PlottableBeingDragged = null;
+      // PlottableBeingDragged_XY = null;
+      // StartingDragPosition = DataPoint.None;
+
+      PlottableBeingDragged_Line = null;
       formsPlot1.Interaction.Enable(); // enable panning again
       formsPlot1.Refresh();
     }
@@ -2745,7 +2773,33 @@ namespace ServoTester3
       // this rectangle is the area around the mouse in coordinate units
       CoordinateRect rect = formsPlot1.Plot.GetCoordinateRect(e.X, e.Y, radius: 10);
 
-      if (PlottableBeingDragged is null)
+      // // update the cursor to reflect what is beneath it
+      // if (PlottableBeingDragged_XY is null)
+      // {
+      //     (var signalUnderMouse, DataPoint dp) = GetSignalXYUnderMouse(formsPlot1.Plot, e.X, e.Y);
+      //     Cursor = signalUnderMouse is null ? Cursors.Arrow : Cursors.SizeWE;
+      //     HighlightedPointMarker.IsVisible = signalUnderMouse is not null;
+
+      //     if (signalUnderMouse is not null)
+      //     {
+      //         HighlightedPointMarker.Location = dp.Coordinates;
+      //         HighlightedPointMarker.Color = signalUnderMouse.Color;
+      //         Text = $"Index {dp.Index} at {dp.Coordinates}";
+      //         formsPlot1.Refresh();
+      //     }
+
+      //     return;
+      // }
+
+      // // update the position of the plottable being dragged
+      // if (PlottableBeingDragged_XY is SignalXY sigXY)
+      // {
+      //     HighlightedPointMarker.IsVisible = false;
+      //     sigXY.Data.XOffset = rect.HorizontalCenter - StartingDragPosition.X + StartingDragOffset;
+      //     formsPlot1.Refresh();
+      // }
+      
+      if (PlottableBeingDragged_Line is null)
       {
         // set cursor based on what's beneath the plottable
         var lineUnderMouse = GetLineUnderMouse(e.X, e.Y);
@@ -2756,12 +2810,12 @@ namespace ServoTester3
       else
       {
         // update the position of the plottable being dragged
-        if (PlottableBeingDragged is HorizontalLine hl)
+        if (PlottableBeingDragged_Line is HorizontalLine hl)
         {
           hl.Y = rect.VerticalCenter;
           hl.Text = $"{hl.Y:0.00}";
         }
-        else if (PlottableBeingDragged is VerticalLine vl)
+        else if (PlottableBeingDragged_Line is VerticalLine vl)
         {
           vl.X = rect.HorizontalCenter;
           vl.Text = $"{vl.X:0.00}";
@@ -2780,6 +2834,23 @@ namespace ServoTester3
       }
 
       return null;
+    }
+    private static (SignalXY? signalXY, DataPoint point) GetSignalXYUnderMouse(Plot plot, double x, double y)
+    {
+        Pixel mousePixel = new(x, y);
+
+        Coordinates mouseLocation = plot.GetCoordinates(mousePixel);
+
+        foreach (SignalXY signal in plot.GetPlottables<SignalXY>().Reverse())
+        {
+            DataPoint nearest = signal.Data.GetNearest(mouseLocation, plot.LastRender);
+            if (nearest.IsReal)
+            {
+                return (signal, nearest);
+            }
+        }
+
+        return (null, DataPoint.None);
     }
     private void cbGraph_CheckedChanged(object sender, EventArgs e)
     {
