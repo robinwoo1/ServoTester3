@@ -2492,73 +2492,39 @@ namespace ServoTester3
       formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
-        // var sig1 = formsPlot1.Plot.Add.Signal(Graph_ch1);
         var sig1 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch1);
         sig1.LegendText = "Torque";
-        // sig1.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        // sig1.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        // formsPlot1.Plot.Axes.Left.Label.Text = "Torque";
       }
       if (cbGraph_ch2.Checked)
       {
-        // var sig2 = formsPlot1.Plot.Add.Signal(Graph_ch2);
         var sig2 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch2);
         sig2.LegendText = "Current";
-        // sig2.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        // sig2.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        // formsPlot1.Plot.Axes.Left.Label.Text = "Current";
       }
       if (cbGraph_ch3.Checked)
       {
-        // var sig3 = formsPlot1.Plot.Add.Signal(Graph_ch3);
         var sig3 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch3);
         sig3.LegendText = "Speed";
-        // sig3.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        // sig3.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        // formsPlot1.Plot.Axes.Left.Label.Text = "Speed";
       }
       if (cbGraph_ch4.Checked)
       {
-        // var sig4 = formsPlot1.Plot.Add.Signal(Graph_ch4);
         var sig4 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch4);
         sig4.LegendText = "Angle";
-        // sig4.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        // sig4.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        // formsPlot1.Plot.Axes.Left.Label.Text = "Angle";
       }
       if (cbGraph_ch5.Checked)
       {
-        // var sig5 = formsPlot1.Plot.Add.Signal(Graph_ch5);
         var sig5 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch5);
         sig5.LegendText = "Speed Command";
-        // sig5.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        // sig5.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        // formsPlot1.Plot.Axes.Left.Label.Text = "Speed Command";
       }
       if (cbGraph_ch6.Checked)
       {
-        // var sig6 = formsPlot1.Plot.Add.Signal(Graph_ch6);
         var sig6 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch6);
         sig6.LegendText = "Current Command";
-        // sig6.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        // sig6.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        // formsPlot1.Plot.Axes.Left.Label.Text = "Current Command";
       }
       if (cbGraph_ch7.Checked)
       {
-        // var sig7 = formsPlot1.Plot.Add.Signal(Graph_ch7);
         var sig7 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch7);
         sig7.LegendText = "SnugAngle";
-        // sig7.Axes.XAxis = formsPlot1.Plot.Axes.Bottom;
-        // sig7.Axes.YAxis = formsPlot1.Plot.Axes.Left;
-        // formsPlot1.Plot.Axes.Left.Label.Text = "SnugAngle";
       }
-
-      // HighlightedPointMarker = formsPlot1.Plot.Add.Marker(0, 0);
-      // HighlightedPointMarker.IsVisible = false;
-      // HighlightedPointMarker.Size = 15;
-      // HighlightedPointMarker.LineWidth = 2;
-      // HighlightedPointMarker.Shape = MarkerShape.OpenCircle;
 
       formsPlot1.Plot.ShowLegend(Alignment.UpperRight);
 
