@@ -61,8 +61,8 @@ namespace ServoTester3
     List<double> Data_ch7 = new List<double>();
     List<double> Data_ch8 = new List<double>();
 
-    
-    
+
+
     private bool refresh_graph_flag = false;
     private bool clear_graph_flag = false;
     private SerialPort Port { get; } = new SerialPort();
@@ -258,7 +258,15 @@ namespace ServoTester3
           SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
           SendPacket(SendDataPacket, u16PtrCnt);
         }
-        // else if (StartAddress == 5)//
+        else if (StartAddress == 5)//request Driver Info
+        {
+          MakePacket(Command, StartAddress, Data);
+          u16PtrCnt = CmdAck.u16PtrCnt;
+          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+          SendPacket(SendDataPacket, u16PtrCnt);
+        }
         // else if (StartAddress == 6)//
         // else if (StartAddress == 7)//
         else if (StartAddress == 8)//reset Maintenance count
@@ -764,8 +772,8 @@ namespace ServoTester3
         {
           SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Type >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Type >> 8);
-          SendDataPacket[u16PtrCnt++] = (byte)(0);
-          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Version >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Version >> 8);
           SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Serial_low >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Serial_low >> 8);
           SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Serial_high >> 0);
@@ -774,8 +782,8 @@ namespace ServoTester3
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u8User_Gear_efficiency >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
-          SendDataPacket[u16PtrCnt++] = (byte)(0);
-          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16DriverVendor >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16DriverVendor >> 8);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
         }
@@ -794,7 +802,13 @@ namespace ServoTester3
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
         }
-        // else if (StartAddress == 5)//reserved
+        else if (StartAddress == 5)//request Driver Info
+        {
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+        }
         // else if (StartAddress == 6)//reserved
         // else if (StartAddress == 7)//reserved
         else if (StartAddress == 8)//Reset maintenance count
@@ -848,7 +862,7 @@ namespace ServoTester3
         //   SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
         //   SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
         // }
-        switch(StartAddress)
+        switch (StartAddress)
         {
           case 1:
           case 2:
@@ -860,7 +874,7 @@ namespace ServoTester3
           case 8:
             SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
             SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
-          break;
+            break;
           case 9:
             u16Value = (ushort)UInt16.Parse(tbTorquePgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//10
@@ -880,9 +894,9 @@ namespace ServoTester3
             u16Value = (ushort)UInt16.Parse(tbSpeedFFgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//20
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
-          break;
+            break;
           default:
-          break;
+            break;
         }
         // MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value));
       }
@@ -1242,6 +1256,7 @@ namespace ServoTester3
       InitDriverInfo(DriverType);
       InitParameter(DriverType);
       MakeAndSendData(2, 10, 0);
+      IniStep = 0;
     }
     private void btTqOffset_Click(object sender, EventArgs e)
     {
@@ -1418,7 +1433,11 @@ namespace ServoTester3
         Refresh_graph();
       }
 
-
+      if (DriverInfoIsReady)
+      {
+        ShowDriverInfo();
+      }
+      
       switch (AutoSetting.FlagSetting)
       {
         case true when !rbSoftAutocustom.Checked:
@@ -1642,6 +1661,7 @@ namespace ServoTester3
 
                   Error = (ushort)((ComReadBuffer[29] << 8) | ComReadBuffer[28]);
                   // tbError.Text = Error.ToString();//ui
+                  IniStep = ComReadBuffer[39];
                   MaintCnt = (uint)((ComReadBuffer[51] << 24) | (ComReadBuffer[50] << 16) | (ComReadBuffer[49] << 8) | ComReadBuffer[48]);
                   // tbMaintCnt.Text = MaintCnt.ToString();//ui
                   Enc = (ushort)((ComReadBuffer[41] << 8) | ComReadBuffer[40]);
@@ -1723,7 +1743,10 @@ namespace ServoTester3
                     inDriverInfo.u16Serial_high = (ushort)((ComReadBuffer[17] << 8) | ComReadBuffer[16]);
                     inDriverInfo.u8Factory_Gear_efficiency = (ushort)((ComReadBuffer[19] << 8) | ComReadBuffer[18]);
                     inDriverInfo.u8User_Gear_efficiency = (ushort)((ComReadBuffer[21] << 8) | ComReadBuffer[20]);
-                    MakeAndSendData(1, 3, 0);
+                    inDriverInfo.u16DriverVendor = (ushort)((ComReadBuffer[23] << 8) | ComReadBuffer[22]);
+                    DriverInfoIsReady = true;
+                    if (IniStep != 11)
+                      MakeAndSendData(1, 3, 0);
                   }
                   else if (StartAddress == 3)//Speaker On/Off
                   { }
@@ -2156,6 +2179,8 @@ namespace ServoTester3
       Mc_Para.val.f32MC_CROWFOOT_REVERSE_TORQUE = 50;      //16
       Mc_Para.val.u16MC_CROWFOOT_REVERSE_SPEED = 0;       //17
     }
+    public byte IniStep = 0;
+    public bool DriverInfoIsReady = false;
     public struct _auto_setting
     {
       public bool FlagSetting;
@@ -2409,6 +2434,7 @@ namespace ServoTester3
       public ushort u16Temperature;               // 12
       public ushort u16Initial_Angle;             // 13
       public ushort u16Error;                     // 14
+      public ushort u16DriverVendor;              // 24
       public _DriverInfoStruct(ushort u16Type_)
       {
         this.u16Type = u16Type_;
@@ -2425,6 +2451,7 @@ namespace ServoTester3
         this.u16Temperature = 0;
         this.u16Initial_Angle = 0;
         this.u16Error = 0;
+        this.u16DriverVendor = 0;
       }
     }
     _DriverInfoStruct DriverInfo = new _DriverInfoStruct(0);
@@ -2488,7 +2515,7 @@ namespace ServoTester3
       Graph_time.Clear();
       for (int i = 0; i < Graph_ch1.Count; i++)
         Graph_time.Add(5e-3d * (double)i);
-      
+
       formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
@@ -2764,7 +2791,7 @@ namespace ServoTester3
       //     sigXY.Data.XOffset = rect.HorizontalCenter - StartingDragPosition.X + StartingDragOffset;
       //     formsPlot1.Refresh();
       // }
-      
+
       if (PlottableBeingDragged_Line is null)
       {
         // set cursor based on what's beneath the plottable
@@ -2803,20 +2830,20 @@ namespace ServoTester3
     }
     private static (SignalXY? signalXY, DataPoint point) GetSignalXYUnderMouse(Plot plot, double x, double y)
     {
-        Pixel mousePixel = new(x, y);
+      Pixel mousePixel = new(x, y);
 
-        Coordinates mouseLocation = plot.GetCoordinates(mousePixel);
+      Coordinates mouseLocation = plot.GetCoordinates(mousePixel);
 
-        foreach (SignalXY signal in plot.GetPlottables<SignalXY>().Reverse())
+      foreach (SignalXY signal in plot.GetPlottables<SignalXY>().Reverse())
+      {
+        DataPoint nearest = signal.Data.GetNearest(mouseLocation, plot.LastRender);
+        if (nearest.IsReal)
         {
-            DataPoint nearest = signal.Data.GetNearest(mouseLocation, plot.LastRender);
-            if (nearest.IsReal)
-            {
-                return (signal, nearest);
-            }
+          return (signal, nearest);
         }
+      }
 
-        return (null, DataPoint.None);
+      return (null, DataPoint.None);
     }
     private void cbGraph_CheckedChanged(object sender, EventArgs e)
     {
@@ -2828,5 +2855,35 @@ namespace ServoTester3
       myThread_flag = false;
     }
 
+    private void SetDriverInfo(object sender, EventArgs e)
+    {
+      if (!Port.IsOpen)
+        return;
+      DriverInfo.u16Type = (ushort)UInt16.Parse(nudDriverType.Text);
+      DriverInfo.u16Version = (ushort)UInt16.Parse(nudDriverVersion.Text);
+      DriverInfo.u8Factory_Gear_efficiency = (ushort)UInt16.Parse(nudDriverGearEfficiency.Text);
+      DriverInfo.u8User_Gear_efficiency = (ushort)UInt16.Parse(nudDriverUserEfficiency.Text);
+      uint SerialNum = UInt32.Parse(nudDriverSerial.Text);
+      DriverInfo.u16Serial_low = (ushort)(SerialNum>>0);
+      DriverInfo.u16Serial_high = (ushort)(SerialNum>>16);
+      DriverInfo.u16DriverVendor = (ushort)UInt16.Parse(nudDriverVendor.Text);
+      MakeAndSendData(7, 1, 0);
+    }
+
+    private void GetDriverInfo(object sender, EventArgs e)
+    {
+      MakeAndSendData(7, 5, 0);
+    }
+    private void ShowDriverInfo()
+    {
+      nudDriverType.Text = inDriverInfo.u16Type.ToString();
+      nudDriverVersion.Text = inDriverInfo.u16Version.ToString();
+      nudDriverGearEfficiency.Text = inDriverInfo.u8Factory_Gear_efficiency.ToString();
+      nudDriverUserEfficiency.Text = inDriverInfo.u8User_Gear_efficiency.ToString();
+      uint SerialNum = (uint)((inDriverInfo.u16Serial_high<<16) + inDriverInfo.u16Serial_low);
+      nudDriverSerial.Text = SerialNum.ToString();
+      nudDriverVendor.Text = inDriverInfo.u16DriverVendor.ToString();
+      DriverInfoIsReady = false;
+    }
   }
 }

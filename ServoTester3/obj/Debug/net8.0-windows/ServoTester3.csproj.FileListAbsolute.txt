@@ -66,10 +66,10 @@ D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.G
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.AssemblyInfoInputs.cache
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.AssemblyInfo.cs
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.csproj.CoreCompileInputs.cache
+D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.sourcelink.json
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTes.6AF98EC8.Up2Date
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.dll
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\refint\ServoTester3.dll
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.pdb
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.genruntimeconfig.cache
 D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ref\ServoTester3.dll
-D:\hantas-soft\ServoTester3\ServoTester3\obj\Debug\net8.0-windows\ServoTester3.sourcelink.json

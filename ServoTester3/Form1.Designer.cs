@@ -31,6 +31,21 @@
       components = new System.ComponentModel.Container();
       tabControl1 = new TabControl();
       tabPage1 = new TabPage();
+      groupBox12 = new GroupBox();
+      nudDriverVendor = new NumericUpDown();
+      nudDriverUserEfficiency = new NumericUpDown();
+      nudDriverGearEfficiency = new NumericUpDown();
+      nudDriverSerial = new NumericUpDown();
+      nudDriverVersion = new NumericUpDown();
+      nudDriverType = new NumericUpDown();
+      label25 = new Label();
+      label24 = new Label();
+      label17 = new Label();
+      label16 = new Label();
+      label15 = new Label();
+      label14 = new Label();
+      btGetDriver = new Button();
+      btSetDriver = new Button();
       groupBox9 = new GroupBox();
       groupBox11 = new GroupBox();
       rbHardAutocustom = new RadioButton();
@@ -140,6 +155,13 @@
       btnSetAllGain = new Button();
       tabControl1.SuspendLayout();
       tabPage1.SuspendLayout();
+      groupBox12.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)nudDriverVendor).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverUserEfficiency).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverGearEfficiency).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverSerial).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverVersion).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverType).BeginInit();
       groupBox9.SuspendLayout();
       groupBox11.SuspendLayout();
       groupBox10.SuspendLayout();
@@ -180,6 +202,7 @@
       // 
       // tabPage1
       // 
+      tabPage1.Controls.Add(groupBox12);
       tabPage1.Controls.Add(groupBox9);
       tabPage1.Controls.Add(tbMaintCnt);
       tabPage1.Controls.Add(label12);
@@ -196,6 +219,149 @@
       tabPage1.Text = "Function";
       tabPage1.UseVisualStyleBackColor = true;
       // 
+      // groupBox12
+      // 
+      groupBox12.Controls.Add(nudDriverVendor);
+      groupBox12.Controls.Add(nudDriverUserEfficiency);
+      groupBox12.Controls.Add(nudDriverGearEfficiency);
+      groupBox12.Controls.Add(nudDriverSerial);
+      groupBox12.Controls.Add(nudDriverVersion);
+      groupBox12.Controls.Add(nudDriverType);
+      groupBox12.Controls.Add(label25);
+      groupBox12.Controls.Add(label24);
+      groupBox12.Controls.Add(label17);
+      groupBox12.Controls.Add(label16);
+      groupBox12.Controls.Add(label15);
+      groupBox12.Controls.Add(label14);
+      groupBox12.Controls.Add(btGetDriver);
+      groupBox12.Controls.Add(btSetDriver);
+      groupBox12.Location = new Point(568, 8);
+      groupBox12.Name = "groupBox12";
+      groupBox12.Size = new Size(179, 197);
+      groupBox12.TabIndex = 13;
+      groupBox12.TabStop = false;
+      groupBox12.Text = "Driver Info";
+      // 
+      // nudDriverVendor
+      // 
+      nudDriverVendor.Location = new Point(90, 166);
+      nudDriverVendor.Name = "nudDriverVendor";
+      nudDriverVendor.Size = new Size(81, 23);
+      nudDriverVendor.TabIndex = 13;
+      // 
+      // nudDriverUserEfficiency
+      // 
+      nudDriverUserEfficiency.Location = new Point(90, 142);
+      nudDriverUserEfficiency.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+      nudDriverUserEfficiency.Name = "nudDriverUserEfficiency";
+      nudDriverUserEfficiency.Size = new Size(81, 23);
+      nudDriverUserEfficiency.TabIndex = 12;
+      // 
+      // nudDriverGearEfficiency
+      // 
+      nudDriverGearEfficiency.Location = new Point(90, 118);
+      nudDriverGearEfficiency.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+      nudDriverGearEfficiency.Name = "nudDriverGearEfficiency";
+      nudDriverGearEfficiency.Size = new Size(81, 23);
+      nudDriverGearEfficiency.TabIndex = 11;
+      // 
+      // nudDriverSerial
+      // 
+      nudDriverSerial.Location = new Point(90, 94);
+      nudDriverSerial.Maximum = new decimal(new int[] { -1, 0, 0, 0 });
+      nudDriverSerial.Name = "nudDriverSerial";
+      nudDriverSerial.Size = new Size(81, 23);
+      nudDriverSerial.TabIndex = 10;
+      // 
+      // nudDriverVersion
+      // 
+      nudDriverVersion.Location = new Point(90, 70);
+      nudDriverVersion.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
+      nudDriverVersion.Name = "nudDriverVersion";
+      nudDriverVersion.Size = new Size(81, 23);
+      nudDriverVersion.TabIndex = 9;
+      // 
+      // nudDriverType
+      // 
+      nudDriverType.Location = new Point(90, 46);
+      nudDriverType.Name = "nudDriverType";
+      nudDriverType.Size = new Size(81, 23);
+      nudDriverType.TabIndex = 8;
+      // 
+      // label25
+      // 
+      label25.AutoSize = true;
+      label25.Location = new Point(7, 167);
+      label25.Name = "label25";
+      label25.Size = new Size(46, 15);
+      label25.TabIndex = 7;
+      label25.Text = "Vendor";
+      // 
+      // label24
+      // 
+      label24.AutoSize = true;
+      label24.Location = new Point(7, 144);
+      label24.Name = "label24";
+      label24.Size = new Size(79, 15);
+      label24.TabIndex = 6;
+      label24.Text = "User Gear eff.";
+      // 
+      // label17
+      // 
+      label17.AutoSize = true;
+      label17.Location = new Point(7, 119);
+      label17.Name = "label17";
+      label17.Size = new Size(52, 15);
+      label17.TabIndex = 5;
+      label17.Text = "Gear eff.";
+      // 
+      // label16
+      // 
+      label16.AutoSize = true;
+      label16.Location = new Point(7, 95);
+      label16.Name = "label16";
+      label16.Size = new Size(36, 15);
+      label16.TabIndex = 4;
+      label16.Text = "Serial";
+      // 
+      // label15
+      // 
+      label15.AutoSize = true;
+      label15.Location = new Point(7, 70);
+      label15.Name = "label15";
+      label15.Size = new Size(47, 15);
+      label15.TabIndex = 3;
+      label15.Text = "Version";
+      // 
+      // label14
+      // 
+      label14.AutoSize = true;
+      label14.Location = new Point(7, 47);
+      label14.Name = "label14";
+      label14.Size = new Size(32, 15);
+      label14.TabIndex = 2;
+      label14.Text = "Type";
+      // 
+      // btGetDriver
+      // 
+      btGetDriver.Location = new Point(103, 18);
+      btGetDriver.Name = "btGetDriver";
+      btGetDriver.Size = new Size(60, 23);
+      btGetDriver.TabIndex = 1;
+      btGetDriver.Text = "Get Info";
+      btGetDriver.UseVisualStyleBackColor = true;
+      btGetDriver.Click += GetDriverInfo;
+      // 
+      // btSetDriver
+      // 
+      btSetDriver.Location = new Point(4, 18);
+      btSetDriver.Name = "btSetDriver";
+      btSetDriver.Size = new Size(66, 23);
+      btSetDriver.TabIndex = 0;
+      btSetDriver.Text = "Set Info";
+      btSetDriver.UseVisualStyleBackColor = true;
+      btSetDriver.Click += SetDriverInfo;
+      // 
       // groupBox9
       // 
       groupBox9.Controls.Add(groupBox11);
@@ -208,7 +374,7 @@
       groupBox9.Controls.Add(label8);
       groupBox9.Controls.Add(tbFreeAngle);
       groupBox9.Controls.Add(label9);
-      groupBox9.Location = new Point(364, 118);
+      groupBox9.Location = new Point(354, 118);
       groupBox9.Name = "groupBox9";
       groupBox9.Size = new Size(201, 223);
       groupBox9.TabIndex = 9;
@@ -377,7 +543,7 @@
       // 
       // tbMaintCnt
       // 
-      tbMaintCnt.Location = new Point(650, 16);
+      tbMaintCnt.Location = new Point(274, 16);
       tbMaintCnt.Name = "tbMaintCnt";
       tbMaintCnt.ReadOnly = true;
       tbMaintCnt.Size = new Size(67, 23);
@@ -387,7 +553,7 @@
       // label12
       // 
       label12.AutoSize = true;
-      label12.Location = new Point(587, 20);
+      label12.Location = new Point(213, 19);
       label12.Name = "label12";
       label12.Size = new Size(57, 15);
       label12.TabIndex = 12;
@@ -432,7 +598,7 @@
       groupBox7.Controls.Add(btTqOffsetCheck);
       groupBox7.Controls.Add(btTqOffsetSave);
       groupBox7.Controls.Add(label6);
-      groupBox7.Location = new Point(364, 8);
+      groupBox7.Location = new Point(354, 8);
       groupBox7.Name = "groupBox7";
       groupBox7.Size = new Size(201, 107);
       groupBox7.TabIndex = 7;
@@ -748,6 +914,7 @@
       tbSpeedFFgain.Size = new Size(69, 23);
       tbSpeedFFgain.TabIndex = 20;
       tbSpeedFFgain.Tag = "8";
+      tbSpeedFFgain.Value = new decimal(new int[] { 100, 0, 0, 0 });
       tbSpeedFFgain.ValueChanged += Set_ValueChanged;
       // 
       // tbSpeedIgain
@@ -758,7 +925,7 @@
       tbSpeedIgain.Size = new Size(69, 23);
       tbSpeedIgain.TabIndex = 19;
       tbSpeedIgain.Tag = "7";
-      tbSpeedIgain.Value = new decimal(new int[] { 150, 0, 0, 0 });
+      tbSpeedIgain.Value = new decimal(new int[] { 100, 0, 0, 0 });
       tbSpeedIgain.ValueChanged += Set_ValueChanged;
       // 
       // label22
@@ -787,7 +954,7 @@
       tbSpeedPgain.Size = new Size(69, 23);
       tbSpeedPgain.TabIndex = 16;
       tbSpeedPgain.Tag = "6";
-      tbSpeedPgain.Value = new decimal(new int[] { 400, 0, 0, 0 });
+      tbSpeedPgain.Value = new decimal(new int[] { 100, 0, 0, 0 });
       tbSpeedPgain.ValueChanged += Set_ValueChanged;
       // 
       // tbTorqueFFgain
@@ -798,7 +965,7 @@
       tbTorqueFFgain.Size = new Size(69, 23);
       tbTorqueFFgain.TabIndex = 15;
       tbTorqueFFgain.Tag = "5";
-      tbTorqueFFgain.Value = new decimal(new int[] { 165, 0, 0, 0 });
+      tbTorqueFFgain.Value = new decimal(new int[] { 100, 0, 0, 0 });
       tbTorqueFFgain.ValueChanged += Set_ValueChanged;
       // 
       // label20
@@ -827,7 +994,7 @@
       tbTorqueIgain.Size = new Size(69, 23);
       tbTorqueIgain.TabIndex = 12;
       tbTorqueIgain.Tag = "4";
-      tbTorqueIgain.Value = new decimal(new int[] { 70, 0, 0, 0 });
+      tbTorqueIgain.Value = new decimal(new int[] { 100, 0, 0, 0 });
       tbTorqueIgain.ValueChanged += Set_ValueChanged;
       // 
       // tbTorquePgain
@@ -838,7 +1005,7 @@
       tbTorquePgain.Size = new Size(69, 23);
       tbTorquePgain.TabIndex = 11;
       tbTorquePgain.Tag = "3";
-      tbTorquePgain.Value = new decimal(new int[] { 70, 0, 0, 0 });
+      tbTorquePgain.Value = new decimal(new int[] { 100, 0, 0, 0 });
       tbTorquePgain.ValueChanged += Set_ValueChanged;
       // 
       // label18
@@ -1161,9 +1328,9 @@
       // 
       // btSpeed
       // 
-      btSpeed.Location = new Point(7, 16);
+      btSpeed.Location = new Point(6, 16);
       btSpeed.Name = "btSpeed";
-      btSpeed.Size = new Size(52, 22);
+      btSpeed.Size = new Size(53, 22);
       btSpeed.TabIndex = 8;
       btSpeed.Text = "Speed";
       btSpeed.UseVisualStyleBackColor = true;
@@ -1350,6 +1517,14 @@
       tabControl1.ResumeLayout(false);
       tabPage1.ResumeLayout(false);
       tabPage1.PerformLayout();
+      groupBox12.ResumeLayout(false);
+      groupBox12.PerformLayout();
+      ((System.ComponentModel.ISupportInitialize)nudDriverVendor).EndInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverUserEfficiency).EndInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverGearEfficiency).EndInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverSerial).EndInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverVersion).EndInit();
+      ((System.ComponentModel.ISupportInitialize)nudDriverType).EndInit();
       groupBox9.ResumeLayout(false);
       groupBox9.PerformLayout();
       groupBox11.ResumeLayout(false);
@@ -1503,5 +1678,20 @@
     private Button btnLoad;
     private Button btnSave;
     private Button btnSetAllGain;
+    private GroupBox groupBox12;
+    private Button btGetDriver;
+    private Button btSetDriver;
+    private Label label17;
+    private Label label16;
+    private Label label15;
+    private Label label14;
+    private NumericUpDown nudDriverVendor;
+    private NumericUpDown nudDriverUserEfficiency;
+    private NumericUpDown nudDriverGearEfficiency;
+    private NumericUpDown nudDriverSerial;
+    private NumericUpDown nudDriverVersion;
+    private NumericUpDown nudDriverType;
+    private Label label25;
+    private Label label24;
   }
 }
