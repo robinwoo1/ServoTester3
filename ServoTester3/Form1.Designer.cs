@@ -31,6 +31,13 @@
       components = new System.ComponentModel.Container();
       tabControl1 = new TabControl();
       tabPage1 = new TabPage();
+      groupBox15 = new GroupBox();
+      tbTqOffsetValue = new TextBox();
+      label26 = new Label();
+      btSetTqOffset = new Button();
+      groupBox14 = new GroupBox();
+      rbSoftStopOn = new RadioButton();
+      rbSoftStopOff = new RadioButton();
       groupBox12 = new GroupBox();
       nudDriverVendor = new NumericUpDown();
       nudDriverUserEfficiency = new NumericUpDown();
@@ -71,9 +78,9 @@
       groupBox7 = new GroupBox();
       tbTqSensorValue = new TextBox();
       label7 = new Label();
-      tbTqOffsetValue = new TextBox();
-      btTqOffsetCheck = new Button();
-      btTqOffsetSave = new Button();
+      tbTqSensorOffsetValue = new TextBox();
+      btCheckTqSensorOffset = new Button();
+      btSaveTqSensorOffset = new Button();
       label6 = new Label();
       groupBox6 = new GroupBox();
       rbCalibUserStop = new RadioButton();
@@ -97,6 +104,9 @@
       cbGraph_ch2 = new CheckBox();
       cbGraph_ch1 = new CheckBox();
       formsPlot1 = new ScottPlot.WinForms.FormsPlot();
+      tabPage3 = new TabPage();
+      treeView1 = new TreeView();
+      listBox1 = new ListBox();
       tbSpeedFFgain = new NumericUpDown();
       tbSpeedIgain = new NumericUpDown();
       label22 = new Label();
@@ -155,6 +165,8 @@
       btnSetAllGain = new Button();
       tabControl1.SuspendLayout();
       tabPage1.SuspendLayout();
+      groupBox15.SuspendLayout();
+      groupBox14.SuspendLayout();
       groupBox12.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)nudDriverVendor).BeginInit();
       ((System.ComponentModel.ISupportInitialize)nudDriverUserEfficiency).BeginInit();
@@ -171,6 +183,7 @@
       groupBox5.SuspendLayout();
       groupBox4.SuspendLayout();
       tabPage2.SuspendLayout();
+      tabPage3.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)tbSpeedFFgain).BeginInit();
       ((System.ComponentModel.ISupportInitialize)tbSpeedIgain).BeginInit();
       ((System.ComponentModel.ISupportInitialize)tbSpeedPgain).BeginInit();
@@ -194,6 +207,7 @@
       // 
       tabControl1.Controls.Add(tabPage1);
       tabControl1.Controls.Add(tabPage2);
+      tabControl1.Controls.Add(tabPage3);
       tabControl1.Location = new Point(0, 150);
       tabControl1.Name = "tabControl1";
       tabControl1.SelectedIndex = 0;
@@ -202,6 +216,8 @@
       // 
       // tabPage1
       // 
+      tabPage1.Controls.Add(groupBox15);
+      tabPage1.Controls.Add(groupBox14);
       tabPage1.Controls.Add(groupBox12);
       tabPage1.Controls.Add(groupBox9);
       tabPage1.Controls.Add(tbMaintCnt);
@@ -219,6 +235,80 @@
       tabPage1.Text = "Function";
       tabPage1.UseVisualStyleBackColor = true;
       // 
+      // groupBox15
+      // 
+      groupBox15.Controls.Add(tbTqOffsetValue);
+      groupBox15.Controls.Add(label26);
+      groupBox15.Controls.Add(btSetTqOffset);
+      groupBox15.Location = new Point(579, 8);
+      groupBox15.Name = "groupBox15";
+      groupBox15.Size = new Size(201, 107);
+      groupBox15.TabIndex = 9;
+      groupBox15.TabStop = false;
+      groupBox15.Text = "Torque Offset Setting";
+      // 
+      // tbTqOffsetValue
+      // 
+      tbTqOffsetValue.Location = new Point(115, 47);
+      tbTqOffsetValue.Name = "tbTqOffsetValue";
+      tbTqOffsetValue.Size = new Size(75, 23);
+      tbTqOffsetValue.TabIndex = 8;
+      tbTqOffsetValue.Text = "0";
+      // 
+      // label26
+      // 
+      label26.AutoSize = true;
+      label26.Location = new Point(12, 50);
+      label26.Name = "label26";
+      label26.Size = new Size(76, 15);
+      label26.TabIndex = 7;
+      label26.Text = "TorqueOffset";
+      // 
+      // btSetTqOffset
+      // 
+      btSetTqOffset.Location = new Point(6, 18);
+      btSetTqOffset.Name = "btSetTqOffset";
+      btSetTqOffset.Size = new Size(89, 23);
+      btSetTqOffset.TabIndex = 5;
+      btSetTqOffset.Text = "Set Offset";
+      btSetTqOffset.UseVisualStyleBackColor = true;
+      btSetTqOffset.Click += btSetTqOffset_Click;
+      // 
+      // groupBox14
+      // 
+      groupBox14.Controls.Add(rbSoftStopOn);
+      groupBox14.Controls.Add(rbSoftStopOff);
+      groupBox14.Location = new Point(8, 210);
+      groupBox14.Name = "groupBox14";
+      groupBox14.Size = new Size(170, 41);
+      groupBox14.TabIndex = 14;
+      groupBox14.TabStop = false;
+      groupBox14.Text = "Soft Stop";
+      // 
+      // rbSoftStopOn
+      // 
+      rbSoftStopOn.AutoSize = true;
+      rbSoftStopOn.Location = new Point(76, 18);
+      rbSoftStopOn.Name = "rbSoftStopOn";
+      rbSoftStopOn.Size = new Size(41, 19);
+      rbSoftStopOn.TabIndex = 2;
+      rbSoftStopOn.Text = "On";
+      rbSoftStopOn.UseVisualStyleBackColor = true;
+      rbSoftStopOn.CheckedChanged += rbSoftStopOn_CheckedChanged;
+      // 
+      // rbSoftStopOff
+      // 
+      rbSoftStopOff.AutoSize = true;
+      rbSoftStopOff.Checked = true;
+      rbSoftStopOff.Location = new Point(3, 18);
+      rbSoftStopOff.Name = "rbSoftStopOff";
+      rbSoftStopOff.Size = new Size(42, 19);
+      rbSoftStopOff.TabIndex = 0;
+      rbSoftStopOff.TabStop = true;
+      rbSoftStopOff.Text = "Off";
+      rbSoftStopOff.UseVisualStyleBackColor = true;
+      rbSoftStopOff.CheckedChanged += rbSoftStopOff_CheckedChanged;
+      // 
       // groupBox12
       // 
       groupBox12.Controls.Add(nudDriverVendor);
@@ -235,7 +325,7 @@
       groupBox12.Controls.Add(label14);
       groupBox12.Controls.Add(btGetDriver);
       groupBox12.Controls.Add(btSetDriver);
-      groupBox12.Location = new Point(568, 8);
+      groupBox12.Location = new Point(584, 129);
       groupBox12.Name = "groupBox12";
       groupBox12.Size = new Size(179, 197);
       groupBox12.TabIndex = 13;
@@ -563,7 +653,7 @@
       // 
       groupBox8.Controls.Add(btStartOrigin);
       groupBox8.Controls.Add(btSaveOrigin);
-      groupBox8.Location = new Point(8, 164);
+      groupBox8.Location = new Point(8, 151);
       groupBox8.Name = "groupBox8";
       groupBox8.Size = new Size(224, 45);
       groupBox8.TabIndex = 2;
@@ -594,20 +684,20 @@
       // 
       groupBox7.Controls.Add(tbTqSensorValue);
       groupBox7.Controls.Add(label7);
-      groupBox7.Controls.Add(tbTqOffsetValue);
-      groupBox7.Controls.Add(btTqOffsetCheck);
-      groupBox7.Controls.Add(btTqOffsetSave);
+      groupBox7.Controls.Add(tbTqSensorOffsetValue);
+      groupBox7.Controls.Add(btCheckTqSensorOffset);
+      groupBox7.Controls.Add(btSaveTqSensorOffset);
       groupBox7.Controls.Add(label6);
       groupBox7.Location = new Point(354, 8);
       groupBox7.Name = "groupBox7";
       groupBox7.Size = new Size(201, 107);
       groupBox7.TabIndex = 7;
       groupBox7.TabStop = false;
-      groupBox7.Text = "Torque Offset Setting";
+      groupBox7.Text = "Torque Sensor Offset Setting";
       // 
       // tbTqSensorValue
       // 
-      tbTqSensorValue.Location = new Point(93, 47);
+      tbTqSensorValue.Location = new Point(115, 47);
       tbTqSensorValue.Name = "tbTqSensorValue";
       tbTqSensorValue.ReadOnly = true;
       tbTqSensorValue.Size = new Size(75, 23);
@@ -623,43 +713,43 @@
       label7.TabIndex = 7;
       label7.Text = "Sensor Value";
       // 
-      // tbTqOffsetValue
+      // tbTqSensorOffsetValue
       // 
-      tbTqOffsetValue.Location = new Point(93, 74);
-      tbTqOffsetValue.Name = "tbTqOffsetValue";
-      tbTqOffsetValue.ReadOnly = true;
-      tbTqOffsetValue.Size = new Size(75, 23);
-      tbTqOffsetValue.TabIndex = 6;
-      tbTqOffsetValue.Text = "0";
+      tbTqSensorOffsetValue.Location = new Point(115, 74);
+      tbTqSensorOffsetValue.Name = "tbTqSensorOffsetValue";
+      tbTqSensorOffsetValue.ReadOnly = true;
+      tbTqSensorOffsetValue.Size = new Size(75, 23);
+      tbTqSensorOffsetValue.TabIndex = 6;
+      tbTqSensorOffsetValue.Text = "0";
       // 
-      // btTqOffsetCheck
+      // btCheckTqSensorOffset
       // 
-      btTqOffsetCheck.Location = new Point(6, 18);
-      btTqOffsetCheck.Name = "btTqOffsetCheck";
-      btTqOffsetCheck.Size = new Size(89, 23);
-      btTqOffsetCheck.TabIndex = 5;
-      btTqOffsetCheck.Text = "Check Offset";
-      btTqOffsetCheck.UseVisualStyleBackColor = true;
-      btTqOffsetCheck.Click += btTqOffset_Click;
+      btCheckTqSensorOffset.Location = new Point(6, 18);
+      btCheckTqSensorOffset.Name = "btCheckTqSensorOffset";
+      btCheckTqSensorOffset.Size = new Size(89, 23);
+      btCheckTqSensorOffset.TabIndex = 5;
+      btCheckTqSensorOffset.Text = "Check Offset";
+      btCheckTqSensorOffset.UseVisualStyleBackColor = true;
+      btCheckTqSensorOffset.Click += btTqSensorOffset_Click;
       // 
-      // btTqOffsetSave
+      // btSaveTqSensorOffset
       // 
-      btTqOffsetSave.Location = new Point(101, 18);
-      btTqOffsetSave.Name = "btTqOffsetSave";
-      btTqOffsetSave.Size = new Size(92, 23);
-      btTqOffsetSave.TabIndex = 2;
-      btTqOffsetSave.Text = "Save Offset";
-      btTqOffsetSave.UseVisualStyleBackColor = true;
-      btTqOffsetSave.Click += btTqOffset_Click;
+      btSaveTqSensorOffset.Location = new Point(101, 18);
+      btSaveTqSensorOffset.Name = "btSaveTqSensorOffset";
+      btSaveTqSensorOffset.Size = new Size(92, 23);
+      btSaveTqSensorOffset.TabIndex = 2;
+      btSaveTqSensorOffset.Text = "Save Offset";
+      btSaveTqSensorOffset.UseVisualStyleBackColor = true;
+      btSaveTqSensorOffset.Click += btTqOffset_Click;
       // 
       // label6
       // 
       label6.AutoSize = true;
       label6.Location = new Point(11, 77);
       label6.Name = "label6";
-      label6.Size = new Size(73, 15);
+      label6.Size = new Size(99, 15);
       label6.TabIndex = 0;
-      label6.Text = "Offset Value";
+      label6.Text = "SensorOffset Val.";
       // 
       // groupBox6
       // 
@@ -905,6 +995,36 @@
       formsPlot1.Name = "formsPlot1";
       formsPlot1.Size = new Size(748, 338);
       formsPlot1.TabIndex = 0;
+      // 
+      // tabPage3
+      // 
+      tabPage3.Controls.Add(treeView1);
+      tabPage3.Controls.Add(listBox1);
+      tabPage3.Location = new Point(4, 24);
+      tabPage3.Name = "tabPage3";
+      tabPage3.Padding = new Padding(3);
+      tabPage3.Size = new Size(870, 364);
+      tabPage3.TabIndex = 2;
+      tabPage3.Text = "tabPage3";
+      tabPage3.UseVisualStyleBackColor = true;
+      // 
+      // treeView1
+      // 
+      treeView1.Location = new Point(472, 49);
+      treeView1.Name = "treeView1";
+      treeView1.Size = new Size(121, 97);
+      treeView1.TabIndex = 1;
+      // 
+      // listBox1
+      // 
+      listBox1.FormattingEnabled = true;
+      listBox1.ItemHeight = 15;
+      listBox1.Items.AddRange(new object[] { "a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8" });
+      listBox1.Location = new Point(232, 53);
+      listBox1.Name = "listBox1";
+      listBox1.Size = new Size(120, 94);
+      listBox1.TabIndex = 0;
+      listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
       // 
       // tbSpeedFFgain
       // 
@@ -1517,6 +1637,10 @@
       tabControl1.ResumeLayout(false);
       tabPage1.ResumeLayout(false);
       tabPage1.PerformLayout();
+      groupBox15.ResumeLayout(false);
+      groupBox15.PerformLayout();
+      groupBox14.ResumeLayout(false);
+      groupBox14.PerformLayout();
       groupBox12.ResumeLayout(false);
       groupBox12.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)nudDriverVendor).EndInit();
@@ -1541,6 +1665,7 @@
       groupBox4.ResumeLayout(false);
       tabPage2.ResumeLayout(false);
       tabPage2.PerformLayout();
+      tabPage3.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)tbSpeedFFgain).EndInit();
       ((System.ComponentModel.ISupportInitialize)tbSpeedIgain).EndInit();
       ((System.ComponentModel.ISupportInitialize)tbSpeedPgain).EndInit();
@@ -1597,9 +1722,9 @@
         private GroupBox groupBox4;
         private Button btCalibStart;
         private GroupBox groupBox7;
-        private TextBox tbTqOffsetValue;
-        private Button btTqOffsetCheck;
-        private Button btTqOffsetSave;
+        private TextBox tbTqSensorOffsetValue;
+        private Button btCheckTqSensorOffset;
+        private Button btSaveTqSensorOffset;
         private Label label6;
         private GroupBox groupBox6;
         private RadioButton rbCalibUserStop;
@@ -1693,5 +1818,17 @@
     private NumericUpDown nudDriverType;
     private Label label25;
     private Label label24;
+    private GroupBox groupBox14;
+    private RadioButton radioButton1;
+    private RadioButton radioButton2;
+    private RadioButton rbSoftStopOn;
+    private RadioButton rbSoftStopOff;
+    private TabPage tabPage3;
+    private ListBox listBox1;
+    private TreeView treeView1;
+    private GroupBox groupBox15;
+    private TextBox tbTqOffsetValue;
+    private Label label26;
+    private Button btSetTqOffset;
   }
 }
