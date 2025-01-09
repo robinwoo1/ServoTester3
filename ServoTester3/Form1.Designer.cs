@@ -374,6 +374,7 @@
       // nudDriverType
       // 
       nudDriverType.Location = new Point(90, 46);
+      nudDriverType.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
       nudDriverType.Name = "nudDriverType";
       nudDriverType.Size = new Size(81, 23);
       nudDriverType.TabIndex = 8;
@@ -995,6 +996,9 @@
       formsPlot1.Name = "formsPlot1";
       formsPlot1.Size = new Size(748, 338);
       formsPlot1.TabIndex = 0;
+      formsPlot1.MouseDown += FormsPlot1_MouseDown;
+      formsPlot1.MouseMove += FormsPlot1_MouseMove;
+      formsPlot1.MouseUp += FormsPlot1_MouseUp;
       // 
       // tabPage3
       // 

@@ -45,7 +45,7 @@ namespace ServoTester3
       InitializeComponent();
 
     }
-    List<double> Graph_time = new List<double>();
+    // List<double> Graph_time = new List<double>();
     List<double> Graph_ch1 = new List<double>();
     List<double> Graph_ch2 = new List<double>();
     List<double> Graph_ch3 = new List<double>();
@@ -1192,6 +1192,7 @@ namespace ServoTester3
             workTimer.Stop();
             // change button text
             btCommOpen.Text = @"Open";
+            Port.DataReceived -= new SerialDataReceivedEventHandler(DataReceivedHandler);
 
             myThread_flag = false;
           }
@@ -2558,7 +2559,8 @@ namespace ServoTester3
     {
       // tbDataCount.Text = Data_ch1.Count.ToString();
       // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
-      Graph_time.Clear();
+      List<double> Graph_time = new List<double>();
+      // Graph_time.Clear();
       for (int i = 0; i < Graph_ch1.Count; i++)
         Graph_time.Add(5e-3d * (double)i);
 
@@ -2614,9 +2616,9 @@ namespace ServoTester3
       formsPlot1.Refresh();
 
       // use events for custom mouse interactivity
-      formsPlot1.MouseDown += FormsPlot1_MouseDown;
-      formsPlot1.MouseUp += FormsPlot1_MouseUp;
-      formsPlot1.MouseMove += FormsPlot1_MouseMove;
+      //formsPlot1.MouseDown += FormsPlot1_MouseDown;
+      //formsPlot1.MouseUp += FormsPlot1_MouseUp;
+      //formsPlot1.MouseMove += FormsPlot1_MouseMove;
     }
     void fresh_graph_data()
     {
@@ -2734,6 +2736,7 @@ namespace ServoTester3
       loadFile.FileName = "GraphData";
       loadFile.DefaultExt = "txt";
       loadFile.Filter = "txt file(*.txt)|*.txt";
+      
       if (loadFile.ShowDialog() == DialogResult.OK)
       {
         if (loadFile.FileName != "")
@@ -2781,16 +2784,6 @@ namespace ServoTester3
     // Marker HighlightedPointMarker;
     private void FormsPlot1_MouseDown(object? sender, MouseEventArgs e)
     {
-      // (SignalXY? sigXY, DataPoint dataPoint) = GetSignalXYUnderMouse(formsPlot1.Plot, e.X, e.Y);
-      //   // if (sigXY is null)
-      //   //     return;
-      // if (sigXY is not null)
-      // {
-      //   PlottableBeingDragged_XY = sigXY;
-      //   StartingDragPosition = dataPoint;
-      //   StartingDragOffset = sigXY.Data.XOffset;
-      //   formsPlot1.Interaction.Disable(); // disable panning while dragging
-      // }
       var lineUnderMouse = GetLineUnderMouse(e.X, e.Y);
       if (lineUnderMouse is not null)
       {
@@ -2811,32 +2804,6 @@ namespace ServoTester3
     {
       // this rectangle is the area around the mouse in coordinate units
       CoordinateRect rect = formsPlot1.Plot.GetCoordinateRect(e.X, e.Y, radius: 10);
-
-      // // update the cursor to reflect what is beneath it
-      // if (PlottableBeingDragged_XY is null)
-      // {
-      //     (var signalUnderMouse, DataPoint dp) = GetSignalXYUnderMouse(formsPlot1.Plot, e.X, e.Y);
-      //     Cursor = signalUnderMouse is null ? Cursors.Arrow : Cursors.SizeWE;
-      //     HighlightedPointMarker.IsVisible = signalUnderMouse is not null;
-
-      //     if (signalUnderMouse is not null)
-      //     {
-      //         HighlightedPointMarker.Location = dp.Coordinates;
-      //         HighlightedPointMarker.Color = signalUnderMouse.Color;
-      //         Text = $"Index {dp.Index} at {dp.Coordinates}";
-      //         formsPlot1.Refresh();
-      //     }
-
-      //     return;
-      // }
-
-      // // update the position of the plottable being dragged
-      // if (PlottableBeingDragged_XY is SignalXY sigXY)
-      // {
-      //     HighlightedPointMarker.IsVisible = false;
-      //     sigXY.Data.XOffset = rect.HorizontalCenter - StartingDragPosition.X + StartingDragOffset;
-      //     formsPlot1.Refresh();
-      // }
 
       if (PlottableBeingDragged_Line is null)
       {
