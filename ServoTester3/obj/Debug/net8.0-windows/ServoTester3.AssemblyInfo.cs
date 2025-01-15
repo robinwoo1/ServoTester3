@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ServoTester3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ae630748b01278a7703bb728d22a709203c38cb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5822e6d4e484549576c83b3a2e7f319ee8fd223")]
 [assembly: System.Reflection.AssemblyProductAttribute("ServoTester3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ServoTester3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

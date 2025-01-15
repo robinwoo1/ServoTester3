@@ -2161,13 +2161,13 @@ namespace ServoTester3
 
       Mc_Para.val.u16MC_ZERO_DUMMY = 0;     //0
       Mc_Para.val.u16MC_TCAM_ACTM = 0;      //1
-      Mc_Para.val.f32MC_FASTEN_TORQUE = 1.5f; //2
+      Mc_Para.val.f32MC_FASTEN_TORQUE = 20; //2
       Mc_Para.val.f32MC_TORQUE_MIN_MAX = 0; //3
       Mc_Para.val.u16MC_TARGET_ANGLE = 0;   //4
       Mc_Para.val.u16MC_FASTEN_MIN_ANGLE = 0; //5
       Mc_Para.val.u16MC_FASTEN_MAX_ANGLE = 0; //6
       Mc_Para.val.f32MC_SNUG_TORQUE = 0;      //7
-      Mc_Para.val.u16MC_FASTEN_SPEED = 700;     //8
+      Mc_Para.val.u16MC_FASTEN_SPEED = 100;     //8
       Mc_Para.val.u16MC_FREE_FASTEN_ANGLE = 0;  //9
       Mc_Para.val.u16MC_FREE_FASTEN_SPEED = 0;  //10
       Mc_Para.val.u16MC_SOFT_START = 100;         //11
@@ -2211,7 +2211,7 @@ namespace ServoTester3
       Mc_Para.val.u16MC_ACC_DEC_TIME = 200;                 //2
       Mc_Para.val.u16MC_FASTEN_TORQUE_MAINTAIN_TIME = 0;  //3
       Mc_Para.val.u16MC_USE_MAXTQ_FOR_LOOSENING = 0;      //4
-      Mc_Para.val.u16MC_LOOSENING_SPEED = 500;              //5
+      Mc_Para.val.u16MC_LOOSENING_SPEED = 100;              //5
       Mc_Para.val.f32MC_TOTAL_FASTENING_TIME = 10;         //6
       Mc_Para.val.f32MC_TOTAL_LOOSENING_TIME = 10;         //7
       Mc_Para.val.f32MC_STALL_LOOSENING_TIME_LIMIT = 0.2f;    //8
