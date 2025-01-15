@@ -76,7 +76,7 @@ namespace ServoTester3
     private bool timer_working = false;
     private bool port_working = false;
     public ConcurrentQueue<byte> cq = new ConcurrentQueue<byte>();
-    public ConcurrentQueue<byte> graph_cq = new ConcurrentQueue<byte>();
+    // public ConcurrentQueue<byte> graph_cq = new ConcurrentQueue<byte>();
     public byte[] ComReadBuffer = new byte[128 * 16 * 8];
     public byte[] graph_ComReadBuffer = new byte[1024];
     public int ComReadIndex = 0;
@@ -98,58 +98,56 @@ namespace ServoTester3
       [FieldOffset(2)] public byte b2;
       [FieldOffset(3)] public byte b3;
     }
-    public int rbuf_put(byte[] rbuf, ushort rsize)
-    {
-      ushort nhead;
-      ushort datatocopy;
-      ushort curPos = RecvBuf.head; // Update the last position before copying new data
-
-      if (curPos + rsize > SERIAL_BUF_SIZE)
-      {
-        datatocopy = (ushort)(SERIAL_BUF_SIZE - curPos); // find out how much space is left in the main buffer
-        if (RecvBuf.tail > RecvBuf.head)
-        {
-          return 0;
-        }
-        else if ((RecvBuf.tail < RecvBuf.head) && (RecvBuf.tail <= (rsize - datatocopy)))
-        {
-          return 0;
-        }
-        // memcpy((uint8_t *)rb->data+curPos, rbuf, datatocopy); // copy data in that remaining space
-        Array.Copy(rbuf, 0, RecvBuf.data, curPos, datatocopy); // copy data in that remaining space
-        curPos = 0; // point to the start of the buffer
-                    // memcpy((uint8_t *)rb->data, (uint8_t *)rbuf+datatocopy, (rsize-datatocopy)); // copy the remaining data
-        Array.Copy(rbuf, datatocopy, RecvBuf.data, curPos, rsize - datatocopy); // copy the remaining data
-        RecvBuf.head = (ushort)(rsize - datatocopy); // update the position
-      }
-      else
-      {
-        nhead = (ushort)(RecvBuf.head + rsize);
-        if ((RecvBuf.tail > RecvBuf.head) && (RecvBuf.tail <= nhead))
-        {
-          return 0;
-        }
-        // rbuf.CopyTo(RecvBuf.data, curPos);
-        Array.Copy(rbuf, 0, RecvBuf.data, curPos, rbuf.Count());
-        RecvBuf.head = (ushort)((rsize + curPos) & (SERIAL_BUF_SIZE - 1));
-      }
-
-      return 1;
-    }
-    public byte rb_get(byte[] err)
-    {
-      byte d;
-      ushort ntail = (ushort)((RecvBuf.tail + 1) & (SERIAL_BUF_SIZE - 1));
-      if (RecvBuf.head == RecvBuf.tail)
-      {
-        err[0] = 1;
-        return 0;
-      }
-      d = RecvBuf.data[RecvBuf.tail];
-      RecvBuf.data[RecvBuf.tail] = 0;
-      RecvBuf.tail = ntail;
-      return d;
-    }
+    // public int rbuf_put(byte[] rbuf, ushort rsize)
+    // {
+    //   ushort nhead;
+    //   ushort datatocopy;
+    //   ushort curPos = RecvBuf.head; // Update the last position before copying new data
+    //   if (curPos + rsize > SERIAL_BUF_SIZE)
+    //   {
+    //     datatocopy = (ushort)(SERIAL_BUF_SIZE - curPos); // find out how much space is left in the main buffer
+    //     if (RecvBuf.tail > RecvBuf.head)
+    //     {
+    //       return 0;
+    //     }
+    //     else if ((RecvBuf.tail < RecvBuf.head) && (RecvBuf.tail <= (rsize - datatocopy)))
+    //     {
+    //       return 0;
+    //     }
+    //     // memcpy((uint8_t *)rb->data+curPos, rbuf, datatocopy); // copy data in that remaining space
+    //     Array.Copy(rbuf, 0, RecvBuf.data, curPos, datatocopy); // copy data in that remaining space
+    //     curPos = 0; // point to the start of the buffer
+    //                 // memcpy((uint8_t *)rb->data, (uint8_t *)rbuf+datatocopy, (rsize-datatocopy)); // copy the remaining data
+    //     Array.Copy(rbuf, datatocopy, RecvBuf.data, curPos, rsize - datatocopy); // copy the remaining data
+    //     RecvBuf.head = (ushort)(rsize - datatocopy); // update the position
+    //   }
+    //   else
+    //   {
+    //     nhead = (ushort)(RecvBuf.head + rsize);
+    //     if ((RecvBuf.tail > RecvBuf.head) && (RecvBuf.tail <= nhead))
+    //     {
+    //       return 0;
+    //     }
+    //     // rbuf.CopyTo(RecvBuf.data, curPos);
+    //     Array.Copy(rbuf, 0, RecvBuf.data, curPos, rbuf.Count());
+    //     RecvBuf.head = (ushort)((rsize + curPos) & (SERIAL_BUF_SIZE - 1));
+    //   }
+    //   return 1;
+    // }
+    // public byte rb_get(byte[] err)
+    // {
+    //   byte d;
+    //   ushort ntail = (ushort)((RecvBuf.tail + 1) & (SERIAL_BUF_SIZE - 1));
+    //   if (RecvBuf.head == RecvBuf.tail)
+    //   {
+    //     err[0] = 1;
+    //     return 0;
+    //   }
+    //   d = RecvBuf.data[RecvBuf.tail];
+    //   RecvBuf.data[RecvBuf.tail] = 0;
+    //   RecvBuf.tail = ntail;
+    //   return d;
+    // }
     public void SendPacket(byte[] Packet, ushort Cnt)
     {
       try
@@ -2161,13 +2159,13 @@ namespace ServoTester3
 
       Mc_Para.val.u16MC_ZERO_DUMMY = 0;     //0
       Mc_Para.val.u16MC_TCAM_ACTM = 0;      //1
-      Mc_Para.val.f32MC_FASTEN_TORQUE = 1.5f; //2
+      Mc_Para.val.f32MC_FASTEN_TORQUE = 20; //2
       Mc_Para.val.f32MC_TORQUE_MIN_MAX = 0; //3
       Mc_Para.val.u16MC_TARGET_ANGLE = 0;   //4
       Mc_Para.val.u16MC_FASTEN_MIN_ANGLE = 0; //5
       Mc_Para.val.u16MC_FASTEN_MAX_ANGLE = 0; //6
       Mc_Para.val.f32MC_SNUG_TORQUE = 0;      //7
-      Mc_Para.val.u16MC_FASTEN_SPEED = 700;     //8
+      Mc_Para.val.u16MC_FASTEN_SPEED = 100;     //8
       Mc_Para.val.u16MC_FREE_FASTEN_ANGLE = 0;  //9
       Mc_Para.val.u16MC_FREE_FASTEN_SPEED = 0;  //10
       Mc_Para.val.u16MC_SOFT_START = 100;         //11
@@ -2211,7 +2209,7 @@ namespace ServoTester3
       Mc_Para.val.u16MC_ACC_DEC_TIME = 200;                 //2
       Mc_Para.val.u16MC_FASTEN_TORQUE_MAINTAIN_TIME = 0;  //3
       Mc_Para.val.u16MC_USE_MAXTQ_FOR_LOOSENING = 0;      //4
-      Mc_Para.val.u16MC_LOOSENING_SPEED = 500;              //5
+      Mc_Para.val.u16MC_LOOSENING_SPEED = 100;              //5
       Mc_Para.val.f32MC_TOTAL_FASTENING_TIME = 10;         //6
       Mc_Para.val.f32MC_TOTAL_LOOSENING_TIME = 10;         //7
       Mc_Para.val.f32MC_STALL_LOOSENING_TIME_LIMIT = 0.2f;    //8
