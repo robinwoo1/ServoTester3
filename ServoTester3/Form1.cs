@@ -2622,15 +2622,15 @@ namespace ServoTester3
     {
 
       TestUnion d = new TestUnion();
-      d.b0 = ComReadBuffer[764 + 0];
-      d.b1 = ComReadBuffer[764 + 1];
-      d.b2 = ComReadBuffer[764 + 2];
-      d.b3 = ComReadBuffer[764 + 3];
+      d.b0 = ComReadBuffer[766 + 0];
+      d.b1 = ComReadBuffer[766 + 1];
+      d.b2 = ComReadBuffer[766 + 2];
+      d.b3 = ComReadBuffer[766 + 3];
       float hss_gain = d.f;
-      d.b0 = ComReadBuffer[768 + 0];
-      d.b1 = ComReadBuffer[768 + 1];
-      d.b2 = ComReadBuffer[768 + 2];
-      d.b3 = ComReadBuffer[768 + 3];
+      d.b0 = ComReadBuffer[770 + 0];
+      d.b1 = ComReadBuffer[770 + 1];
+      d.b2 = ComReadBuffer[770 + 2];
+      d.b3 = ComReadBuffer[770 + 3];
       float tq_gain = d.f;
       clear_data();
       // Graph number
@@ -2645,26 +2645,26 @@ namespace ServoTester3
       ushort Graph_Data_Length = d.us0;
       for (ushort j = 0; j < Graph_Data_Length; j++)
       {
-        d.b0 = ComReadBuffer[100 * 0 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 0 + 64 + j * 2 + 1];
+        d.b0 = ComReadBuffer[100 * 0 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 0 + 66 + j * 2 + 1];
         Data_ch1.Add(d.s0 * tq_gain);//torque
-        d.b0 = ComReadBuffer[100 * 1 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 1 + 64 + j * 2 + 1];
+        d.b0 = ComReadBuffer[100 * 1 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 1 + 66 + j * 2 + 1];
         Data_ch2.Add(d.s0 * hss_gain);//current
-        d.b0 = ComReadBuffer[100 * 2 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 2 + 64 + j * 2 + 1];
+        d.b0 = ComReadBuffer[100 * 2 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 2 + 66 + j * 2 + 1];
         Data_ch3.Add(d.s0 * 2.0);//speed
-        d.b0 = ComReadBuffer[100 * 3 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 3 + 64 + j * 2 + 1];
+        d.b0 = ComReadBuffer[100 * 3 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 3 + 66 + j * 2 + 1];
         Data_ch4.Add(d.s0);//angle
-        d.b0 = ComReadBuffer[100 * 4 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 4 + 64 + j * 2 + 1];
+        d.b0 = ComReadBuffer[100 * 4 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 4 + 66 + j * 2 + 1];
         Data_ch5.Add(d.s0 * 2.0);//speed command
-        d.b0 = ComReadBuffer[100 * 5 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 5 + 64 + j * 2 + 1];
+        d.b0 = ComReadBuffer[100 * 5 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 5 + 66 + j * 2 + 1];
         Data_ch6.Add(d.s0 * hss_gain);//current command
-        d.b0 = ComReadBuffer[100 * 6 + 64 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 6 + 64 + j * 2 + 1];
+        d.b0 = ComReadBuffer[100 * 6 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 6 + 66 + j * 2 + 1];
         Data_ch7.Add(d.s0);
       }
       Graph_ch1.AddRange(Data_ch1);

@@ -22,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -33,14 +33,6 @@
               "Name": "ST:16:0:{dcc4ea97-1c0c-482b-b205-e541c0df9728}"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Form1.cs",
@@ -48,7 +40,7 @@
               "RelativeDocumentMoniker": "ServoTester3\\Form1.cs",
               "ToolTip": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Form1.cs",
               "RelativeToolTip": "ServoTester3\\Form1.cs",
-              "ViewState": "AgIAAEcFAAAAAAAAAAAAAFAFAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAAoKAAAAAAAAAAAcwBoKAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-07T00:58:36.343Z",
               "EditorCaption": ""
