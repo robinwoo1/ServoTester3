@@ -98,56 +98,6 @@ namespace ServoTester3
       [FieldOffset(2)] public byte b2;
       [FieldOffset(3)] public byte b3;
     }
-    // public int rbuf_put(byte[] rbuf, ushort rsize)
-    // {
-    //   ushort nhead;
-    //   ushort datatocopy;
-    //   ushort curPos = RecvBuf.head; // Update the last position before copying new data
-    //   if (curPos + rsize > SERIAL_BUF_SIZE)
-    //   {
-    //     datatocopy = (ushort)(SERIAL_BUF_SIZE - curPos); // find out how much space is left in the main buffer
-    //     if (RecvBuf.tail > RecvBuf.head)
-    //     {
-    //       return 0;
-    //     }
-    //     else if ((RecvBuf.tail < RecvBuf.head) && (RecvBuf.tail <= (rsize - datatocopy)))
-    //     {
-    //       return 0;
-    //     }
-    //     // memcpy((uint8_t *)rb->data+curPos, rbuf, datatocopy); // copy data in that remaining space
-    //     Array.Copy(rbuf, 0, RecvBuf.data, curPos, datatocopy); // copy data in that remaining space
-    //     curPos = 0; // point to the start of the buffer
-    //                 // memcpy((uint8_t *)rb->data, (uint8_t *)rbuf+datatocopy, (rsize-datatocopy)); // copy the remaining data
-    //     Array.Copy(rbuf, datatocopy, RecvBuf.data, curPos, rsize - datatocopy); // copy the remaining data
-    //     RecvBuf.head = (ushort)(rsize - datatocopy); // update the position
-    //   }
-    //   else
-    //   {
-    //     nhead = (ushort)(RecvBuf.head + rsize);
-    //     if ((RecvBuf.tail > RecvBuf.head) && (RecvBuf.tail <= nhead))
-    //     {
-    //       return 0;
-    //     }
-    //     // rbuf.CopyTo(RecvBuf.data, curPos);
-    //     Array.Copy(rbuf, 0, RecvBuf.data, curPos, rbuf.Count());
-    //     RecvBuf.head = (ushort)((rsize + curPos) & (SERIAL_BUF_SIZE - 1));
-    //   }
-    //   return 1;
-    // }
-    // public byte rb_get(byte[] err)
-    // {
-    //   byte d;
-    //   ushort ntail = (ushort)((RecvBuf.tail + 1) & (SERIAL_BUF_SIZE - 1));
-    //   if (RecvBuf.head == RecvBuf.tail)
-    //   {
-    //     err[0] = 1;
-    //     return 0;
-    //   }
-    //   d = RecvBuf.data[RecvBuf.tail];
-    //   RecvBuf.data[RecvBuf.tail] = 0;
-    //   RecvBuf.tail = ntail;
-    //   return d;
-    // }
     public void SendPacket(byte[] Packet, ushort Cnt)
     {
       try
@@ -164,209 +114,118 @@ namespace ServoTester3
     {
       ushort u16PtrCnt = 0;
       ushort calc_crc = 0;
-
-      if (Command == 1)
+      switch (Command)
       {
-        if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3)
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          // Port.Write(SendDataPacket, 0, u16PtrCnt);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        // else if (StartAddress == 4)
-      }
-      else if (Command == 2)
-      {
-        if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3 || StartAddress == 4 || StartAddress == 5 ||
+        case 1:
+          if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3)
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 4)
+          break;
+        case 2:
+          if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3 || StartAddress == 4 || StartAddress == 5 ||
             StartAddress == 6 || StartAddress == 7 || StartAddress == 8 || StartAddress == 9 || StartAddress == 10)
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          // Port.Write(SendDataPacket, 0, u16PtrCnt);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        // else if (StartAddress == 11)
-      }
-      // else if (Command == 3) // cyclic PC<-MC
-      // else if (Command == 4) // praph PC<-MC
-      // else if (Command == 5) // event PC<-MC
-      else if (Command == 6)
-      {
-        if (StartAddress == 1)// Sync setting
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        // else if (StartAddress == 2)// Sync state out PC<-MC
-        else if (StartAddress == 3)// Sync resume
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        else if (StartAddress == 4)// Sync in event update
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-      }
-      else if (Command == 7)
-      {
-        if (StartAddress == 1)//download driver info
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        // else if (StartAddress == 2)//upload driver info
-        else if (StartAddress == 3)//Speaker & Output
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        else if (StartAddress == 4)//LED band & output
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        else if (StartAddress == 5)//request Driver Info
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        // else if (StartAddress == 6)//
-        // else if (StartAddress == 7)//
-        else if (StartAddress == 8)//reset Maintenance count
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        else if (StartAddress == 9)// Set torque Offset
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        else if (StartAddress == 10)//Check torque Sensor Offset
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        else if (StartAddress == 11)//Save torque Sensor Offset
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        else if (StartAddress == 12)//Start Initail Angle
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-        // else if (StartAddress == 13)//receive Initial Angle result
-      }
-      else if (Command == 8)
-      {
-        //if (StartAddress == 1)
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          // Port.Write(SendDataPacket, 0, u16PtrCnt);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-      }
-      else if (Command == 9)
-      {
-        //if (StartAddress == 1)
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          // Port.Write(SendDataPacket, 0, u16PtrCnt);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-      }
-      else if (Command == 104)
-      {
-        // if (StartAddress == 1)
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          // Port.Write(SendDataPacket, 0, u16PtrCnt);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
-      }
-      else if (Command == 106)
-      {
-        // if (StartAddress == 1)
-        {
-          MakePacket(Command, StartAddress, Data);
-          u16PtrCnt = CmdAck.u16PtrCnt;
-          calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-          // Port.Write(SendDataPacket, 0, u16PtrCnt);
-          SendPacket(SendDataPacket, u16PtrCnt);
-        }
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 11)
+          break;
+        case 3: // cyclic PC<-MC
+          break;
+        case 4: // praph PC<-MC
+          break;
+        case 5: // event PC<-MC
+          break;
+        case 6:
+          if (StartAddress == 1 ||// Sync setting
+              StartAddress == 3 ||// Sync resume
+              StartAddress == 4)// Sync in event update
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 2)// Sync state out PC<-MC
+          break;
+        case 7:
+          if (StartAddress == 1 ||//download driver info
+              StartAddress == 3 ||//Speaker & Output
+              StartAddress == 4 ||//LED band & output
+              StartAddress == 5 ||//request Driver Info
+              StartAddress == 8 ||//reset Maintenance count
+              StartAddress == 9 ||// Set torque Offset
+              StartAddress == 10 ||//Check torque Sensor Offset
+              StartAddress == 11 ||//Save torque Sensor Offset
+              StartAddress == 12)//Start Initail Angle
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 2)//upload driver info
+          // else if (StartAddress == 6)//
+          // else if (StartAddress == 7)//
+          // else if (StartAddress == 13)//receive Initial Angle result
+          break;
+        case 8:
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        case 9:
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        case 104:
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        case 106:
+          {
+            MakePacket(Command, StartAddress, Data);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        default:
+          break;
       }
     }
     private void MakePacket(byte Command, ushort StartAddress, short Data)
@@ -441,7 +300,6 @@ namespace ServoTester3
           SendDataPacket[u16PtrCnt++] = (byte)(Mc_Para.val.u16MC_SCREW_TYPE >> 8);
           SendDataPacket[u16PtrCnt++] = (byte)(Mc_Para.val.u16MC_SOFT_STOP >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(Mc_Para.val.u16MC_SOFT_STOP >> 8);
-          
 
           SendDataPacket[u16PtrCnt++] = (byte)(Mc_Para.val.u16MC_ADVANCED_MODE >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(Mc_Para.val.u16MC_ADVANCED_MODE >> 8);
@@ -684,7 +542,7 @@ namespace ServoTester3
         switch (StartAddress)
         {
           case 1://fasten/loosen
-            SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(McFlag.b1ControlFL);//(Data >> 0);
             SendDataPacket[u16PtrCnt++] = (byte)0;
             SendDataPacket[u16PtrCnt++] = (byte)0;
             SendDataPacket[u16PtrCnt++] = (byte)0;
@@ -692,23 +550,6 @@ namespace ServoTester3
           case 2://Start/Stop
             if (Data != 0)//start
             {
-              string input = String.Empty;
-
-              if (tbLoosenAngle.Text == "" || tbLoosenAngle.Text == "0")
-                McFlag.LoosenAngle = 0;
-              else
-              {
-                try
-                {
-                  McFlag.LoosenAngle = Int16.Parse(tbLoosenAngle.Text);
-                  // Console.WriteLine(result);
-                }
-                catch (FormatException)
-                {
-                  // Console.WriteLine($"Unable to parse '{input}'");
-                  McFlag.LoosenAngle = 0;
-                }
-              }
               SendDataPacket[u16PtrCnt++] = (byte)(Data >> 0);
               SendDataPacket[u16PtrCnt++] = (byte)(McFlag.LoosenAngle >> 0);
               SendDataPacket[u16PtrCnt++] = (byte)(McFlag.LoosenAngle >> 8);
@@ -1255,10 +1096,24 @@ namespace ServoTester3
     {
       if (btStartStopFL.Text == "StartFL")
       {
+        if (tbLoosenAngle.Text == "" || tbLoosenAngle.Text == "0")
+          McFlag.LoosenAngle = 0;
+        else
+        {
+          try
+          {
+            McFlag.LoosenAngle = Int16.Parse(tbLoosenAngle.Text);
+          }
+          catch (FormatException)
+          {
+            McFlag.LoosenAngle = 0;
+          }
+        }
         MakeAndSendData(2, 2, 1);
       }
-      else//Loosen
+      else
       {
+        
         MakeAndSendData(2, 2, 0);
       }
     }
@@ -1267,10 +1122,12 @@ namespace ServoTester3
       clear_graph_flag = true;
       if (btFastenLoosen.Text == "Fasten")
       {
+        McFlag.b1ControlFL = 0;
         MakeAndSendData(2, 1, 0);
       }
       else//Loosen
       {
+        McFlag.b1ControlFL = 1;
         MakeAndSendData(2, 1, 1);
       }
     }
@@ -1287,7 +1144,7 @@ namespace ServoTester3
     }
     private void btTqOffset_Click(object sender, EventArgs e)
     {
-      
+
     }
     private void btSetTqOffset_Click(object sender, EventArgs e)
     {
@@ -2109,8 +1966,8 @@ namespace ServoTester3
       Mc_Para.dft.u16MC_TORQUE_COMPENSATION = 0; Mc_Para.min.u16MC_TORQUE_COMPENSATION = 0; Mc_Para.max.u16MC_TORQUE_COMPENSATION = 1;        //SET[15] : 
       Mc_Para.dft.u16MC_TORQUE_OFFSET = 0; Mc_Para.min.u16MC_TORQUE_OFFSET = 0; Mc_Para.max.u16MC_TORQUE_OFFSET = 20000;          //SET[16] : 
       Mc_Para.dft.u16MC_MAX_PULSE_COUNT = 0; Mc_Para.min.u16MC_MAX_PULSE_COUNT = 0; Mc_Para.max.u16MC_MAX_PULSE_COUNT = 20000;        //SET[17] : 
-      Mc_Para.val.u16MC_SCREW_TYPE = 0;Mc_Para.min.u16MC_SCREW_TYPE = 0;Mc_Para.max.u16MC_SCREW_TYPE = 1;
-      Mc_Para.val.u16MC_SOFT_STOP = 0;Mc_Para.min.u16MC_SOFT_STOP = 0;Mc_Para.max.u16MC_SOFT_STOP = 1;
+      Mc_Para.val.u16MC_SCREW_TYPE = 0; Mc_Para.min.u16MC_SCREW_TYPE = 0; Mc_Para.max.u16MC_SCREW_TYPE = 1;
+      Mc_Para.val.u16MC_SOFT_STOP = 0; Mc_Para.min.u16MC_SOFT_STOP = 0; Mc_Para.max.u16MC_SOFT_STOP = 1;
 
       Mc_Para.dft.u16MC_ADVANCED_MODE = 0; Mc_Para.min.u16MC_ADVANCED_MODE = 0; Mc_Para.max.u16MC_ADVANCED_MODE = 10;                   //SET[0] :  
       Mc_Para.dft.f32MC_ADVANCED_PARA1 = 0; Mc_Para.min.f32MC_ADVANCED_PARA1 = 0; Mc_Para.max.f32MC_ADVANCED_PARA1 = 0xffff;              //SET[1] :  
@@ -2734,7 +2591,7 @@ namespace ServoTester3
       loadFile.FileName = "GraphData";
       loadFile.DefaultExt = "txt";
       loadFile.Filter = "txt file(*.txt)|*.txt";
-      
+
       if (loadFile.ShowDialog() == DialogResult.OK)
       {
         if (loadFile.FileName != "")
@@ -2928,5 +2785,9 @@ namespace ServoTester3
       }
     }
 
+    private void gbServo_Enter(object sender, EventArgs e)
+    {
+
+    }
   }
 }

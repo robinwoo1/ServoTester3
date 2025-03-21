@@ -1419,12 +1419,13 @@
       gbServo.Controls.Add(nudTorque);
       gbServo.Controls.Add(btSpeed);
       gbServo.Controls.Add(btTorque);
-      gbServo.Location = new Point(557, 1);
+      gbServo.Location = new Point(556, 1);
       gbServo.Name = "gbServo";
       gbServo.Size = new Size(144, 70);
       gbServo.TabIndex = 14;
       gbServo.TabStop = false;
       gbServo.Text = "Servo";
+      gbServo.Enter += gbServo_Enter;
       // 
       // nudSpeed
       // 
