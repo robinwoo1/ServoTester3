@@ -32,6 +32,7 @@
       tabControl1 = new TabControl();
       tabPage1 = new TabPage();
       groupBox15 = new GroupBox();
+      btGetTqOffset = new Button();
       tbTqOffsetValue = new TextBox();
       label26 = new Label();
       btSetTqOffset = new Button();
@@ -237,6 +238,7 @@
       // 
       // groupBox15
       // 
+      groupBox15.Controls.Add(btGetTqOffset);
       groupBox15.Controls.Add(tbTqOffsetValue);
       groupBox15.Controls.Add(label26);
       groupBox15.Controls.Add(btSetTqOffset);
@@ -246,6 +248,16 @@
       groupBox15.TabIndex = 9;
       groupBox15.TabStop = false;
       groupBox15.Text = "Torque Offset Setting";
+      // 
+      // btGetTqOffset
+      // 
+      btGetTqOffset.Location = new Point(108, 18);
+      btGetTqOffset.Name = "btGetTqOffset";
+      btGetTqOffset.Size = new Size(89, 23);
+      btGetTqOffset.TabIndex = 9;
+      btGetTqOffset.Text = "Get Offset";
+      btGetTqOffset.UseVisualStyleBackColor = true;
+      btGetTqOffset.Click += btGetTqOffset_Click;
       // 
       // tbTqOffsetValue
       // 
@@ -1835,5 +1847,6 @@
     private TextBox tbTqOffsetValue;
     private Label label26;
     private Button btSetTqOffset;
+    private Button btGetTqOffset;
   }
 }

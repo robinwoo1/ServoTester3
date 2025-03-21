@@ -166,8 +166,9 @@ namespace ServoTester3
               StartAddress == 3 ||//Speaker & Output
               StartAddress == 4 ||//LED band & output
               StartAddress == 5 ||//request Driver Info
+              StartAddress == 6 ||// Set torque Offset
+              StartAddress == 7 ||// Get torque Offset
               StartAddress == 8 ||//reset Maintenance count
-              StartAddress == 9 ||// Set torque Offset
               StartAddress == 10 ||//Check torque Sensor Offset
               StartAddress == 11 ||//Save torque Sensor Offset
               StartAddress == 12)//Start Initail Angle
@@ -180,8 +181,7 @@ namespace ServoTester3
             SendPacket(SendDataPacket, u16PtrCnt);
           }
           // else if (StartAddress == 2)//upload driver info
-          // else if (StartAddress == 6)//
-          // else if (StartAddress == 7)//
+          // else if (StartAddress == 9)//
           // else if (StartAddress == 13)//receive Initial Angle result
           break;
         case 8:
@@ -622,20 +622,20 @@ namespace ServoTester3
       {
         if (StartAddress == 1) // Download Driver info
         {
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Type >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Type >> 8);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Version >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Version >> 8);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Serial_low >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Serial_low >> 8);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Serial_high >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16Serial_high >> 8);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u8Factory_Gear_efficiency >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Type >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Type >> 8);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Version >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Version >> 8);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Serial_low >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Serial_low >> 8);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Serial_high >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16Serial_high >> 8);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u8Factory_Gear_efficiency >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u8User_Gear_efficiency >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u8User_Gear_efficiency >> 0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16DriverVendor >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16DriverVendor >> 8);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16DriverVendor >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16DriverVendor >> 8);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
         }
@@ -661,8 +661,29 @@ namespace ServoTester3
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
         }
-        // else if (StartAddress == 6)//reserved
-        // else if (StartAddress == 7)//reserved
+        else if (StartAddress == 6)//Set Torque Offset
+        {
+          d.f = outDriverInfo.f32TorqueOffset;
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = d.b0;
+          SendDataPacket[u16PtrCnt++] = d.b1;
+          SendDataPacket[u16PtrCnt++] = d.b2;
+          SendDataPacket[u16PtrCnt++] = d.b3;
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+        }
+        else if (StartAddress == 7)//Get Torque Offset
+        {
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);
+        }
         else if (StartAddress == 8)//Reset maintenance count
         {
           SendDataPacket[u16PtrCnt++] = (byte)(1);
@@ -670,31 +691,18 @@ namespace ServoTester3
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
         }
-        else if (StartAddress == 9)//Set Torque Offset
-        {
-          // d.f = (ushort)UInt16.Parse(tbTqOffsetValue.Text);
-          d.f = (float)Double.Parse(tbTqOffsetValue.Text);
-          // d.f = DoubleConverter(tbTqOffsetValue.Text);
-          SendDataPacket[u16PtrCnt++] = d.b0;
-          SendDataPacket[u16PtrCnt++] = d.b1;
-          SendDataPacket[u16PtrCnt++] = d.b2;
-          SendDataPacket[u16PtrCnt++] = d.b3;
-          SendDataPacket[u16PtrCnt++] = (byte)(2);//unit low
-          SendDataPacket[u16PtrCnt++] = (byte)(0);//unit high
-          SendDataPacket[u16PtrCnt++] = (byte)(0);
-          SendDataPacket[u16PtrCnt++] = (byte)(0);
-        }
+        // else if (StartAddress == 9)//
         else if (StartAddress == 10)//Check torque sensor OffsetADC
         {
-          SendDataPacket[u16PtrCnt++] = (byte)(0);//(byte)(DriverInfo.u16TorqueOffset >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(0);//(byte)(DriverInfo.u16TorqueOffset >> 8);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);//(byte)(outDriverInfo.u16TorqueSensorOffset >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(0);//(byte)(outDriverInfo.u16TorqueSensorOffset >> 8);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
         }
         else if (StartAddress == 11)//Save torque sensor OffsetADC
         {
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16TorqueOffset >> 0);
-          SendDataPacket[u16PtrCnt++] = (byte)(DriverInfo.u16TorqueOffset >> 8);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16TorqueSensorOffset >> 0);
+          SendDataPacket[u16PtrCnt++] = (byte)(outDriverInfo.u16TorqueSensorOffset >> 8);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
           SendDataPacket[u16PtrCnt++] = (byte)(0);
         }
@@ -741,22 +749,22 @@ namespace ServoTester3
             SendDataPacket[u16PtrCnt++] = (byte)(Data >> 8);
             break;
           case 9:
-            u16Value = (ushort)UInt16.Parse(tbTorquePgain.Text);
+            u16Value = Gain.Tq_Kp;//(ushort)UInt16.Parse(tbTorquePgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//10
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
-            u16Value = (ushort)UInt16.Parse(tbTorqueIgain.Text);
+            u16Value = Gain.Tq_Ki;//(ushort)UInt16.Parse(tbTorqueIgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//12
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
-            u16Value = (ushort)UInt16.Parse(tbTorqueFFgain.Text);
+            u16Value = Gain.Tq_Kf;//(ushort)UInt16.Parse(tbTorqueFFgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//14
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
-            u16Value = (ushort)UInt16.Parse(tbSpeedPgain.Text);
+            u16Value = Gain.Sp_Kp;//(ushort)UInt16.Parse(tbSpeedPgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//16
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
-            u16Value = (ushort)UInt16.Parse(tbSpeedIgain.Text);
+            u16Value = Gain.Sp_Ki;//(ushort)UInt16.Parse(tbSpeedIgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//18
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
-            u16Value = (ushort)UInt16.Parse(tbSpeedFFgain.Text);
+            u16Value = Gain.Sp_Kf;//(ushort)UInt16.Parse(tbSpeedFFgain.Text);
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 0);//20
             SendDataPacket[u16PtrCnt++] = (byte)(u16Value >> 8);
             break;
@@ -1153,8 +1161,20 @@ namespace ServoTester3
 
       if (sender == btSetTqOffset)
       {
-        MakeAndSendData(7, 9, 0);
+        outDriverInfo.f32TorqueOffset = (float)Double.Parse(tbTqOffsetValue.Text);
+        MakeAndSendData(7, 6, 0);
         btSetTqOffset.Enabled = true;
+      }
+    }
+    private void btGetTqOffset_Click(object sender, EventArgs e)
+    {
+      if (!Port.IsOpen)
+        return;
+
+      if (sender == btGetTqOffset)
+      {
+        MakeAndSendData(7, 7, 0);
+        btGetTqOffset.Enabled = true;
       }
     }
     private void btAlarmReset_Click(object sender, EventArgs e)
@@ -1202,20 +1222,42 @@ namespace ServoTester3
       switch (addr)
       {
         case 1:
-          MakeAndSendData(9, addr, (short)(Convert.ToInt32(((NumericUpDown)control).Value / 10)));
+          Gain.Speed = (short)(Convert.ToInt32(((NumericUpDown)control).Value) / 10);
+          MakeAndSendData(9, addr, Gain.Speed);
           break;
         case 2:
+          Gain.Torque = Convert.ToInt16(((NumericUpDown)control).Value);
+          MakeAndSendData(9, addr, Gain.Torque);
+          break;
         case 3:
+          Gain.Tq_Kp = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbTorquePgain.Text);
+          MakeAndSendData(9, addr, (short)Gain.Tq_Kp);
+          break;
         case 4:
+          Gain.Tq_Ki = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbTorqueIgain.Text);
+          MakeAndSendData(9, addr, (short)Gain.Tq_Ki);
+          break;
         case 5:
+          Gain.Tq_Kf = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbTorqueFFgain.Text);
+          MakeAndSendData(9, addr, (short)Gain.Tq_Kf);
+          break;
         case 6:
+          Gain.Sp_Kp = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbSpeedPgain.Text);
+          MakeAndSendData(9, addr, (short)Gain.Sp_Kp);
+          break;
         case 7:
+          Gain.Sp_Ki = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbSpeedIgain.Text);
+          MakeAndSendData(9, addr, (short)Gain.Sp_Ki);
+          break;
         case 8:
+          Gain.Sp_Kf = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbSpeedFFgain.Text);
+          MakeAndSendData(9, addr, (short)Gain.Sp_Kf);
+          break;
           // add range
           // packet.AddRange(GetPacket(addr, Convert.ToInt32(((ComboBox)control).SelectedIndex)));
           // MakeAndSendData(9, addr, Convert.ToInt16(((ComboBox)control).SelectedIndex));
-          MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value));
-          break;
+          // MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value));
+          // break;
           // case 9:
           // case 10:
           // case 11:
@@ -1320,6 +1362,11 @@ namespace ServoTester3
       if (DriverInfoIsReady)
       {
         ShowDriverInfo();
+      }
+
+      if (DriverInfo_TorqueOffsetIsReady)
+      {
+        ShowDriverInfo_TorqueOffset();
       }
 
       switch (AutoSetting.FlagSetting)
@@ -1448,6 +1495,7 @@ namespace ServoTester3
     public void ProcessPcMcReceivedCommData()
     {
       byte data;
+      TestUnion d = new TestUnion();
       while (cq.Count > 0)
       {
         cq.TryDequeue(out data);
@@ -1539,7 +1587,7 @@ namespace ServoTester3
                   TqSensorValue = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
 
                   TqSensorOffsetValue = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
-                  DriverInfo.u16TorqueOffset = TqSensorOffsetValue;
+                  DriverInfo.u16TorqueSensorOffset = TqSensorOffsetValue;
 
                   Error = (ushort)((ComReadBuffer[29] << 8) | ComReadBuffer[28]);
                   // tbError.Text = Error.ToString();//ui
@@ -1619,13 +1667,13 @@ namespace ServoTester3
                   if (StartAddress == 2)//upload Driver info
                   {
                     AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    inDriverInfo.u16Type = (ushort)((ComReadBuffer[11] << 8) | ComReadBuffer[10]);
-                    inDriverInfo.u16Version = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
-                    inDriverInfo.u16Serial_low = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
-                    inDriverInfo.u16Serial_high = (ushort)((ComReadBuffer[17] << 8) | ComReadBuffer[16]);
-                    inDriverInfo.u8Factory_Gear_efficiency = (ushort)((ComReadBuffer[19] << 8) | ComReadBuffer[18]);
-                    inDriverInfo.u8User_Gear_efficiency = (ushort)((ComReadBuffer[21] << 8) | ComReadBuffer[20]);
-                    inDriverInfo.u16DriverVendor = (ushort)((ComReadBuffer[23] << 8) | ComReadBuffer[22]);
+                    DriverInfo.u16Type = (ushort)((ComReadBuffer[11] << 8) | ComReadBuffer[10]);
+                    DriverInfo.u16Version = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
+                    DriverInfo.u16Serial_low = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
+                    DriverInfo.u16Serial_high = (ushort)((ComReadBuffer[17] << 8) | ComReadBuffer[16]);
+                    DriverInfo.u8Factory_Gear_efficiency = (ushort)((ComReadBuffer[19] << 8) | ComReadBuffer[18]);
+                    DriverInfo.u8User_Gear_efficiency = (ushort)((ComReadBuffer[21] << 8) | ComReadBuffer[20]);
+                    DriverInfo.u16DriverVendor = (ushort)((ComReadBuffer[23] << 8) | ComReadBuffer[22]);
                     DriverInfoIsReady = true;
                     if (IniStep != 11)
                       MakeAndSendData(1, 3, 0);
@@ -1636,7 +1684,15 @@ namespace ServoTester3
                   { }
                   // else if (StartAddress == 5)//Reserved
                   // else if (StartAddress == 6)//Reserved
-                  // else if (StartAddress == 7)//Reserved
+                  else if (StartAddress == 7)// Get Torque Offset
+                  {
+                    d.b0 = ComReadBuffer[12];
+                    d.b0 = ComReadBuffer[13];
+                    d.b0 = ComReadBuffer[14];
+                    d.b0 = ComReadBuffer[15];
+                    DriverInfo.f32TorqueOffset = d.f;
+                    DriverInfo_TorqueOffsetIsReady = true;
+                  }
                   else if (StartAddress == 8)//reset maintenance
                   { }
                   // else if (StartAddress == 9)//Reserved
@@ -1931,20 +1987,20 @@ namespace ServoTester3
     }
     private void InitDriverInfo(ushort u16Type_)
     {
-      DriverInfo.u16Type = u16Type_;//1;
-      DriverInfo.u16Version = 123;
-      DriverInfo.u8Factory_Gear_efficiency = 100;
-      DriverInfo.u8User_Gear_efficiency = 100;
-      DriverInfo.u16Serial_low = 1234;
-      DriverInfo.u16Serial_high = 5678;
-      DriverInfo.u16MaintenanceCount_low = 0;
-      DriverInfo.u16MaintenanceCount_high = 0;
-      DriverInfo.u16WarningMaintenanceCount = 0;
-      DriverInfo.u16TorqueOffset = 32768;
-      DriverInfo.u16LED_Band = 0;
-      DriverInfo.u16Temperature = 0;
-      DriverInfo.u16Initial_Angle = 0;
-      DriverInfo.u16Error = 0;
+      outDriverInfo.u16Type = u16Type_;//1;
+      outDriverInfo.u16Version = 123;
+      outDriverInfo.u8Factory_Gear_efficiency = 100;
+      outDriverInfo.u8User_Gear_efficiency = 100;
+      outDriverInfo.u16Serial_low = 1234;
+      outDriverInfo.u16Serial_high = 5678;
+      outDriverInfo.u16MaintenanceCount_low = 0;
+      outDriverInfo.u16MaintenanceCount_high = 0;
+      outDriverInfo.u16WarningMaintenanceCount = 0;
+      outDriverInfo.u16TorqueSensorOffset = 32768;
+      outDriverInfo.u16LED_Band = 0;
+      outDriverInfo.u16Temperature = 0;
+      outDriverInfo.u16Initial_Angle = 0;
+      outDriverInfo.u16Error = 0;
     }
     private void InitParameter(ushort u16MC_DRIVER_MODEL_)
     {
@@ -2081,7 +2137,31 @@ namespace ServoTester3
     }
     public byte IniStep = 0;
     public bool DriverInfoIsReady = false;
+    public bool DriverInfo_TorqueOffsetIsReady = false;
     public byte SoftStop = 0;
+    public struct _Gain
+    {
+      public short Speed;
+      public short Torque;
+      public ushort Tq_Kp;
+      public ushort Tq_Ki;
+      public ushort Tq_Kf;
+      public ushort Sp_Kp;
+      public ushort Sp_Ki;
+      public ushort Sp_Kf;
+      public _Gain()
+      {
+        this.Speed = 0;
+        this.Torque = 0;
+        this.Tq_Kp = 100;
+        this.Tq_Ki = 100;
+        this.Tq_Kf = 100;
+        this.Sp_Kp = 100;
+        this.Sp_Ki = 100;
+        this.Sp_Kf = 100;
+      }
+    }
+    public _Gain Gain = new _Gain();
     public struct _auto_setting
     {
       public bool FlagSetting;
@@ -2331,11 +2411,14 @@ namespace ServoTester3
       public ushort u16MaintenanceCount_low;      // 7
       public ushort u16MaintenanceCount_high;     // 8
       public ushort u16WarningMaintenanceCount;   // 9
-      public ushort u16TorqueOffset;              // 10
+      public ushort u16TorqueSensorOffset;              // 10
       public ushort u16LED_Band;                  // 11
       public ushort u16Temperature;               // 12
       public ushort u16Initial_Angle;             // 13
       public ushort u16Error;                     // 14
+      public ushort u16TorqueOffset_low;          // 15
+      public ushort u16TorqueOffset_high;         // 16
+      public float f32TorqueOffset;
       public ushort u16DriverVendor;              // 24
       public _DriverInfoStruct(ushort u16Type_)
       {
@@ -2348,7 +2431,7 @@ namespace ServoTester3
         this.u16MaintenanceCount_low = 0;
         this.u16MaintenanceCount_high = 0;
         this.u16WarningMaintenanceCount = 0;
-        this.u16TorqueOffset = 0;
+        this.u16TorqueSensorOffset = 32768;
         this.u16LED_Band = 0;
         this.u16Temperature = 0;
         this.u16Initial_Angle = 0;
@@ -2356,8 +2439,8 @@ namespace ServoTester3
         this.u16DriverVendor = 0;
       }
     }
+    _DriverInfoStruct outDriverInfo = new _DriverInfoStruct(0);
     _DriverInfoStruct DriverInfo = new _DriverInfoStruct(0);
-    _DriverInfoStruct inDriverInfo = new _DriverInfoStruct(0);
     public struct CmdAck_
     {
       public byte u8Command;
@@ -2727,14 +2810,14 @@ namespace ServoTester3
     {
       if (!Port.IsOpen)
         return;
-      DriverInfo.u16Type = (ushort)UInt16.Parse(nudDriverType.Text);
-      DriverInfo.u16Version = (ushort)UInt16.Parse(nudDriverVersion.Text);
-      DriverInfo.u8Factory_Gear_efficiency = (ushort)UInt16.Parse(nudDriverGearEfficiency.Text);
-      DriverInfo.u8User_Gear_efficiency = (ushort)UInt16.Parse(nudDriverUserEfficiency.Text);
+      outDriverInfo.u16Type = (ushort)UInt16.Parse(nudDriverType.Text);
+      outDriverInfo.u16Version = (ushort)UInt16.Parse(nudDriverVersion.Text);
+      outDriverInfo.u8Factory_Gear_efficiency = (ushort)UInt16.Parse(nudDriverGearEfficiency.Text);
+      outDriverInfo.u8User_Gear_efficiency = (ushort)UInt16.Parse(nudDriverUserEfficiency.Text);
       uint SerialNum = UInt32.Parse(nudDriverSerial.Text);
-      DriverInfo.u16Serial_low = (ushort)(SerialNum >> 0);
-      DriverInfo.u16Serial_high = (ushort)(SerialNum >> 16);
-      DriverInfo.u16DriverVendor = (ushort)UInt16.Parse(nudDriverVendor.Text);
+      outDriverInfo.u16Serial_low = (ushort)(SerialNum >> 0);
+      outDriverInfo.u16Serial_high = (ushort)(SerialNum >> 16);
+      outDriverInfo.u16DriverVendor = (ushort)UInt16.Parse(nudDriverVendor.Text);
       MakeAndSendData(7, 1, 0);
     }
 
@@ -2744,14 +2827,19 @@ namespace ServoTester3
     }
     private void ShowDriverInfo()
     {
-      nudDriverType.Text = inDriverInfo.u16Type.ToString();
-      nudDriverVersion.Text = inDriverInfo.u16Version.ToString();
-      nudDriverGearEfficiency.Text = inDriverInfo.u8Factory_Gear_efficiency.ToString();
-      nudDriverUserEfficiency.Text = inDriverInfo.u8User_Gear_efficiency.ToString();
-      uint SerialNum = (uint)((inDriverInfo.u16Serial_high << 16) + inDriverInfo.u16Serial_low);
+      nudDriverType.Text = DriverInfo.u16Type.ToString();
+      nudDriverVersion.Text = DriverInfo.u16Version.ToString();
+      nudDriverGearEfficiency.Text = DriverInfo.u8Factory_Gear_efficiency.ToString();
+      nudDriverUserEfficiency.Text = DriverInfo.u8User_Gear_efficiency.ToString();
+      uint SerialNum = (uint)((DriverInfo.u16Serial_high << 16) + DriverInfo.u16Serial_low);
       nudDriverSerial.Text = SerialNum.ToString();
-      nudDriverVendor.Text = inDriverInfo.u16DriverVendor.ToString();
+      nudDriverVendor.Text = DriverInfo.u16DriverVendor.ToString();
       DriverInfoIsReady = false;
+    }
+    private void ShowDriverInfo_TorqueOffset()
+    {
+      tbTqOffsetValue.Text = DriverInfo.f32TorqueOffset.ToString();
+      DriverInfo_TorqueOffsetIsReady = false;
     }
 
     private void rbSoftStopOff_CheckedChanged(object sender, EventArgs e)
