@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "D:\\hantas-soft\\ServoTester3\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\parameter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\parameter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\packet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\packet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\packet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\packet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\parameter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|solutionrelative:servotester3\\parameter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2F1C7A98-E589-4843-9AB8-2B1C1C5E07B0}|ServoTester3\\ServoTester3.csproj|d:\\hantas-soft\\servotester3\\servotester3\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -30,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,29 +42,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Packet.cs",
               "DocumentMoniker": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Packet.cs",
               "RelativeDocumentMoniker": "ServoTester3\\Packet.cs",
               "ToolTip": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Packet.cs",
               "RelativeToolTip": "ServoTester3\\Packet.cs",
-              "ViewState": "AgIAAFoBAAAAAAAAAAAUwGwBAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAK0AAAAAAAAAAAAUwL4AAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-24T03:55:08.11Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "Parameter.cs",
               "DocumentMoniker": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Parameter.cs",
               "RelativeDocumentMoniker": "ServoTester3\\Parameter.cs",
               "ToolTip": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Parameter.cs",
               "RelativeToolTip": "ServoTester3\\Parameter.cs",
-              "ViewState": "AgIAAOgBAAAAAAAAAAAowPMBAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAMBAAAAAAAAAAAowKgBAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-24T00:23:43.683Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-03-24T00:23:43.683Z"
             },
             {
               "$type": "Document",
@@ -74,7 +73,7 @@
               "RelativeDocumentMoniker": "ServoTester3\\Form1.cs",
               "ToolTip": "D:\\hantas-soft\\ServoTester3\\ServoTester3\\Form1.cs",
               "RelativeToolTip": "ServoTester3\\Form1.cs",
-              "ViewState": "AgIAAD8CAAAAAAAAAAAowFACAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAAOsDAAAAAAAAAAAUwPwDAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-07T00:58:36.343Z",
               "EditorCaption": ""

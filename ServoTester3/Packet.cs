@@ -11,16 +11,36 @@ namespace ServoTester3
 {
   internal class _Packet
   {
+    public const ushort SERIAL_BUF_SIZE = 128 * 16;//128*8;
     public const byte ON = 1;
     public const byte OFF = 0;
     public const int _LengthLow = 2;
     public const int _LengthHigh = 3;
     public SerialPort Port { get; } = new SerialPort();
-
+    public byte[] ComReadBuffer = new byte[128 * 16 * 8];
+    public byte[] SendDataPacket = new byte[SERIAL_BUF_SIZE];
     // public _Packet()
     // {
     //   this.Port = new SerialPort();
     // }
+    
+    // List<double> Graph_time = new List<double>();
+    public List<double> Graph_ch1 = new List<double>();
+    public List<double> Graph_ch2 = new List<double>();
+    public List<double> Graph_ch3 = new List<double>();
+    public List<double> Graph_ch4 = new List<double>();
+    public List<double> Graph_ch5 = new List<double>();
+    public List<double> Graph_ch6 = new List<double>();
+    public List<double> Graph_ch7 = new List<double>();
+    public List<double> Graph_ch8 = new List<double>();
+    public List<double> Data_ch1 = new List<double>();
+    public List<double> Data_ch2 = new List<double>();
+    public List<double> Data_ch3 = new List<double>();
+    public List<double> Data_ch4 = new List<double>();
+    public List<double> Data_ch5 = new List<double>();
+    public List<double> Data_ch6 = new List<double>();
+    public List<double> Data_ch7 = new List<double>();
+    public List<double> Data_ch8 = new List<double>();
 
     [StructLayout(LayoutKind.Explicit)]
     struct TestUnion
@@ -38,6 +58,211 @@ namespace ServoTester3
       [FieldOffset(3)] public byte b3;
     }
     TestUnion d = new TestUnion();
+    
+    public void clear_graph_data()
+    {
+      Graph_ch1.Clear();
+      Graph_ch2.Clear();
+      Graph_ch3.Clear();
+      Graph_ch4.Clear();
+      Graph_ch5.Clear();
+      Graph_ch6.Clear();
+      Graph_ch7.Clear();
+      Graph_ch8.Clear();
+    }
+    public void clear_data()
+    {
+      Data_ch1.Clear();
+      Data_ch2.Clear();
+      Data_ch3.Clear();
+      Data_ch4.Clear();
+      Data_ch5.Clear();
+      Data_ch6.Clear();
+      Data_ch7.Clear();
+      Data_ch8.Clear();
+    }
+    public void fresh_graph_data(ref _Parameter Mc)
+    {
+
+      TestUnion d = new TestUnion();
+      d.b0 = ComReadBuffer[766 + 0];
+      d.b1 = ComReadBuffer[766 + 1];
+      d.b2 = ComReadBuffer[766 + 2];
+      d.b3 = ComReadBuffer[766 + 3];
+      float hss_gain = d.f;
+      d.b0 = ComReadBuffer[770 + 0];
+      d.b1 = ComReadBuffer[770 + 1];
+      d.b2 = ComReadBuffer[770 + 2];
+      d.b3 = ComReadBuffer[770 + 3];
+      float tq_gain = d.f;
+      clear_data();
+      // Graph number
+      d.b0 = ComReadBuffer[10];
+      d.b1 = ComReadBuffer[11];
+      if (d.us0 == 1)//start run
+      {
+        clear_graph_data();
+      }
+      d.b0 = ComReadBuffer[12];
+      d.b1 = ComReadBuffer[13];
+      ushort Graph_Data_Length = d.us0;
+      for (ushort j = 0; j < Graph_Data_Length; j++)
+      {
+        d.b0 = ComReadBuffer[100 * 0 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 0 + 66 + j * 2 + 1];
+        Data_ch1.Add(d.s0 * tq_gain);//torque
+        d.b0 = ComReadBuffer[100 * 1 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 1 + 66 + j * 2 + 1];
+        Data_ch2.Add(d.s0 * hss_gain);//current
+        d.b0 = ComReadBuffer[100 * 2 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 2 + 66 + j * 2 + 1];
+        Data_ch3.Add(d.s0 * 2.0);//speed
+        d.b0 = ComReadBuffer[100 * 3 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 3 + 66 + j * 2 + 1];
+        Data_ch4.Add(d.s0);//angle
+        d.b0 = ComReadBuffer[100 * 4 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 4 + 66 + j * 2 + 1];
+        Data_ch5.Add(d.s0 * 2.0);//speed command
+        d.b0 = ComReadBuffer[100 * 5 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 5 + 66 + j * 2 + 1];
+        Data_ch6.Add(d.s0 * hss_gain);//current command
+        d.b0 = ComReadBuffer[100 * 6 + 66 + j * 2 + 0];
+        d.b1 = ComReadBuffer[100 * 6 + 66 + j * 2 + 1];
+        Data_ch7.Add(d.s0);
+      }
+      Graph_ch1.AddRange(Data_ch1);
+      Graph_ch2.AddRange(Data_ch2);
+      Graph_ch3.AddRange(Data_ch3);
+      Graph_ch4.AddRange(Data_ch4);
+      Graph_ch5.AddRange(Data_ch5);
+      Graph_ch6.AddRange(Data_ch6);
+      Graph_ch7.AddRange(Data_ch7);
+
+      Mc.Var.refresh_graph_flag = true;
+      // this.Invoke(new Action(delegate () // this == Form 이다. Form이 아닌 컨트롤의 Invoke를 직접호출해도 무방하다.
+      // {
+      //   //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
+      //   Refresh_graph();
+      // }));
+    }
+    public void MakeAndSendData(byte Command, ushort StartAddress, short Data, ref _Parameter Mc)
+    {
+      ushort u16PtrCnt = 0;
+      ushort calc_crc = 0;
+      switch (Command)
+      {
+        case 1:
+          if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3)
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 4)
+          break;
+        case 2:
+          if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3 || StartAddress == 4 || StartAddress == 5 ||
+            StartAddress == 6 || StartAddress == 7 || StartAddress == 8 || StartAddress == 9 || StartAddress == 10)
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 11)
+          break;
+        case 3: // cyclic PC<-MC
+          break;
+        case 4: // praph PC<-MC
+          break;
+        case 5: // event PC<-MC
+          break;
+        case 6:
+          if (StartAddress == 1 ||// Sync setting
+              StartAddress == 3 ||// Sync resume
+              StartAddress == 4)// Sync in event update
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 2)// Sync state out PC<-MC
+          break;
+        case 7:
+          if (StartAddress == 1 ||//download driver info
+              StartAddress == 3 ||//Speaker & Output
+              StartAddress == 4 ||//LED band & output
+              StartAddress == 5 ||//request Driver Info
+              StartAddress == 6 ||// Set torque Offset
+              StartAddress == 7 ||// Get torque Offset
+              StartAddress == 8 ||//reset Maintenance count
+              StartAddress == 10 ||//Check torque Sensor Offset
+              StartAddress == 11 ||//Save torque Sensor Offset
+              StartAddress == 12)//Start Initail Angle
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          // else if (StartAddress == 2)//upload driver info
+          // else if (StartAddress == 9)//
+          // else if (StartAddress == 13)//receive Initial Angle result
+          break;
+        case 8:
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        case 9:
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        case 104:
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        case 106:
+          {
+            MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
+            u16PtrCnt = CmdAck.u16PtrCnt;
+            calc_crc = GetCRC(SendDataPacket, u16PtrCnt + 2);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
+            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
+            SendPacket(SendDataPacket, u16PtrCnt);
+          }
+          break;
+        default:
+          break;
+      }
+    }
     public void MakePacket(byte Command, ushort StartAddress, short Data, ref byte[] SendDataPacket, ref _Parameter Mc)
     {
       // ushort data, A1, A2, A3;

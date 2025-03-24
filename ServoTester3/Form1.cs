@@ -22,7 +22,6 @@ namespace ServoTester3
     public const int _LengthLow = 2;
     public const int _LengthHigh = 3;
     private List<byte> _requestPacket;
-    public byte[] SendDataPacket = new byte[SERIAL_BUF_SIZE];
     public byte[] FlagRun = new byte[10];
     public byte DriverRun = 0;
     public byte CommandRun = 0;
@@ -47,27 +46,10 @@ namespace ServoTester3
       InitializeComponent();
 
     }
-    // List<double> Graph_time = new List<double>();
-    List<double> Graph_ch1 = new List<double>();
-    List<double> Graph_ch2 = new List<double>();
-    List<double> Graph_ch3 = new List<double>();
-    List<double> Graph_ch4 = new List<double>();
-    List<double> Graph_ch5 = new List<double>();
-    List<double> Graph_ch6 = new List<double>();
-    List<double> Graph_ch7 = new List<double>();
-    List<double> Graph_ch8 = new List<double>();
-    List<double> Data_ch1 = new List<double>();
-    List<double> Data_ch2 = new List<double>();
-    List<double> Data_ch3 = new List<double>();
-    List<double> Data_ch4 = new List<double>();
-    List<double> Data_ch5 = new List<double>();
-    List<double> Data_ch6 = new List<double>();
-    List<double> Data_ch7 = new List<double>();
-    List<double> Data_ch8 = new List<double>();
 
 
 
-    private bool refresh_graph_flag = false;
+    
     private bool clear_graph_flag = false;
     
     private bool MotorState { get; set; }
@@ -79,7 +61,7 @@ namespace ServoTester3
     private bool port_working = false;
     public ConcurrentQueue<byte> cq = new ConcurrentQueue<byte>();
     // public ConcurrentQueue<byte> graph_cq = new ConcurrentQueue<byte>();
-    public byte[] ComReadBuffer = new byte[128 * 16 * 8];
+    
     public byte[] graph_ComReadBuffer = new byte[1024];
     public int ComReadIndex = 0;
     public ushort Command_Index_Pc;
@@ -99,124 +81,6 @@ namespace ServoTester3
       [FieldOffset(1)] public byte b1;
       [FieldOffset(2)] public byte b2;
       [FieldOffset(3)] public byte b3;
-    }
-    public void MakeAndSendData(byte Command, ushort StartAddress, short Data)
-    {
-      ushort u16PtrCnt = 0;
-      ushort calc_crc = 0;
-      switch (Command)
-      {
-        case 1:
-          if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3)
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          // else if (StartAddress == 4)
-          break;
-        case 2:
-          if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3 || StartAddress == 4 || StartAddress == 5 ||
-            StartAddress == 6 || StartAddress == 7 || StartAddress == 8 || StartAddress == 9 || StartAddress == 10)
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          // else if (StartAddress == 11)
-          break;
-        case 3: // cyclic PC<-MC
-          break;
-        case 4: // praph PC<-MC
-          break;
-        case 5: // event PC<-MC
-          break;
-        case 6:
-          if (StartAddress == 1 ||// Sync setting
-              StartAddress == 3 ||// Sync resume
-              StartAddress == 4)// Sync in event update
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          // else if (StartAddress == 2)// Sync state out PC<-MC
-          break;
-        case 7:
-          if (StartAddress == 1 ||//download driver info
-              StartAddress == 3 ||//Speaker & Output
-              StartAddress == 4 ||//LED band & output
-              StartAddress == 5 ||//request Driver Info
-              StartAddress == 6 ||// Set torque Offset
-              StartAddress == 7 ||// Get torque Offset
-              StartAddress == 8 ||//reset Maintenance count
-              StartAddress == 10 ||//Check torque Sensor Offset
-              StartAddress == 11 ||//Save torque Sensor Offset
-              StartAddress == 12)//Start Initail Angle
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          // else if (StartAddress == 2)//upload driver info
-          // else if (StartAddress == 9)//
-          // else if (StartAddress == 13)//receive Initial Angle result
-          break;
-        case 8:
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          break;
-        case 9:
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          break;
-        case 104:
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          break;
-        case 106:
-          {
-            Packet.MakePacket(Command, StartAddress, Data, ref SendDataPacket, ref Mc);
-            u16PtrCnt = Packet.CmdAck.u16PtrCnt;
-            calc_crc = Packet.GetCRC(SendDataPacket, u16PtrCnt + 2);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 0);
-            SendDataPacket[u16PtrCnt++] = (byte)(calc_crc >> 8);
-            Packet.SendPacket(SendDataPacket, u16PtrCnt);
-          }
-          break;
-        default:
-          break;
-      }
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -243,13 +107,13 @@ namespace ServoTester3
       {
         nudSpeed.Enabled = true;
         nudTorque.Enabled = false;
-        MakeAndSendData(8, 2, 0);
+        Packet.MakeAndSendData(8, 2, 0, ref Mc);
       }
       else// btTorque
       {
         nudSpeed.Enabled = false;
         nudTorque.Enabled = true;
-        MakeAndSendData(8, 2, 1);
+        Packet.MakeAndSendData(8, 2, 1, ref Mc);
       }
     }
     private void ServoOn_Click(object sender, EventArgs e)
@@ -258,13 +122,13 @@ namespace ServoTester3
         return;
       if (btServoOnOff.Text == "Servo On")
       {
-        MakeAndSendData(8, 3, 1);
+        Packet.MakeAndSendData(8, 3, 1, ref Mc);
         Mc.Flag.b1Run = 1;
         btServoOnOff.Text = "Servo Off";
       }
       else
       {
-        MakeAndSendData(8, 3, 0);
+        Packet.MakeAndSendData(8, 3, 0, ref Mc);
         Mc.Flag.b1Run = 0;
         btServoOnOff.Text = "Servo On";
       }
@@ -276,7 +140,7 @@ namespace ServoTester3
 
       if (sender == btMotorTest)
       {
-        MakeAndSendData(8, 1, 1);
+        Packet.MakeAndSendData(8, 1, 1, ref Mc);
         btServoOnOff.Enabled = true;
         // gbServo.Visible = true;
         // gbFastenLoosen.Visible = false;
@@ -284,7 +148,7 @@ namespace ServoTester3
       }
       else// (sender == btNutRunner)
       {
-        MakeAndSendData(8, 1, 0);
+        Packet.MakeAndSendData(8, 1, 0, ref Mc);
         btServoOnOff.Enabled = false;
         // gbFastenLoosen.Visible = true;
         // gbServo.Visible = false;
@@ -293,27 +157,27 @@ namespace ServoTester3
     }
     private void btSaveOrigin_Click(object sender, EventArgs e)
     {
-      MakeAndSendData(2, 3, 0);
+      Packet.MakeAndSendData(2, 3, 0, ref Mc);
     }
     private void btStartOrigin_Click(object sender, EventArgs e)
     {
-      MakeAndSendData(2, 4, 0);
+      Packet.MakeAndSendData(2, 4, 0, ref Mc);
     }
     private void btResetMC_Click(object sender, EventArgs e)
     {
-      MakeAndSendData(2, 5, 0);
+      Packet.MakeAndSendData(2, 5, 0, ref Mc);
     }
     private void btSoftHardAutocustom_Click(object sender, EventArgs e)
     {
       if (btSoftHardAutocustom.Text == "Soft")
       {
-        MakeAndSendData(2, 8, 0);
+        Packet.MakeAndSendData(2, 8, 0, ref Mc);
         // btSoftHardAutocustom.Text = "Hard";
         // rbSoftAutocustom.Checked = true;
       }
       else//Hard
       {
-        MakeAndSendData(2, 8, 1);
+        Packet.MakeAndSendData(2, 8, 1, ref Mc);
         // btSoftHardAutocustom.Text = "Soft";
         // rbHardAutocustom.Checked = true;
       }
@@ -322,13 +186,13 @@ namespace ServoTester3
     {
       if (btStartStopAutocustom.Text == "Start")
       {
-        MakeAndSendData(2, 9, 1);
+        Packet.MakeAndSendData(2, 9, 1, ref Mc);
         // btStartStopAutocustom.Text = "Stop";
         // rbStartAutocustom.Checked = true;
       }
       else//Stop
       {
-        MakeAndSendData(2, 9, 0);
+        Packet.MakeAndSendData(2, 9, 0, ref Mc);
         // btStartStopAutocustom.Text = "Start";
         // rbStopAutocustom.Checked = true;
       }
@@ -458,9 +322,9 @@ namespace ServoTester3
         //   //           {
         //   //               //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
         //   //               // lbl_Result.Text = result.ToString();
-        //   //               fresh_graph_data();
+        //   //               Packet.fresh_graph_data(ref Mc);
         //   //           }));
-        //   // fresh_graph_data();
+        //   // Packet.fresh_graph_data(ref Mc);
         //   // graph_count++;
         // }
         ProcessPcMcReceivedCommData();
@@ -473,12 +337,12 @@ namespace ServoTester3
     //     // check sender
     //     if (btRunStop.Text == @"Servo On")
     //     {
-    //         MakeAndSendData(106, 1, 1);
+    //         Packet.MakeAndSendData(106, 1, 1, ref Mc);
     //         btRunStop.Text = @"Servo Off";
     //     }
     //     else
     //     {
-    //         MakeAndSendData(106, 1, 0);
+    //         Packet.MakeAndSendData(106, 1, 0, ref Mc);
     //         btRunStop.Text = @"Servo On";
     //     }
 
@@ -504,12 +368,12 @@ namespace ServoTester3
             Mc.Flag.LoosenAngle = 0;
           }
         }
-        MakeAndSendData(2, 2, 1);
+        Packet.MakeAndSendData(2, 2, 1, ref Mc);
       }
       else
       {
         
-        MakeAndSendData(2, 2, 0);
+        Packet.MakeAndSendData(2, 2, 0, ref Mc);
       }
     }
     private void btFastenLoosen_Click(object sender, EventArgs e)
@@ -518,12 +382,12 @@ namespace ServoTester3
       if (btFastenLoosen.Text == "Fasten")
       {
         Mc.Flag.b1ControlFL = 0;
-        MakeAndSendData(2, 1, 0);
+        Packet.MakeAndSendData(2, 1, 0, ref Mc);
       }
       else//Loosen
       {
         Mc.Flag.b1ControlFL = 1;
-        MakeAndSendData(2, 1, 1);
+        Packet.MakeAndSendData(2, 1, 1, ref Mc);
       }
     }
     private void btMcInit_Click(object sender, EventArgs e)
@@ -534,7 +398,7 @@ namespace ServoTester3
       Mc.InitInfo_DrvModel_para(DriverType);//1);
       Mc.InitDriverInfo(DriverType);
       Mc.InitParameter(DriverType);
-      MakeAndSendData(2, 10, 0);
+      Packet.MakeAndSendData(2, 10, 0, ref Mc);
       Mc.Var.IniStep = 0;
     }
     private void btTqOffset_Click(object sender, EventArgs e)
@@ -549,7 +413,7 @@ namespace ServoTester3
       if (sender == btSetTqOffset)
       {
         Mc.outDriverInfo.f32TorqueOffset = (float)Double.Parse(tbTqOffsetValue.Text);
-        MakeAndSendData(7, 6, 0);
+        Packet.MakeAndSendData(7, 6, 0, ref Mc);
         btSetTqOffset.Enabled = true;
       }
     }
@@ -560,7 +424,7 @@ namespace ServoTester3
 
       if (sender == btGetTqOffset)
       {
-        MakeAndSendData(7, 7, 0);
+        Packet.MakeAndSendData(7, 7, 0, ref Mc);
         btGetTqOffset.Enabled = true;
       }
     }
@@ -568,7 +432,7 @@ namespace ServoTester3
     {
       if (!Packet.Port.IsOpen)
         return;
-      MakeAndSendData(2, 6, 0);
+      Packet.MakeAndSendData(2, 6, 0, ref Mc);
     }
     private void btCalibrationCommand_Click(object sender, EventArgs e)
     {
@@ -576,11 +440,11 @@ namespace ServoTester3
         return;
       if (sender == btCalibStart)
       {
-        MakeAndSendData(7, 12, 1);
+        Packet.MakeAndSendData(7, 12, 1, ref Mc);
       }
       else
       {
-        MakeAndSendData(7, 12, 0);
+        Packet.MakeAndSendData(7, 12, 0, ref Mc);
       }
     }
 
@@ -610,40 +474,40 @@ namespace ServoTester3
       {
         case 1:
           Mc.Gain.Speed = (short)(Convert.ToInt32(((NumericUpDown)control).Value) / 10);
-          MakeAndSendData(9, addr, Mc.Gain.Speed);
+          Packet.MakeAndSendData(9, addr, Mc.Gain.Speed, ref Mc);
           break;
         case 2:
           Mc.Gain.Torque = Convert.ToInt16(((NumericUpDown)control).Value);
-          MakeAndSendData(9, addr, Mc.Gain.Torque);
+          Packet.MakeAndSendData(9, addr, Mc.Gain.Torque, ref Mc);
           break;
         case 3:
           Mc.Gain.Tq_Kp = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbTorquePgain.Text);
-          MakeAndSendData(9, addr, (short)Mc.Gain.Tq_Kp);
+          Packet.MakeAndSendData(9, addr, (short)Mc.Gain.Tq_Kp, ref Mc);
           break;
         case 4:
           Mc.Gain.Tq_Ki = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbTorqueIgain.Text);
-          MakeAndSendData(9, addr, (short)Mc.Gain.Tq_Ki);
+          Packet.MakeAndSendData(9, addr, (short)Mc.Gain.Tq_Ki, ref Mc);
           break;
         case 5:
           Mc.Gain.Tq_Kf = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbTorqueFFgain.Text);
-          MakeAndSendData(9, addr, (short)Mc.Gain.Tq_Kf);
+          Packet.MakeAndSendData(9, addr, (short)Mc.Gain.Tq_Kf, ref Mc);
           break;
         case 6:
           Mc.Gain.Sp_Kp = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbSpeedPgain.Text);
-          MakeAndSendData(9, addr, (short)Mc.Gain.Sp_Kp);
+          Packet.MakeAndSendData(9, addr, (short)Mc.Gain.Sp_Kp, ref Mc);
           break;
         case 7:
           Mc.Gain.Sp_Ki = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbSpeedIgain.Text);
-          MakeAndSendData(9, addr, (short)Mc.Gain.Sp_Ki);
+          Packet.MakeAndSendData(9, addr, (short)Mc.Gain.Sp_Ki, ref Mc);
           break;
         case 8:
           Mc.Gain.Sp_Kf = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbSpeedFFgain.Text);
-          MakeAndSendData(9, addr, (short)Mc.Gain.Sp_Kf);
+          Packet.MakeAndSendData(9, addr, (short)Mc.Gain.Sp_Kf, ref Mc);
           break;
           // add range
           // packet.AddRange(GetPacket(addr, Convert.ToInt32(((ComboBox)control).SelectedIndex)));
-          // MakeAndSendData(9, addr, Convert.ToInt16(((ComboBox)control).SelectedIndex));
-          // MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value));
+          // Packet.MakeAndSendData(9, addr, Convert.ToInt16(((ComboBox)control).SelectedIndex), ref Mc);
+          // Packet.MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value), ref Mc);
           // break;
           // case 9:
           // case 10:
@@ -656,7 +520,7 @@ namespace ServoTester3
           // case 17:
           //     // add range
           //     // packet.AddRange(GetPacket(addr, Convert.ToInt32(((NumericUpDown)control).Value)));
-          //     MakeAndSendData(106, addr, Convert.ToInt16(((NumericUpDown)control).Value));
+          //     Packet.MakeAndSendData(106, addr, Convert.ToInt16(((NumericUpDown)control).Value), ref Mc);
           //     break;
       }
       // // check port is open
@@ -673,7 +537,7 @@ namespace ServoTester3
     }
     private void btnSetAllGain_Click(object sender, EventArgs e)
     {
-      MakeAndSendData(9, 9, 0);
+      Packet.MakeAndSendData(9, 9, 0, ref Mc);
     }
     private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
     {
@@ -737,12 +601,12 @@ namespace ServoTester3
 
       // tbDataCount.Text = Data_ch1.Count.ToString();
       tbDataCount.Text = graph_count.ToString();
-      tbGraphDataCount.Text = Graph_ch1.Count.ToString();
-      // tbGraphDataCount.Text = graph_count.ToString();//Graph_ch1.Count.ToString();
+      tbGraphDataCount.Text = Packet.Graph_ch1.Count.ToString();
+      // tbGraphDataCount.Text = graph_count.ToString();//Packet.Graph_ch1.Count.ToString();
 
-      if (refresh_graph_flag)
+      if (Mc.Var.refresh_graph_flag)
       {
-        refresh_graph_flag = false;
+        Mc.Var.refresh_graph_flag = false;
         Refresh_graph();
       }
 
@@ -887,12 +751,12 @@ namespace ServoTester3
       {
         cq.TryDequeue(out data);
 
-        ComReadBuffer[ComReadIndex++] = data;
+        Packet.ComReadBuffer[ComReadIndex++] = data;
         // check header length
-        if ((ComReadBuffer[0] == 0x5A) && (ComReadBuffer[1] == 0xA5) && (ComReadIndex >= 4))
+        if ((Packet.ComReadBuffer[0] == 0x5A) && (Packet.ComReadBuffer[1] == 0xA5) && (ComReadIndex >= 4))
         {
           // get length
-          var data_length = (ComReadBuffer[3] << 8) | ComReadBuffer[2];
+          var data_length = (Packet.ComReadBuffer[3] << 8) | Packet.ComReadBuffer[2];
           if (data_length > 900 || ComReadIndex > 900)
           {
             ComReadIndex = 0;
@@ -901,13 +765,13 @@ namespace ServoTester3
           // check analyze count
           if (ComReadIndex == (data_length + 6))
           {
-            byte check_Command = ComReadBuffer[4];
+            byte check_Command = Packet.ComReadBuffer[4];
             byte Command = (byte)(check_Command & 0x7f);
-            byte Try_num = ComReadBuffer[7];
-            ushort StartAddress = (ushort)((ComReadBuffer[9] << 8) | (ushort)ComReadBuffer[8]);
-            ushort received_crc = (ushort)(ComReadBuffer[ComReadIndex - 2] & 0xff);
-            received_crc |= (ushort)(ComReadBuffer[ComReadIndex - 1] << 8);
-            ushort calc_crc = Packet.GetCRC(ComReadBuffer, ComReadIndex);
+            byte Try_num = Packet.ComReadBuffer[7];
+            ushort StartAddress = (ushort)((Packet.ComReadBuffer[9] << 8) | (ushort)Packet.ComReadBuffer[8]);
+            ushort received_crc = (ushort)(Packet.ComReadBuffer[ComReadIndex - 2] & 0xff);
+            received_crc |= (ushort)(Packet.ComReadBuffer[ComReadIndex - 1] << 8);
+            ushort calc_crc = Packet.GetCRC(Packet.ComReadBuffer, ComReadIndex);
             ComReadIndex = 0;
             if (calc_crc == received_crc)
             {
@@ -931,13 +795,13 @@ namespace ServoTester3
                   else if (StartAddress == 3)
                   {
                     Packet.ResetAckState();
-                    MakeAndSendData(1, 1, 0);
+                    Packet.MakeAndSendData(1, 1, 0, ref Mc);
                   }
                   else if (StartAddress == 4)
                   {
                     Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    Mc.Info.u16Con_Model_Type = (ushort)((ComReadBuffer[11] << 8) | ComReadBuffer[10]);
-                    Mc.Info.u16Version = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
+                    Mc.Info.u16Con_Model_Type = (ushort)((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
+                    Mc.Info.u16Version = (ushort)((Packet.ComReadBuffer[13] << 8) | Packet.ComReadBuffer[12]);
                   }
                   break;
                 case 2:
@@ -956,7 +820,7 @@ namespace ServoTester3
                   else if (StartAddress == 11)
                   {
                     Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    Mcinitialized = ComReadBuffer[11];
+                    Mcinitialized = Packet.ComReadBuffer[11];
                     // this.Invoke(new Action(delegate ()
                     // {
                     //   if (Mcinitialized != 0)
@@ -971,51 +835,51 @@ namespace ServoTester3
                   }
                   break;
                 case 3:// Pc <- Mc, Cyclic
-                  TqSensorValue = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
+                  TqSensorValue = (ushort)((Packet.ComReadBuffer[13] << 8) | Packet.ComReadBuffer[12]);
 
-                  TqSensorOffsetValue = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
+                  TqSensorOffsetValue = (ushort)((Packet.ComReadBuffer[15] << 8) | Packet.ComReadBuffer[14]);
                   Mc.DriverInfo.u16TorqueSensorOffset = TqSensorOffsetValue;
 
-                  Error = (ushort)((ComReadBuffer[29] << 8) | ComReadBuffer[28]);
+                  Error = (ushort)((Packet.ComReadBuffer[29] << 8) | Packet.ComReadBuffer[28]);
                   // tbError.Text = Error.ToString();//ui
-                  Mc.Var.IniStep = ComReadBuffer[39];
-                  MaintCnt = (uint)((ComReadBuffer[51] << 24) | (ComReadBuffer[50] << 16) | (ComReadBuffer[49] << 8) | ComReadBuffer[48]);
+                  Mc.Var.IniStep = Packet.ComReadBuffer[39];
+                  MaintCnt = (uint)((Packet.ComReadBuffer[51] << 24) | (Packet.ComReadBuffer[50] << 16) | (Packet.ComReadBuffer[49] << 8) | Packet.ComReadBuffer[48]);
                   // tbMaintCnt.Text = MaintCnt.ToString();//ui
-                  Enc = (ushort)((ComReadBuffer[41] << 8) | ComReadBuffer[40]);
+                  Enc = (ushort)((Packet.ComReadBuffer[41] << 8) | Packet.ComReadBuffer[40]);
                   // tbEnc.Text = Enc.ToString();//ui
 
-                  MotorState = ((ComReadBuffer[27] << 8) | ComReadBuffer[26]) != 0;
-                  Mc.Flag.b1Run = ComReadBuffer[26];
-                  Mc.Flag.b1ControlFL = ComReadBuffer[30];
+                  MotorState = ((Packet.ComReadBuffer[27] << 8) | Packet.ComReadBuffer[26]) != 0;
+                  Mc.Flag.b1Run = Packet.ComReadBuffer[26];
+                  Mc.Flag.b1ControlFL = Packet.ComReadBuffer[30];
 
-                  if (ComReadBuffer[42] != 0)
+                  if (Packet.ComReadBuffer[42] != 0)
                     Mc.AutoSetting.FlagSetting = true;
                   else
                     Mc.AutoSetting.FlagSetting = false;
 
-                  if (ComReadBuffer[43] != 0)
+                  if (Packet.ComReadBuffer[43] != 0)
                     Mc.AutoSetting.FlagStart = true;
                   else
                     Mc.AutoSetting.FlagStart = false;
 
-                  byte b1Run = (byte)(ComReadBuffer[44] & 0x01);
+                  byte b1Run = (byte)(Packet.ComReadBuffer[44] & 0x01);
                   if (FlagRun[0] != b1Run)
                   {
-                    MakeAndSendData(2, 2, b1Run);
+                    Packet.MakeAndSendData(2, 2, b1Run, ref Mc);
                   }
                   // FlagRun[4] = FlagRun[3];
                   // FlagRun[3] = FlagRun[2];
                   FlagRun[2] = FlagRun[1];
                   FlagRun[1] = FlagRun[0];
-                  FlagRun[0] = (byte)(ComReadBuffer[44] & 0x01);
+                  FlagRun[0] = (byte)(Packet.ComReadBuffer[44] & 0x01);
 
-                  byte b1ControlFL = (byte)(ComReadBuffer[44] & 0x02);
+                  byte b1ControlFL = (byte)(Packet.ComReadBuffer[44] & 0x02);
                   if (FlagFL[0] != b1ControlFL)
                   {
                     if (b1ControlFL != 0)
-                      MakeAndSendData(2, 1, 1);
+                      Packet.MakeAndSendData(2, 1, 1, ref Mc);
                     else
-                      MakeAndSendData(2, 1, 0);
+                      Packet.MakeAndSendData(2, 1, 0, ref Mc);
                   }
                   // FlagFL[4] = FlagFL[3];
                   // FlagFL[3] = FlagFL[2];
@@ -1023,7 +887,7 @@ namespace ServoTester3
                   FlagFL[1] = FlagFL[0];
                   FlagFL[0] = b1ControlFL;
 
-                  if (ComReadBuffer[63] != 0)
+                  if (Packet.ComReadBuffer[63] != 0)
                     Mot_or_Nut = true;
                   else
                     Mot_or_Nut = false;
@@ -1035,17 +899,17 @@ namespace ServoTester3
                     Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
                   }
                   graph_count++;
-                  fresh_graph_data();
+                  Packet.fresh_graph_data(ref Mc);
                   break;
                 case 5:
                   if (StartAddress == 1)
                   {
                     Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
                   }
-                  Mc.AutoSetting.CurrentSpeed = (ushort)((ComReadBuffer[119] << 8) | ComReadBuffer[118]);
-                  Mc.AutoSetting.CurrentSeatingPoint = (ushort)((ComReadBuffer[121] << 8) | ComReadBuffer[120]);
-                  Mc.AutoSetting.CurrentFSpeed = (ushort)((ComReadBuffer[123] << 8) | ComReadBuffer[122]);
-                  Mc.AutoSetting.CurrentFAngle = (ushort)((ComReadBuffer[125] << 8) | ComReadBuffer[124]);
+                  Mc.AutoSetting.CurrentSpeed = (ushort)((Packet.ComReadBuffer[119] << 8) | Packet.ComReadBuffer[118]);
+                  Mc.AutoSetting.CurrentSeatingPoint = (ushort)((Packet.ComReadBuffer[121] << 8) | Packet.ComReadBuffer[120]);
+                  Mc.AutoSetting.CurrentFSpeed = (ushort)((Packet.ComReadBuffer[123] << 8) | Packet.ComReadBuffer[122]);
+                  Mc.AutoSetting.CurrentFAngle = (ushort)((Packet.ComReadBuffer[125] << 8) | Packet.ComReadBuffer[124]);
                   break;
                 case 6:
                   break;
@@ -1054,16 +918,16 @@ namespace ServoTester3
                   if (StartAddress == 2)//upload Driver info
                   {
                     Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    Mc.DriverInfo.u16Type = (ushort)((ComReadBuffer[11] << 8) | ComReadBuffer[10]);
-                    Mc.DriverInfo.u16Version = (ushort)((ComReadBuffer[13] << 8) | ComReadBuffer[12]);
-                    Mc.DriverInfo.u16Serial_low = (ushort)((ComReadBuffer[15] << 8) | ComReadBuffer[14]);
-                    Mc.DriverInfo.u16Serial_high = (ushort)((ComReadBuffer[17] << 8) | ComReadBuffer[16]);
-                    Mc.DriverInfo.u8Factory_Gear_efficiency = (ushort)((ComReadBuffer[19] << 8) | ComReadBuffer[18]);
-                    Mc.DriverInfo.u8User_Gear_efficiency = (ushort)((ComReadBuffer[21] << 8) | ComReadBuffer[20]);
-                    Mc.DriverInfo.u16DriverVendor = (ushort)((ComReadBuffer[23] << 8) | ComReadBuffer[22]);
+                    Mc.DriverInfo.u16Type = (ushort)((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
+                    Mc.DriverInfo.u16Version = (ushort)((Packet.ComReadBuffer[13] << 8) | Packet.ComReadBuffer[12]);
+                    Mc.DriverInfo.u16Serial_low = (ushort)((Packet.ComReadBuffer[15] << 8) | Packet.ComReadBuffer[14]);
+                    Mc.DriverInfo.u16Serial_high = (ushort)((Packet.ComReadBuffer[17] << 8) | Packet.ComReadBuffer[16]);
+                    Mc.DriverInfo.u8Factory_Gear_efficiency = (ushort)((Packet.ComReadBuffer[19] << 8) | Packet.ComReadBuffer[18]);
+                    Mc.DriverInfo.u8User_Gear_efficiency = (ushort)((Packet.ComReadBuffer[21] << 8) | Packet.ComReadBuffer[20]);
+                    Mc.DriverInfo.u16DriverVendor = (ushort)((Packet.ComReadBuffer[23] << 8) | Packet.ComReadBuffer[22]);
                     Mc.Var.DriverInfoIsReady = true;
                     if (Mc.Var.IniStep != 11)
-                      MakeAndSendData(1, 3, 0);
+                      Packet.MakeAndSendData(1, 3, 0, ref Mc);
                   }
                   else if (StartAddress == 3)//Speaker On/Off
                   { }
@@ -1073,10 +937,10 @@ namespace ServoTester3
                   // else if (StartAddress == 6)//Reserved
                   else if (StartAddress == 7)// Get Torque Offset
                   {
-                    d.b0 = ComReadBuffer[12];
-                    d.b0 = ComReadBuffer[13];
-                    d.b0 = ComReadBuffer[14];
-                    d.b0 = ComReadBuffer[15];
+                    d.b0 = Packet.ComReadBuffer[12];
+                    d.b0 = Packet.ComReadBuffer[13];
+                    d.b0 = Packet.ComReadBuffer[14];
+                    d.b0 = Packet.ComReadBuffer[15];
                     Mc.DriverInfo.f32TorqueOffset = d.f;
                     Mc.Var.DriverInfo_TorqueOffsetIsReady = true;
                   }
@@ -1091,13 +955,13 @@ namespace ServoTester3
                   { }
                   else if (StartAddress == 13)// receive initial angle result Pc <- Mc
                   {
-                    CalibResultState = (int)((ComReadBuffer[11] << 11) | ComReadBuffer[10]);
+                    CalibResultState = (int)((Packet.ComReadBuffer[11] << 11) | Packet.ComReadBuffer[10]);
                     Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
                   }
                   // else if (StartAddress == 13)// Pc -> Mc
                   else if (StartAddress == 101)// Pc <- Mc
                   {
-                    int CalibStepState1 = (int)((ComReadBuffer[11] << 8) | ComReadBuffer[10]);
+                    int CalibStepState1 = (int)((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
                     if (CalibStepState1 == 0)
                       CalibStepState = 0;
                     else if (CalibStepState1 == 1)
@@ -1113,16 +977,16 @@ namespace ServoTester3
                   break;
                 case 104:
                   // get value
-                  // MotorState = ((ComReadBuffer[3] << 8) | ComReadBuffer[4]) != 0;
+                  // MotorState = ((Packet.ComReadBuffer[3] << 8) | Packet.ComReadBuffer[4]) != 0;
                   if (StartAddress == 1)// Pc -> Mc
                   {
 
                   }
                   else if (StartAddress == 2)// Pc <- Mc
                   {
-                    MotorState = ((ComReadBuffer[11] << 8) | ComReadBuffer[10]) != 0;
-                    // CalibStepState = ((ComReadBuffer[11] << 8) | ComReadBuffer[10]);
-                    // CalibResultState = ((ComReadBuffer[11] << 8) | ComReadBuffer[10]);
+                    MotorState = ((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]) != 0;
+                    // CalibStepState = ((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
+                    // CalibResultState = ((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
                   }
                   break;
                 case 106:
@@ -1137,8 +1001,8 @@ namespace ServoTester3
             }
           }
         }
-        else if (((ComReadIndex > 0) && (ComReadBuffer[0] != 0x5A))  // check packet error
-            || ((ComReadIndex > 1) && (ComReadBuffer[1] != 0xA5)))  // check packet error
+        else if (((ComReadIndex > 0) && (Packet.ComReadBuffer[0] != 0x5A))  // check packet error
+            || ((ComReadIndex > 1) && (Packet.ComReadBuffer[1] != 0xA5)))  // check packet error
         {
           ComReadIndex = 0;// no return Ack
         }
@@ -1205,73 +1069,51 @@ namespace ServoTester3
       }
     }
     RecvBuf_ RecvBuf = new RecvBuf_(SERIAL_BUF_SIZE);
-    void clear_graph_data()
-    {
-      Graph_ch1.Clear();
-      Graph_ch2.Clear();
-      Graph_ch3.Clear();
-      Graph_ch4.Clear();
-      Graph_ch5.Clear();
-      Graph_ch6.Clear();
-      Graph_ch7.Clear();
-      Graph_ch8.Clear();
-    }
-    void clear_data()
-    {
-      Data_ch1.Clear();
-      Data_ch2.Clear();
-      Data_ch3.Clear();
-      Data_ch4.Clear();
-      Data_ch5.Clear();
-      Data_ch6.Clear();
-      Data_ch7.Clear();
-      Data_ch8.Clear();
-    }
 
     //[Obsolete]
     public void Refresh_graph()
     {
       // tbDataCount.Text = Data_ch1.Count.ToString();
-      // tbGraphDataCount.Text = Graph_ch1.Count.ToString();
+      // tbGraphDataCount.Text = Packet.Graph_ch1.Count.ToString();
       List<double> Graph_time = new List<double>();
       // Graph_time.Clear();
-      for (int i = 0; i < Graph_ch1.Count; i++)
+      for (int i = 0; i < Packet.Graph_ch1.Count; i++)
         Graph_time.Add(5e-3d * (double)i);
 
       formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
-        var sig1 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch1);
+        var sig1 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch1);
         sig1.LegendText = "Torque";
       }
       if (cbGraph_ch2.Checked)
       {
-        var sig2 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch2);
+        var sig2 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch2);
         sig2.LegendText = "Current";
       }
       if (cbGraph_ch3.Checked)
       {
-        var sig3 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch3);
+        var sig3 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch3);
         sig3.LegendText = "Speed";
       }
       if (cbGraph_ch4.Checked)
       {
-        var sig4 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch4);
+        var sig4 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch4);
         sig4.LegendText = "Angle";
       }
       if (cbGraph_ch5.Checked)
       {
-        var sig5 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch5);
+        var sig5 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch5);
         sig5.LegendText = "Speed Command";
       }
       if (cbGraph_ch6.Checked)
       {
-        var sig6 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch6);
+        var sig6 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch6);
         sig6.LegendText = "Current Command";
       }
       if (cbGraph_ch7.Checked)
       {
-        var sig7 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch7);
+        var sig7 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch7);
         sig7.LegendText = "SnugAngle";
       }
 
@@ -1294,70 +1136,6 @@ namespace ServoTester3
       //formsPlot1.MouseUp += FormsPlot1_MouseUp;
       //formsPlot1.MouseMove += FormsPlot1_MouseMove;
     }
-    void fresh_graph_data()
-    {
-
-      TestUnion d = new TestUnion();
-      d.b0 = ComReadBuffer[766 + 0];
-      d.b1 = ComReadBuffer[766 + 1];
-      d.b2 = ComReadBuffer[766 + 2];
-      d.b3 = ComReadBuffer[766 + 3];
-      float hss_gain = d.f;
-      d.b0 = ComReadBuffer[770 + 0];
-      d.b1 = ComReadBuffer[770 + 1];
-      d.b2 = ComReadBuffer[770 + 2];
-      d.b3 = ComReadBuffer[770 + 3];
-      float tq_gain = d.f;
-      clear_data();
-      // Graph number
-      d.b0 = ComReadBuffer[10];
-      d.b1 = ComReadBuffer[11];
-      if (d.us0 == 1)//start run
-      {
-        clear_graph_data();
-      }
-      d.b0 = ComReadBuffer[12];
-      d.b1 = ComReadBuffer[13];
-      ushort Graph_Data_Length = d.us0;
-      for (ushort j = 0; j < Graph_Data_Length; j++)
-      {
-        d.b0 = ComReadBuffer[100 * 0 + 66 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 0 + 66 + j * 2 + 1];
-        Data_ch1.Add(d.s0 * tq_gain);//torque
-        d.b0 = ComReadBuffer[100 * 1 + 66 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 1 + 66 + j * 2 + 1];
-        Data_ch2.Add(d.s0 * hss_gain);//current
-        d.b0 = ComReadBuffer[100 * 2 + 66 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 2 + 66 + j * 2 + 1];
-        Data_ch3.Add(d.s0 * 2.0);//speed
-        d.b0 = ComReadBuffer[100 * 3 + 66 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 3 + 66 + j * 2 + 1];
-        Data_ch4.Add(d.s0);//angle
-        d.b0 = ComReadBuffer[100 * 4 + 66 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 4 + 66 + j * 2 + 1];
-        Data_ch5.Add(d.s0 * 2.0);//speed command
-        d.b0 = ComReadBuffer[100 * 5 + 66 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 5 + 66 + j * 2 + 1];
-        Data_ch6.Add(d.s0 * hss_gain);//current command
-        d.b0 = ComReadBuffer[100 * 6 + 66 + j * 2 + 0];
-        d.b1 = ComReadBuffer[100 * 6 + 66 + j * 2 + 1];
-        Data_ch7.Add(d.s0);
-      }
-      Graph_ch1.AddRange(Data_ch1);
-      Graph_ch2.AddRange(Data_ch2);
-      Graph_ch3.AddRange(Data_ch3);
-      Graph_ch4.AddRange(Data_ch4);
-      Graph_ch5.AddRange(Data_ch5);
-      Graph_ch6.AddRange(Data_ch6);
-      Graph_ch7.AddRange(Data_ch7);
-
-      refresh_graph_flag = true;
-      // this.Invoke(new Action(delegate () // this == Form 이다. Form이 아닌 컨트롤의 Invoke를 직접호출해도 무방하다.
-      // {
-      //   //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
-      //   Refresh_graph();
-      // }));
-    }
     private void btnSaveGraph_Click(object sender, EventArgs e)
     {
       // string FileName = "";
@@ -1371,32 +1149,32 @@ namespace ServoTester3
         if (saveFile.FileName != "")
         {
           StreamWriter sw = new StreamWriter(saveFile.FileName);
-          sw.WriteLine(Graph_ch1.Count());
-          for (int i = 0; i < Graph_ch1.Count; i++)
+          sw.WriteLine(Packet.Graph_ch1.Count());
+          for (int i = 0; i < Packet.Graph_ch1.Count; i++)
           {
-            sw.WriteLine(Graph_ch1[i].ToString());
-            sw.WriteLine(Graph_ch2[i].ToString());
-            sw.WriteLine(Graph_ch3[i].ToString());
-            sw.WriteLine(Graph_ch4[i].ToString());
-            sw.WriteLine(Graph_ch5[i].ToString());
-            sw.WriteLine(Graph_ch6[i].ToString());
-            sw.WriteLine(Graph_ch7[i].ToString());
+            sw.WriteLine(Packet.Graph_ch1[i].ToString());
+            sw.WriteLine(Packet.Graph_ch2[i].ToString());
+            sw.WriteLine(Packet.Graph_ch3[i].ToString());
+            sw.WriteLine(Packet.Graph_ch4[i].ToString());
+            sw.WriteLine(Packet.Graph_ch5[i].ToString());
+            sw.WriteLine(Packet.Graph_ch6[i].ToString());
+            sw.WriteLine(Packet.Graph_ch7[i].ToString());
           }
           sw.Close();
         }
         else
         {
           StreamWriter sw = new StreamWriter("GraphData.txt");
-          sw.WriteLine(Graph_ch1.Count());
-          for (int i = 0; i < Graph_ch1.Count; i++)
+          sw.WriteLine(Packet.Graph_ch1.Count());
+          for (int i = 0; i < Packet.Graph_ch1.Count; i++)
           {
-            sw.WriteLine(Graph_ch1[i].ToString());
-            sw.WriteLine(Graph_ch2[i].ToString());
-            sw.WriteLine(Graph_ch3[i].ToString());
-            sw.WriteLine(Graph_ch4[i].ToString());
-            sw.WriteLine(Graph_ch5[i].ToString());
-            sw.WriteLine(Graph_ch6[i].ToString());
-            sw.WriteLine(Graph_ch7[i].ToString());
+            sw.WriteLine(Packet.Graph_ch1[i].ToString());
+            sw.WriteLine(Packet.Graph_ch2[i].ToString());
+            sw.WriteLine(Packet.Graph_ch3[i].ToString());
+            sw.WriteLine(Packet.Graph_ch4[i].ToString());
+            sw.WriteLine(Packet.Graph_ch5[i].ToString());
+            sw.WriteLine(Packet.Graph_ch6[i].ToString());
+            sw.WriteLine(Packet.Graph_ch7[i].ToString());
           }
           sw.Close();
         }
@@ -1417,16 +1195,16 @@ namespace ServoTester3
         {
           StreamReader sr = new StreamReader(loadFile.FileName);
           int Count = Convert.ToInt32(sr.ReadLine());
-          clear_graph_data();
+          Packet.clear_graph_data();
           for (int i = 0; i < Count; i++)
           {
-            Graph_ch1.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch2.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch3.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch4.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch5.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch6.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch7.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch1.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch2.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch3.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch4.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch5.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch6.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch7.Add(Convert.ToDouble(sr.ReadLine()));
           }
           sr.Close();
         }
@@ -1434,20 +1212,20 @@ namespace ServoTester3
         {
           StreamReader sr = new StreamReader("GraphData.txt");
           int Count = Convert.ToInt32(sr.ReadLine());
-          clear_graph_data();
+          Packet.clear_graph_data();
           for (int i = 0; i < Count; i++)
           {
-            Graph_ch1.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch2.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch3.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch4.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch5.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch6.Add(Convert.ToDouble(sr.ReadLine()));
-            Graph_ch7.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch1.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch2.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch3.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch4.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch5.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch6.Add(Convert.ToDouble(sr.ReadLine()));
+            Packet.Graph_ch7.Add(Convert.ToDouble(sr.ReadLine()));
           }
           sr.Close();
         }
-        // refresh_graph_flag = true;
+        // Mc.Var.refresh_graph_flag = true;
         Refresh_graph();
       }
     }
@@ -1554,12 +1332,12 @@ namespace ServoTester3
       Mc.outDriverInfo.u16Serial_low = (ushort)(SerialNum >> 0);
       Mc.outDriverInfo.u16Serial_high = (ushort)(SerialNum >> 16);
       Mc.outDriverInfo.u16DriverVendor = (ushort)UInt16.Parse(nudDriverVendor.Text);
-      MakeAndSendData(7, 1, 0);
+      Packet.MakeAndSendData(7, 1, 0, ref Mc);
     }
 
     private void GetDriverInfo(object sender, EventArgs e)
     {
-      MakeAndSendData(7, 5, 0);
+      Packet.MakeAndSendData(7, 5, 0, ref Mc);
     }
     private void ShowDriverInfo()
     {
@@ -1600,12 +1378,12 @@ namespace ServoTester3
 
       if (sender == btCheckTqSensorOffset)
       {
-        MakeAndSendData(7, 10, 0);
+        Packet.MakeAndSendData(7, 10, 0, ref Mc);
         btSaveTqSensorOffset.Enabled = true;
       }
       else if (sender == btSaveTqSensorOffset)
       {
-        MakeAndSendData(7, 11, 0);
+        Packet.MakeAndSendData(7, 11, 0, ref Mc);
       }
     }
 

@@ -24,12 +24,14 @@ namespace ServoTester3
     }
     public struct _Var
     {
+      public bool refresh_graph_flag;
       public byte IniStep;
       public bool DriverInfoIsReady;
       public bool DriverInfo_TorqueOffsetIsReady;
       public byte SoftStop;
       public _Var()
       {
+        this.refresh_graph_flag = false;
         this.IniStep = 0;
         this.DriverInfoIsReady = false;
         this.DriverInfo_TorqueOffsetIsReady = false;
