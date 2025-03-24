@@ -7,10 +7,11 @@ using static ServoTester3.Form1;
 
 namespace ServoTester3
 {
-  internal class Parameter
+  internal class _Parameter
   {
-    public Parameter()
+    public _Parameter()
     {
+      this.Var = new _Var();
       this.Gain = new _Gain();
       this.AutoSetting = new _auto_setting();
       this.Info = new _InfoStruct();
@@ -21,6 +22,21 @@ namespace ServoTester3
       this.DriverInfo = new _DriverInfoStruct(0);
       this.Para = new _para();
     }
+    public struct _Var
+    {
+      public byte IniStep;
+      public bool DriverInfoIsReady;
+      public bool DriverInfo_TorqueOffsetIsReady;
+      public byte SoftStop;
+      public _Var()
+      {
+        this.IniStep = 0;
+        this.DriverInfoIsReady = false;
+        this.DriverInfo_TorqueOffsetIsReady = false;
+        this.SoftStop = 0;
+      }
+    }
+    public _Var Var;
     public struct _Gain
     {
       public short Speed;
@@ -381,6 +397,8 @@ namespace ServoTester3
         this.u16Temperature = 0;
         this.u16Initial_Angle = 0;
         this.u16Error = 0;
+        this.u16TorqueOffset_low = 0;
+        this.u16TorqueOffset_high = 0;
         this.u16DriverVendor = 0;
       }
     }
