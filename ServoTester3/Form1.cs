@@ -1863,9 +1863,9 @@ namespace ServoTester3
       {
         case 1://30
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 7.0f;         // default Nm
-          Info_DrvModel_para.f32Tq_max_Nm = 35.0f;         // default Nm
-                                                           // SPEED
+          Info_DrvModel_para.f32Tq_min_Nm = 7.0f;           // default Nm
+          Info_DrvModel_para.f32Tq_max_Nm = 35.0f;          // default Nm
+                                                            // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 1090;
           // Gear
@@ -1874,9 +1874,9 @@ namespace ServoTester3
           break;
         case 2://40
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 8.0f;         // default Nm
-          Info_DrvModel_para.f32Tq_max_Nm = 40.0f;         // default Nm
-                                                           // SPEED
+          Info_DrvModel_para.f32Tq_min_Nm = 8.0f;           // default Nm
+          Info_DrvModel_para.f32Tq_max_Nm = 40.0f;          // default Nm
+                                                            // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 1090;
           // Gear
@@ -1885,9 +1885,9 @@ namespace ServoTester3
           break;
         case 3://50
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 10.0f;         // default Nm
-          Info_DrvModel_para.f32Tq_max_Nm = 55.0f;         // default Nm
-                                                           // SPEED
+          Info_DrvModel_para.f32Tq_min_Nm = 10.0f;          // default Nm
+          Info_DrvModel_para.f32Tq_max_Nm = 55.0f;          // default Nm
+                                                            // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 655;
           // Gear
@@ -1896,9 +1896,9 @@ namespace ServoTester3
           break;
         case 4://70
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 15.0f;         // default Nm
-          Info_DrvModel_para.f32Tq_max_Nm = 80.0f;         // default Nm
-                                                           // SPEED
+          Info_DrvModel_para.f32Tq_min_Nm = 15.0f;          // default Nm
+          Info_DrvModel_para.f32Tq_max_Nm = 80.0f;          // default Nm
+                                                            // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
           Info_DrvModel_para.u32Speed_max = 475;
           // Gear
@@ -1907,7 +1907,7 @@ namespace ServoTester3
           break;
         case 5://100
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 20.0f;         // default Nm
+          Info_DrvModel_para.f32Tq_min_Nm = 20.0f;          // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 100.0f;         // default Nm
                                                             // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
@@ -1918,7 +1918,7 @@ namespace ServoTester3
           break;
         case 6://150
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 30.0f;         // default Nm
+          Info_DrvModel_para.f32Tq_min_Nm = 30.0f;          // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 160.0f;         // default Nm
                                                             // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
@@ -1929,7 +1929,7 @@ namespace ServoTester3
           break;
         case 7://180
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 35.0f;         // default Nm
+          Info_DrvModel_para.f32Tq_min_Nm = 35.0f;          // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 180.0f;         // default Nm
                                                             // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
@@ -1940,7 +1940,7 @@ namespace ServoTester3
           break;
         case 8://200
                // TORQUE
-          Info_DrvModel_para.f32Tq_min_Nm = 40.0f;         // default Nm
+          Info_DrvModel_para.f32Tq_min_Nm = 40.0f;          // default Nm
           Info_DrvModel_para.f32Tq_max_Nm = 200.0f;         // default Nm
                                                             // SPEED
           Info_DrvModel_para.u32Speed_min = 50;
