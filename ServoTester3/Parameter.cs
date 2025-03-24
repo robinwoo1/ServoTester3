@@ -24,6 +24,19 @@ namespace ServoTester3
     }
     public struct _Var
     {
+      public int CalibStepState;// { CALIB_SUCCESS, CALIB_FAIL, CALIB_USERSTOP }
+      public int CalibResultState;// { get; set; }
+      public int graph_count;
+      public bool Mot_or_Nut;//false;
+      public byte[] FlagFL;// = new byte[10];
+      public byte[] FlagRun;// = new byte[10];
+      public bool MotorState { get; set; }
+      public ushort Enc;
+      public uint MaintCnt;
+      public ushort Error;
+      public ushort TqSensorOffsetValue;
+      public ushort TqSensorValue;
+      public ushort Mcinitialized;
       public bool refresh_graph_flag;
       public byte IniStep;
       public bool DriverInfoIsReady;
@@ -31,6 +44,19 @@ namespace ServoTester3
       public byte SoftStop;
       public _Var()
       {
+        this.CalibStepState = 0;
+        this.CalibResultState = 0;
+        this.graph_count = 0;
+        this.Mot_or_Nut = true;
+        this.FlagFL = new byte[10];
+        this.FlagRun = new byte[10];
+        this.MotorState = false;
+        this.Enc = 0;
+        this.MaintCnt = 0;
+        this.Error = 0;
+        this.TqSensorOffsetValue = 0;
+        this.TqSensorValue = 0;
+        this.Mcinitialized = 0;
         this.refresh_graph_flag = false;
         this.IniStep = 0;
         this.DriverInfoIsReady = false;

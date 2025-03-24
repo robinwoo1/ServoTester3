@@ -16,29 +16,19 @@ namespace ServoTester3
   public partial class Form1 : Form
   {
     public const ushort SERIAL_BUF_SIZE = 128 * 16;//128*8;
-    public const ushort COMMAND_LIST_NUM = 1000;
+    
     public const byte ON = 1;
     public const byte OFF = 0;
     public const int _LengthLow = 2;
     public const int _LengthHigh = 3;
     private List<byte> _requestPacket;
-    public byte[] FlagRun = new byte[10];
     public byte DriverRun = 0;
     public byte CommandRun = 0;
-    public byte[] FlagFL = new byte[10];
     public byte DriverFL = 0;
     public byte CommandFL = 0;
     public bool closing_flag = false;
-    public bool Mot_or_Nut = true;//false;
     Thread myThread;// = new Thread(myFunc);
     public bool myThread_flag = false;
-    public int graph_count = 0;
-    ushort TqSensorValue = 0;
-    ushort TqSensorOffsetValue = 0;
-    ushort Error = 0;
-    uint MaintCnt = 0;
-    ushort Enc = 0;
-    ushort Mcinitialized = 0;
     _Parameter Mc = new _Parameter();
     _Packet Packet = new _Packet();
     public Form1()
@@ -46,26 +36,18 @@ namespace ServoTester3
       InitializeComponent();
 
     }
-
-
-
-    
     private bool clear_graph_flag = false;
-    
-    private bool MotorState { get; set; }
     // private int MotorState;
-    private int CalibStepState;// { CALIB_SUCCESS, CALIB_FAIL, CALIB_USERSTOP }
-    private int CalibResultState;// { get; set; }
     private int time_tick;
     private bool timer_working = false;
     private bool port_working = false;
-    public ConcurrentQueue<byte> cq = new ConcurrentQueue<byte>();
+    
     // public ConcurrentQueue<byte> graph_cq = new ConcurrentQueue<byte>();
     
     public byte[] graph_ComReadBuffer = new byte[1024];
-    public int ComReadIndex = 0;
-    public ushort Command_Index_Pc;
-    public ushort[,] Command_List_Pc = new ushort[COMMAND_LIST_NUM, 3];
+    
+    
+    
     public List<byte> SendByte { get; set; } = new List<byte>();
     [StructLayout(LayoutKind.Explicit)]
     struct TestUnion
@@ -238,7 +220,7 @@ namespace ServoTester3
             //Port.DiscardOutBuffer();
             //Port.DiscardInBuffer();
 
-            ComReadIndex = 0;
+            Packet.ComReadIndex = 0;
             RecvBuf.tail = 0;
             RecvBuf.head = 0;
             // set port
@@ -327,7 +309,7 @@ namespace ServoTester3
         //   // Packet.fresh_graph_data(ref Mc);
         //   // graph_count++;
         // }
-        ProcessPcMcReceivedCommData();
+        Packet.ProcessPcMcReceivedCommData(ref Mc);
         Thread.Sleep(50);
       }
     }
@@ -549,10 +531,10 @@ namespace ServoTester3
           // this.Invoke(new EventHandler(MySerialReceived));//
           byte[] data = Packet.Port.Encoding.GetBytes(Packet.Port.ReadExisting());
           // rbuf_put(data, (ushort)(data.Count()));
-          // cq.CopyTo(data, data.Count());
+          // Packet.cq.CopyTo(data, data.Count());
           for (int i = 0; i < data.Count(); i++)
           {
-            cq.Enqueue(data[i]);
+            Packet.cq.Enqueue(data[i]);
           }
           port_working = false;
         }
@@ -575,7 +557,7 @@ namespace ServoTester3
     //     {
     //       cq.Enqueue(data[i]);
     //     }
-    //     // ProcessPcMcReceivedCommData();
+    //     // Packet.ProcessPcMcReceivedCommData(ref Mc);
     //   }
     //   finally
     //   {
@@ -593,16 +575,16 @@ namespace ServoTester3
       tbFreeSpeed.Text = Mc.AutoSetting.CurrentFSpeed.ToString();
       tbFreeAngle.Text = Mc.AutoSetting.CurrentFAngle.ToString();
 
-      tbTqSensorValue.Text = TqSensorValue.ToString();
-      tbTqSensorOffsetValue.Text = TqSensorOffsetValue.ToString();
-      tbError.Text = Error.ToString();
-      tbMaintCnt.Text = MaintCnt.ToString();
-      tbEnc.Text = Enc.ToString();
+      tbTqSensorValue.Text = Mc.Var.TqSensorValue.ToString();
+      tbTqSensorOffsetValue.Text = Mc.Var.TqSensorOffsetValue.ToString();
+      tbError.Text = Mc.Var.Error.ToString();
+      tbMaintCnt.Text = Mc.Var.MaintCnt.ToString();
+      tbEnc.Text = Mc.Var.Enc.ToString();
 
       // tbDataCount.Text = Data_ch1.Count.ToString();
-      tbDataCount.Text = graph_count.ToString();
+      tbDataCount.Text = Mc.Var.graph_count.ToString();
       tbGraphDataCount.Text = Packet.Graph_ch1.Count.ToString();
-      // tbGraphDataCount.Text = graph_count.ToString();//Packet.Graph_ch1.Count.ToString();
+      // tbGraphDataCount.Text = Mc.Var.graph_count.ToString();//Packet.Graph_ch1.Count.ToString();
 
       if (Mc.Var.refresh_graph_flag)
       {
@@ -643,7 +625,7 @@ namespace ServoTester3
           break;
       }
       // check motor state
-      switch (MotorState)
+      switch (Mc.Var.MotorState)
       {
         // change off
         case false when !rbOff.Checked:
@@ -654,7 +636,7 @@ namespace ServoTester3
           break;
       }
       // check Calibration Step state
-      switch (CalibStepState)
+      switch (Mc.Var.CalibStepState)
       {
         // none
         case 0 when !rbCalibNone.Checked:
@@ -678,7 +660,7 @@ namespace ServoTester3
           break;
       }
       // check Calibration Result state
-      switch (CalibResultState)
+      switch (Mc.Var.CalibResultState)
       {
         // success
         case 0 when !rbCalibSuccess.Checked:
@@ -711,7 +693,7 @@ namespace ServoTester3
       {
         btStartStopFL.Text = "StartFL";
       }
-      if (Mot_or_Nut)
+      if (Mc.Var.Mot_or_Nut)
       {
         rbMot.Checked = true;
         rbNut.Checked = false;
@@ -725,7 +707,7 @@ namespace ServoTester3
         gbServo.Visible = false;
         gbFastenLoosen.Visible = true;
       }
-      if (Mcinitialized != 0)
+      if (Mc.Var.Mcinitialized != 0)
       {
         btMcInit.Text = @"Init MC - Yes";
       }
@@ -742,271 +724,6 @@ namespace ServoTester3
         btServoOnOff.Text = "Servo Off";
       }
       timer_working = false;
-    }
-    public void ProcessPcMcReceivedCommData()
-    {
-      byte data;
-      TestUnion d = new TestUnion();
-      while (cq.Count > 0)
-      {
-        cq.TryDequeue(out data);
-
-        Packet.ComReadBuffer[ComReadIndex++] = data;
-        // check header length
-        if ((Packet.ComReadBuffer[0] == 0x5A) && (Packet.ComReadBuffer[1] == 0xA5) && (ComReadIndex >= 4))
-        {
-          // get length
-          var data_length = (Packet.ComReadBuffer[3] << 8) | Packet.ComReadBuffer[2];
-          if (data_length > 900 || ComReadIndex > 900)
-          {
-            ComReadIndex = 0;
-            continue;
-          }
-          // check analyze count
-          if (ComReadIndex == (data_length + 6))
-          {
-            byte check_Command = Packet.ComReadBuffer[4];
-            byte Command = (byte)(check_Command & 0x7f);
-            byte Try_num = Packet.ComReadBuffer[7];
-            ushort StartAddress = (ushort)((Packet.ComReadBuffer[9] << 8) | (ushort)Packet.ComReadBuffer[8]);
-            ushort received_crc = (ushort)(Packet.ComReadBuffer[ComReadIndex - 2] & 0xff);
-            received_crc |= (ushort)(Packet.ComReadBuffer[ComReadIndex - 1] << 8);
-            ushort calc_crc = Packet.GetCRC(Packet.ComReadBuffer, ComReadIndex);
-            ComReadIndex = 0;
-            if (calc_crc == received_crc)
-            {
-              if (Command != 3)
-              {
-                Command_List_Pc[Command_Index_Pc, 0] = Command;
-                Command_List_Pc[Command_Index_Pc, 1] = StartAddress;
-                Command_List_Pc[Command_Index_Pc, 2] = 0;
-                Command_Index_Pc++;
-                if (Command_Index_Pc >= COMMAND_LIST_NUM)
-                  Command_Index_Pc = 0;
-              }
-              // check command
-              switch (Command)
-              {
-                case 1:
-                  if (StartAddress == 1 || StartAddress == 2)// || StartAddress == 3)
-                  {
-                    Packet.ResetAckState();
-                  }
-                  else if (StartAddress == 3)
-                  {
-                    Packet.ResetAckState();
-                    Packet.MakeAndSendData(1, 1, 0, ref Mc);
-                  }
-                  else if (StartAddress == 4)
-                  {
-                    Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    Mc.Info.u16Con_Model_Type = (ushort)((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
-                    Mc.Info.u16Version = (ushort)((Packet.ComReadBuffer[13] << 8) | Packet.ComReadBuffer[12]);
-                  }
-                  break;
-                case 2:
-                  if (StartAddress == 1 || StartAddress == 2 || StartAddress == 3 || StartAddress == 4 ||
-                      StartAddress == 6 || StartAddress == 7 || StartAddress == 8 || StartAddress == 9 || StartAddress == 10)
-                  {
-                    Packet.ResetAckState();
-                  }
-                  else if (StartAddress == 5)
-                  {
-                    // this.Invoke(new Action(delegate ()
-                    // {
-                    //   btMcInit.Text = @"Init MC - No";
-                    // }));
-                  }
-                  else if (StartAddress == 11)
-                  {
-                    Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    Mcinitialized = Packet.ComReadBuffer[11];
-                    // this.Invoke(new Action(delegate ()
-                    // {
-                    //   if (Mcinitialized != 0)
-                    //   {
-                    //     btMcInit.Text = @"Init MC - Yes";
-                    //   }
-                    //   else
-                    //   {
-                    //     btMcInit.Text = @"Init MC - No";
-                    //   }
-                    // }));
-                  }
-                  break;
-                case 3:// Pc <- Mc, Cyclic
-                  TqSensorValue = (ushort)((Packet.ComReadBuffer[13] << 8) | Packet.ComReadBuffer[12]);
-
-                  TqSensorOffsetValue = (ushort)((Packet.ComReadBuffer[15] << 8) | Packet.ComReadBuffer[14]);
-                  Mc.DriverInfo.u16TorqueSensorOffset = TqSensorOffsetValue;
-
-                  Error = (ushort)((Packet.ComReadBuffer[29] << 8) | Packet.ComReadBuffer[28]);
-                  // tbError.Text = Error.ToString();//ui
-                  Mc.Var.IniStep = Packet.ComReadBuffer[39];
-                  MaintCnt = (uint)((Packet.ComReadBuffer[51] << 24) | (Packet.ComReadBuffer[50] << 16) | (Packet.ComReadBuffer[49] << 8) | Packet.ComReadBuffer[48]);
-                  // tbMaintCnt.Text = MaintCnt.ToString();//ui
-                  Enc = (ushort)((Packet.ComReadBuffer[41] << 8) | Packet.ComReadBuffer[40]);
-                  // tbEnc.Text = Enc.ToString();//ui
-
-                  MotorState = ((Packet.ComReadBuffer[27] << 8) | Packet.ComReadBuffer[26]) != 0;
-                  Mc.Flag.b1Run = Packet.ComReadBuffer[26];
-                  Mc.Flag.b1ControlFL = Packet.ComReadBuffer[30];
-
-                  if (Packet.ComReadBuffer[42] != 0)
-                    Mc.AutoSetting.FlagSetting = true;
-                  else
-                    Mc.AutoSetting.FlagSetting = false;
-
-                  if (Packet.ComReadBuffer[43] != 0)
-                    Mc.AutoSetting.FlagStart = true;
-                  else
-                    Mc.AutoSetting.FlagStart = false;
-
-                  byte b1Run = (byte)(Packet.ComReadBuffer[44] & 0x01);
-                  if (FlagRun[0] != b1Run)
-                  {
-                    Packet.MakeAndSendData(2, 2, b1Run, ref Mc);
-                  }
-                  // FlagRun[4] = FlagRun[3];
-                  // FlagRun[3] = FlagRun[2];
-                  FlagRun[2] = FlagRun[1];
-                  FlagRun[1] = FlagRun[0];
-                  FlagRun[0] = (byte)(Packet.ComReadBuffer[44] & 0x01);
-
-                  byte b1ControlFL = (byte)(Packet.ComReadBuffer[44] & 0x02);
-                  if (FlagFL[0] != b1ControlFL)
-                  {
-                    if (b1ControlFL != 0)
-                      Packet.MakeAndSendData(2, 1, 1, ref Mc);
-                    else
-                      Packet.MakeAndSendData(2, 1, 0, ref Mc);
-                  }
-                  // FlagFL[4] = FlagFL[3];
-                  // FlagFL[3] = FlagFL[2];
-                  FlagFL[2] = FlagFL[1];
-                  FlagFL[1] = FlagFL[0];
-                  FlagFL[0] = b1ControlFL;
-
-                  if (Packet.ComReadBuffer[63] != 0)
-                    Mot_or_Nut = true;
-                  else
-                    Mot_or_Nut = false;
-
-                  break;
-                case 4:
-                  if (StartAddress == 1)
-                  {
-                    Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                  }
-                  graph_count++;
-                  Packet.fresh_graph_data(ref Mc);
-                  break;
-                case 5:
-                  if (StartAddress == 1)
-                  {
-                    Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                  }
-                  Mc.AutoSetting.CurrentSpeed = (ushort)((Packet.ComReadBuffer[119] << 8) | Packet.ComReadBuffer[118]);
-                  Mc.AutoSetting.CurrentSeatingPoint = (ushort)((Packet.ComReadBuffer[121] << 8) | Packet.ComReadBuffer[120]);
-                  Mc.AutoSetting.CurrentFSpeed = (ushort)((Packet.ComReadBuffer[123] << 8) | Packet.ComReadBuffer[122]);
-                  Mc.AutoSetting.CurrentFAngle = (ushort)((Packet.ComReadBuffer[125] << 8) | Packet.ComReadBuffer[124]);
-                  break;
-                case 6:
-                  break;
-                case 7:
-                  // if (StartAddress == 1)//download Driver info
-                  if (StartAddress == 2)//upload Driver info
-                  {
-                    Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                    Mc.DriverInfo.u16Type = (ushort)((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
-                    Mc.DriverInfo.u16Version = (ushort)((Packet.ComReadBuffer[13] << 8) | Packet.ComReadBuffer[12]);
-                    Mc.DriverInfo.u16Serial_low = (ushort)((Packet.ComReadBuffer[15] << 8) | Packet.ComReadBuffer[14]);
-                    Mc.DriverInfo.u16Serial_high = (ushort)((Packet.ComReadBuffer[17] << 8) | Packet.ComReadBuffer[16]);
-                    Mc.DriverInfo.u8Factory_Gear_efficiency = (ushort)((Packet.ComReadBuffer[19] << 8) | Packet.ComReadBuffer[18]);
-                    Mc.DriverInfo.u8User_Gear_efficiency = (ushort)((Packet.ComReadBuffer[21] << 8) | Packet.ComReadBuffer[20]);
-                    Mc.DriverInfo.u16DriverVendor = (ushort)((Packet.ComReadBuffer[23] << 8) | Packet.ComReadBuffer[22]);
-                    Mc.Var.DriverInfoIsReady = true;
-                    if (Mc.Var.IniStep != 11)
-                      Packet.MakeAndSendData(1, 3, 0, ref Mc);
-                  }
-                  else if (StartAddress == 3)//Speaker On/Off
-                  { }
-                  else if (StartAddress == 4)//Led band
-                  { }
-                  // else if (StartAddress == 5)//Reserved
-                  // else if (StartAddress == 6)//Reserved
-                  else if (StartAddress == 7)// Get Torque Offset
-                  {
-                    d.b0 = Packet.ComReadBuffer[12];
-                    d.b0 = Packet.ComReadBuffer[13];
-                    d.b0 = Packet.ComReadBuffer[14];
-                    d.b0 = Packet.ComReadBuffer[15];
-                    Mc.DriverInfo.f32TorqueOffset = d.f;
-                    Mc.Var.DriverInfo_TorqueOffsetIsReady = true;
-                  }
-                  else if (StartAddress == 8)//reset maintenance
-                  { }
-                  // else if (StartAddress == 9)//Reserved
-                  else if (StartAddress == 10)//Check Torque offset value
-                  { }
-                  else if (StartAddress == 11)//Save Torque offset value
-                  { }
-                  else if (StartAddress == 12)//Start/Stop Initail Angle
-                  { }
-                  else if (StartAddress == 13)// receive initial angle result Pc <- Mc
-                  {
-                    CalibResultState = (int)((Packet.ComReadBuffer[11] << 11) | Packet.ComReadBuffer[10]);
-                    Packet.AckSend(Command, 0, StartAddress, 0);       // return Ack OK
-                  }
-                  // else if (StartAddress == 13)// Pc -> Mc
-                  else if (StartAddress == 101)// Pc <- Mc
-                  {
-                    int CalibStepState1 = (int)((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
-                    if (CalibStepState1 == 0)
-                      CalibStepState = 0;
-                    else if (CalibStepState1 == 1)
-                      CalibStepState = 1;
-                    else if (CalibStepState1 == 2 || CalibStepState1 == 3)
-                      CalibStepState = 2;
-                    else if (CalibStepState1 == 4 || CalibStepState1 == 5)
-                      CalibStepState = 3;
-                    else
-                      CalibStepState = 4;
-                    Packet.AckSend(Command, Try_num, StartAddress, 0);       // return Ack OK
-                  }
-                  break;
-                case 104:
-                  // get value
-                  // MotorState = ((Packet.ComReadBuffer[3] << 8) | Packet.ComReadBuffer[4]) != 0;
-                  if (StartAddress == 1)// Pc -> Mc
-                  {
-
-                  }
-                  else if (StartAddress == 2)// Pc <- Mc
-                  {
-                    MotorState = ((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]) != 0;
-                    // CalibStepState = ((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
-                    // CalibResultState = ((Packet.ComReadBuffer[11] << 8) | Packet.ComReadBuffer[10]);
-                  }
-                  break;
-                case 106:
-                  break;
-                default:
-                  break;
-              }
-            }
-            else
-            {
-              // Packet.AckSend(Command, Try_num, StartAddress, 2);       // return check CRC error
-            }
-          }
-        }
-        else if (((ComReadIndex > 0) && (Packet.ComReadBuffer[0] != 0x5A))  // check packet error
-            || ((ComReadIndex > 1) && (Packet.ComReadBuffer[1] != 0xA5)))  // check packet error
-        {
-          ComReadIndex = 0;// no return Ack
-        }
-      }
     }
 
     private static IEnumerable<byte> GetCrc(IEnumerable<byte> packet)
