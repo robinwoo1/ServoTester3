@@ -643,44 +643,52 @@ namespace ServoTester3
     //[Obsolete]
     public void Refresh_graph()
     {
+      List<double> Graph_ch1 = Packet.Graph_ch1.ToList();
+      List<double> Graph_ch2 = Packet.Graph_ch2.ToList();
+      List<double> Graph_ch3 = Packet.Graph_ch3.ToList();
+      List<double> Graph_ch4 = Packet.Graph_ch4.ToList();
+      List<double> Graph_ch5 = Packet.Graph_ch5.ToList();
+      List<double> Graph_ch6 = Packet.Graph_ch6.ToList();
+      List<double> Graph_ch7 = Packet.Graph_ch7.ToList();
+      // List<double> Graph_ch8 = Packet.Graph_ch8.ToList();
       List<double> Graph_time = new List<double>();
-      for (int i = 0; i < Packet.Graph_ch1.Count; i++)
+      formsPlot1.Plot.Clear();
+      for (int i = 0; i < Graph_ch1.Count; i++)
         Graph_time.Add(5e-3d * (double)i);
 
-      formsPlot1.Plot.Clear();
       if (cbGraph_ch1.Checked)
       {
-        var sig1 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch1);
+        var sig1 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch1);
         sig1.LegendText = "Torque";
       }
       if (cbGraph_ch2.Checked)
       {
-        var sig2 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch2);
+        var sig2 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch2);
         sig2.LegendText = "Current";
       }
       if (cbGraph_ch3.Checked)
       {
-        var sig3 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch3);
+        var sig3 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch3);
         sig3.LegendText = "Speed";
       }
       if (cbGraph_ch4.Checked)
       {
-        var sig4 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch4);
+        var sig4 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch4);
         sig4.LegendText = "Angle";
       }
       if (cbGraph_ch5.Checked)
       {
-        var sig5 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch5);
+        var sig5 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch5);
         sig5.LegendText = "Speed Command";
       }
       if (cbGraph_ch6.Checked)
       {
-        var sig6 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch6);
+        var sig6 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch6);
         sig6.LegendText = "Current Command";
       }
       if (cbGraph_ch7.Checked)
       {
-        var sig7 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Packet.Graph_ch7);
+        var sig7 = formsPlot1.Plot.Add.ScatterLine(Graph_time, Graph_ch7);
         sig7.LegendText = "SnugAngle";
       }
 
@@ -695,7 +703,7 @@ namespace ServoTester3
       var hl = formsPlot1.Plot.Add.HorizontalLine(0);
       hl.IsDraggable = true;
       hl.Text = $"{hl.Y:0.00}";//"HLine";
-
+      // if (Graph_time.Count == Graph_ch1.Count)
       formsPlot1.Refresh();
     }
     private void btnSaveGraph_Click(object sender, EventArgs e)
