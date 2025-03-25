@@ -15,18 +15,6 @@ namespace ServoTester3
 {
   public partial class Form1 : Form
   {
-    public const ushort SERIAL_BUF_SIZE = 128 * 16;//128*8;
-    
-    public const byte ON = 1;
-    public const byte OFF = 0;
-    public const int _LengthLow = 2;
-    public const int _LengthHigh = 3;
-    private List<byte> _requestPacket;
-    public byte DriverRun = 0;
-    public byte CommandRun = 0;
-    public byte DriverFL = 0;
-    public byte CommandFL = 0;
-    public bool closing_flag = false;
     Thread myThread;// = new Thread(myFunc);
     public bool myThread_flag = false;
     _Parameter Mc = new _Parameter();
@@ -36,35 +24,9 @@ namespace ServoTester3
       InitializeComponent();
 
     }
-    private bool clear_graph_flag = false;
-    // private int MotorState;
     private int time_tick;
     private bool timer_working = false;
     private bool port_working = false;
-    
-    // public ConcurrentQueue<byte> graph_cq = new ConcurrentQueue<byte>();
-    
-    public byte[] graph_ComReadBuffer = new byte[1024];
-    
-    
-    
-    public List<byte> SendByte { get; set; } = new List<byte>();
-    [StructLayout(LayoutKind.Explicit)]
-    struct TestUnion
-    {
-      [FieldOffset(0)] public float f;
-      [FieldOffset(0)] public int i;
-      [FieldOffset(0)] public uint u;
-      [FieldOffset(0)] public ushort us0;
-      [FieldOffset(2)] public ushort us1;
-      [FieldOffset(0)] public short s0;
-      [FieldOffset(2)] public short s1;
-      [FieldOffset(0)] public byte b0;
-      [FieldOffset(1)] public byte b1;
-      [FieldOffset(2)] public byte b2;
-      [FieldOffset(3)] public byte b3;
-    }
-
     private void Form1_Load(object sender, EventArgs e)
     {
       // refresh port
@@ -221,8 +183,6 @@ namespace ServoTester3
             //Port.DiscardInBuffer();
 
             Packet.ComReadIndex = 0;
-            RecvBuf.tail = 0;
-            RecvBuf.head = 0;
             // set port
             Packet.Port.PortName = port;
             Packet.Port.BaudRate = baudrate;
@@ -293,46 +253,10 @@ namespace ServoTester3
 
       while (myThread_flag)
       {
-        // if (graph_cq.Count>0)
-        // {
-        //   // for (int i=0;i<800;i++)
-        //   // {
-        //   //   graph_cq.TryDequeue(out data);
-        //   //   graph_ComReadBuffer[i]=data;
-        //   // }
-        //   // this.Invoke(new Action(delegate() // this == Form 이다. Form이 아닌 컨트롤의 Invoke를 직접호출해도 무방하다.
-        //   //           {
-        //   //               //Invoke를 통해 lbl_Result 컨트롤에 결과값을 업데이트한다.
-        //   //               // lbl_Result.Text = result.ToString();
-        //   //               Packet.fresh_graph_data(ref Mc);
-        //   //           }));
-        //   // Packet.fresh_graph_data(ref Mc);
-        //   // graph_count++;
-        // }
         Packet.ProcessPcMcReceivedCommData(ref Mc);
         Thread.Sleep(50);
       }
     }
-    // private void btMotor_Click(object sender, EventArgs e)
-    // {
-    //     // var list = new List<byte>();
-    //     // check sender
-    //     if (btRunStop.Text == @"Servo On")
-    //     {
-    //         Packet.MakeAndSendData(106, 1, 1, ref Mc);
-    //         btRunStop.Text = @"Servo Off";
-    //     }
-    //     else
-    //     {
-    //         Packet.MakeAndSendData(106, 1, 0, ref Mc);
-    //         btRunStop.Text = @"Servo On";
-    //     }
-
-    //     // // check port is open
-    //     // if (Packet.Port.IsOpen && list.Count > 0)
-    //     //   // write packet
-    //     //   Packet.Port.Write(list.ToArray(), 0, list.Count);
-    // }
     private void btStartStopFL_Click(object sender, EventArgs e)
     {
       if (btStartStopFL.Text == "StartFL")
@@ -360,7 +284,6 @@ namespace ServoTester3
     }
     private void btFastenLoosen_Click(object sender, EventArgs e)
     {
-      clear_graph_flag = true;
       if (btFastenLoosen.Text == "Fasten")
       {
         Mc.Flag.b1ControlFL = 0;
@@ -429,11 +352,6 @@ namespace ServoTester3
         Packet.MakeAndSendData(7, 12, 0, ref Mc);
       }
     }
-
-    // private void Set_ValueChanged(object sender, EventArgs e)
-    // {
-
-    // }
     private void Set_ValueChanged(object sender, EventArgs e)
     {
       Control control = null;
@@ -486,36 +404,9 @@ namespace ServoTester3
           Mc.Gain.Sp_Kf = Convert.ToUInt16(((NumericUpDown)control).Value);//(ushort)UInt16.Parse(tbSpeedFFgain.Text);
           Packet.MakeAndSendData(9, addr, (short)Mc.Gain.Sp_Kf, ref Mc);
           break;
-          // add range
-          // packet.AddRange(GetPacket(addr, Convert.ToInt32(((ComboBox)control).SelectedIndex)));
-          // Packet.MakeAndSendData(9, addr, Convert.ToInt16(((ComboBox)control).SelectedIndex), ref Mc);
-          // Packet.MakeAndSendData(9, addr, Convert.ToInt16(((NumericUpDown)control).Value), ref Mc);
-          // break;
-          // case 9:
-          // case 10:
-          // case 11:
-          // case 12:
-          // case 13:
-          // case 14:
-          // case 15:
-          // case 16:
-          // case 17:
-          //     // add range
-          //     // packet.AddRange(GetPacket(addr, Convert.ToInt32(((NumericUpDown)control).Value)));
-          //     Packet.MakeAndSendData(106, addr, Convert.ToInt16(((NumericUpDown)control).Value), ref Mc);
-          //     break;
+        default:
+          break;
       }
-      // // check port is open
-      // if (Packet.Port.IsOpen && packet.Count > 0)
-      //     // write packet
-      //     Packet.Port.Write(packet.ToArray(), 0, packet.Count);
-
-      // // debug
-      // foreach (var b in packet)
-      // {
-      //     Debug.Write($@"{b:X2} ");
-      // }
-      // Debug.WriteLine(string.Empty);
     }
     private void btnSetAllGain_Click(object sender, EventArgs e)
     {
@@ -528,10 +419,7 @@ namespace ServoTester3
         if (Packet.Port.IsOpen)
         {
           port_working = true;
-          // this.Invoke(new EventHandler(MySerialReceived));//
           byte[] data = Packet.Port.Encoding.GetBytes(Packet.Port.ReadExisting());
-          // rbuf_put(data, (ushort)(data.Count()));
-          // Packet.cq.CopyTo(data, data.Count());
           for (int i = 0; i < data.Count(); i++)
           {
             Packet.cq.Enqueue(data[i]);
@@ -543,27 +431,7 @@ namespace ServoTester3
       {
         //Packet.Port.Close();
       }
-
     }
-
-    // private void MySerialReceived(object s, EventArgs e)  //
-    // {
-    //   try
-    //   {
-    //     byte[] data = Packet.Port.Encoding.GetBytes(Packet.Port.ReadExisting());
-    //     // rbuf_put(data, (ushort)(data.Count()));
-    //     // cq.CopyTo(data, data.Count());
-    //     for (int i=0;i<data.Count();i++)
-    //     {
-    //       cq.Enqueue(data[i]);
-    //     }
-    //     // Packet.ProcessPcMcReceivedCommData(ref Mc);
-    //   }
-    //   finally
-    //   {
-
-    //   }
-    // }
     private void workTimer_Tick(object sender, EventArgs e)
     {
       timer_working = true;
@@ -581,10 +449,8 @@ namespace ServoTester3
       tbMaintCnt.Text = Mc.Var.MaintCnt.ToString();
       tbEnc.Text = Mc.Var.Enc.ToString();
 
-      // tbDataCount.Text = Data_ch1.Count.ToString();
       tbDataCount.Text = Mc.Var.graph_count.ToString();
       tbGraphDataCount.Text = Packet.Graph_ch1.Count.ToString();
-      // tbGraphDataCount.Text = Mc.Var.graph_count.ToString();//Packet.Graph_ch1.Count.ToString();
 
       if (Mc.Var.refresh_graph_flag)
       {
@@ -773,27 +639,11 @@ namespace ServoTester3
       // return
       return list;
     }
-    public struct RecvBuf_
-    {
-      public ushort head;
-      public ushort tail;
-      public byte[] data;
-      public RecvBuf_(int num)
-      {
-        this.head = 0;
-        this.tail = 0;
-        this.data = new byte[num];
-      }
-    }
-    RecvBuf_ RecvBuf = new RecvBuf_(SERIAL_BUF_SIZE);
 
     //[Obsolete]
     public void Refresh_graph()
     {
-      // tbDataCount.Text = Data_ch1.Count.ToString();
-      // tbGraphDataCount.Text = Packet.Graph_ch1.Count.ToString();
       List<double> Graph_time = new List<double>();
-      // Graph_time.Clear();
       for (int i = 0; i < Packet.Graph_ch1.Count; i++)
         Graph_time.Add(5e-3d * (double)i);
 
@@ -847,11 +697,6 @@ namespace ServoTester3
       hl.Text = $"{hl.Y:0.00}";//"HLine";
 
       formsPlot1.Refresh();
-
-      // use events for custom mouse interactivity
-      //formsPlot1.MouseDown += FormsPlot1_MouseDown;
-      //formsPlot1.MouseUp += FormsPlot1_MouseUp;
-      //formsPlot1.MouseMove += FormsPlot1_MouseMove;
     }
     private void btnSaveGraph_Click(object sender, EventArgs e)
     {
